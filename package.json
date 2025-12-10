@@ -1,0 +1,36 @@
+{
+  "name": "stocker",
+  "version": "0.1.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "test": "vitest run",
+    "serve": "vite preview",
+    "tauri": "tauri"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@solidjs/router": "^0.15.4",
+    "@tailwindcss/vite": "^4.1.17",
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-opener": "^2",
+    "@types/node": "^24.10.1",
+    "daisyui": "^5.5.7",
+    "lucide-solid": "^0.555.0",
+    "solid-js": "^1.9.3",
+    "tailwindcss": "^4.1.17",
+    "vitest": "^4.0.15",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.3.8",
+    "@tauri-apps/cli": "^2",
+    "jsdom": "^27.2.0",
+    "typescript": "~5.6.2",
+    "vite": "^6.0.3",
+    "vite-plugin-solid": "^2.11.0"
+  }
+}
