@@ -1,0 +1,151 @@
+import { type Component, createEffect, createSignal } from 'solid-js';
+import type { JournalRecord } from '@/entities/stock/models/journal';
+import { useFormat } from '@/shared/lib/format';
+import NumberInput from '@/shared/ui/NumberInput';
+
+interface RecordsPerSupplier {
+	id: string;
+	name: string;
+	records: JournalRecord[];
+};
+
+const JournalSheet: Component<{
+	value?: JournalRecord[];
+	onChange?: (value: JournalRecord[]) => unknown;
+}> = (props) => {
+
+	const formatter = useFormat('ja-JP');
+
+	const [records, setRecords] = createSignal<JournalRecord[]>([]);
+
+	const [suppliers, setSuppliers] = createSignal<RecordsPerSupplier[]>([]);
+
+	const [totalPrice, setTotalPrice] = createSignal(0);
+
+	const onChange = (value: JournalRecord) => {
+
+		const index =  records().findIndex(r => 
+			r.supplierId === value.supplierId && r.supplyId === value.supplyId);
+
+		if (index >= 0) {
+			records()[index] = value;
+			props.onChange?.(records());
+		}
+
+		const total = records().reduce((price, record) => price + record.totalPrice, 0);
+
+		setTotalPrice(total);
+	}
+
+	createEffect(() => {
+
+		setRecords(props.value ?? []);
+
+		const supps: RecordsPerSupplier[] = [];
+
+		for (const record of records()) {
+			if (!supps.some(s => s.id === record.supplierId)) {
+				supps.push({
+					id: record.supplierId,
+					name: record.supplierName,
+					records: [],
+				});
+			}
+
+			supps.find(s => s.id === record.supplierId)?.records.push(record)
+		}
+
+		setSuppliers(supps);
+	});
+
+	return (
+		<table class="table text-nowrap table-pin-rows table-fixed pr-3">
+			<thead>
+				<tr>
+					<th></th>
+					<th>仕入品</th>
+					<th>単位</th>
+					<th class='text-end'>単価</th>
+					<th class='text-end'>数量</th>
+					<th class='text-end'>金額</th>
+				</tr>
+			</thead>
+			<tbody>
+				{
+					suppliers().map(supp => (
+						<>
+							<tr class='bg-base-200'>
+								<td colspan={6}>{supp.name}</td>
+							</tr>
+							{
+								supp.records.map(record =>
+									<JournalRecordInput
+										value={record}
+										onChange={onChange}
+									/>
+								)
+							}
+						</>
+					))
+				}
+			</tbody>
+			<tfoot>
+				<tr class='rounded-none bg-base-300'>
+					<td colSpan={5}>合計</td>
+					<td class='text-end'>{formatter.number.format(totalPrice())} 円</td>
+				</tr>
+			</tfoot>
+		</table>
+	);
+};
+
+const JournalRecordInput: Component<{
+	value: JournalRecord;
+	onChange: (value: JournalRecord) => unknown;
+}> = (props) => {
+	const formatter = useFormat('ja-JP');
+
+	const [unitPrice, setUnitPrice] = createSignal(0);
+
+	const [quantity, setQuantity] = createSignal(0);
+
+	const [taxRate, _] = createSignal(0);
+
+	const [totalPrice, setTotalPrice] = createSignal(0);
+
+	const [totalPriceIncludeTax, setTotalPriceIncludeTax] = createSignal(0);
+
+	createEffect(() => {
+		setTotalPrice(unitPrice() * quantity());
+		setTotalPriceIncludeTax(totalPrice() * ((taxRate() / 100) + 1))
+		props.onChange({
+			supplyName: props.value.supplyName,
+			supplierName: props.value.supplierName,
+			unitName: props.value.unitName,
+			supplierId: props.value.supplierId,
+			supplyId: props.value.supplyId,
+			unitPrice: unitPrice(),
+			quantity: quantity(),
+			taxRate: taxRate() / 100,
+			totalPrice: totalPrice(),
+			totalPriceIncludeTax: totalPriceIncludeTax(),
+		});
+	});
+
+	return (
+		<tr>
+			<td></td>
+			<td>{props.value.supplyName}</td>
+			<td>{props.value.unitName}</td>
+			<td>
+				<NumberInput value={(unitPrice())} onChange={setUnitPrice} suffix='円'/>
+			</td>
+			<td>
+				<NumberInput value={quantity()} onChange={setQuantity} suffix={props.value.unitName}/>
+			</td>
+			<td class="text-end">{formatter.number.format(totalPrice())} 円</td>
+		</tr>
+	);
+};
+
+export default JournalSheet;

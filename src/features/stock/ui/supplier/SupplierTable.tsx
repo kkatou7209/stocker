@@ -14,7 +14,7 @@ const SupplierTable: Component<SupplierTableProps> = (props) => {
 
 	return (
 		<table class="table">
-			<thead class="sticky">
+			<thead class="sticky top-0 left-0">
 				<tr class="table block table-fixed">
 					<th class='w-20'></th>
 					<th>仕入先名</th>

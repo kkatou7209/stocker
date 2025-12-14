@@ -1,32 +1,26 @@
-import { SearchIcon } from 'lucide-solid';
-import { type Component, createSignal, onMount } from 'solid-js';
+import { StoreIcon, WheatIcon } from 'lucide-solid';
+import { type Component, createSignal, onMount, Show } from 'solid-js';
 import { useApp } from '@/app/contexts/AppContext';
 import type { Supply } from '@/entities/stock/models/supply';
-import { SupplierId } from '@/entities/stock/values/supplier-id';
-import { SupplyId } from '@/entities/stock/values/supply-id';
-import { SupplyName } from '@/entities/stock/values/supply-name';
-import { UnitName } from '@/entities/stock/values/unit-name';
+import { useSupplierRespository } from '@/entities/stock/respository/supplier';
+import { useSupplyRepository } from '@/entities/stock/respository/supply';
 import { listSuppliesAccordionValues } from '@/features/stock/api/list-supplies-accordion-values';
 import type {
 	SuppliesAccordionValue,
 	SupplyAccordionValue,
 } from '@/features/stock/models/supplies-accordion-value';
-import SuppliesAccordion from '@/features/stock/ui/SuppliesAccordion';
+import SuppliesAccordion from '@/features/stock/ui/supply/SuppliesAccordion';
 import SupplyInput, {
 	type SupplyInputSupplierModel,
 	type SupplyInputValue,
-} from '@/features/stock/ui/SupplyInput';
-import { useApi } from '@/shared/api';
-import type {
-	AddSupplyCommand,
-	UpdateSupplyCommand,
-} from '@/shared/api/usecases';
+} from '@/features/stock/ui/supply/SupplyInput';
 import Button from '@/shared/ui/Button';
 import TextInput from '@/shared/ui/TextInput';
 
 const SupplyListPage: Component = () => {
 	const app = useApp();
-	const api = useApi();
+	const supplyRepository = useSupplyRepository();
+	const supplierRepository = useSupplierRespository();
 
 	app.setPageTitle('仕入品');
 
@@ -54,61 +48,69 @@ const SupplyListPage: Component = () => {
 		null,
 	);
 
+	const reload = async () => {
+		const suppliers = await supplierRepository.find({
+			supplierName: searchSupplierName(),
+			supplyName: searchSupplyName(),
+		});
+
+		const values: SuppliesAccordionValue[] = suppliers.map((supplier) => {
+			const value: SuppliesAccordionValue = {
+				supplierId: supplier.id,
+				supplierName: supplier.name,
+				supplies: supplier.supplies.map((supply) => ({
+					supplyId: supply.id,
+					supplyName: supply.name,
+					unitName: supply.unitName,
+				})),
+			};
+
+			return value;
+		});
+
+		setSuppliesAccordionValues(values);
+	};
+
 	const select = async (value: SupplyAccordionValue) => {
 		setSelectedSupply(null);
 
-		const id = SupplyId.of(value.supplyId);
-
-		const supply = await api.getSupply(id);
+		const supply = await supplyRepository.get(value.supplyId);
 
 		if (!supply) return;
 
 		setSelectedSupply(supply);
 
 		setSupplyInput({
-			supplyName: supply.name().value(),
-			unitName: supply.unitName().value(),
-			supplierId: supply.supplierId().value(),
+			supplyName: supply.name,
+			unitName: supply.unitName,
+			supplierId: supply.supplierId,
 		});
 
 		setEditDialogOpen(true);
 	};
 
 	const add = async (supply: SupplyInputValue) => {
-		const command: AddSupplyCommand = {
-			name: SupplyName.of(supply.supplyName),
-			supplierId: SupplierId.of(supply.supplierId),
-			unitName: UnitName.of(supply.unitName),
-		};
-
-		await api.addSupply(command);
-
-		const values = await listSuppliesAccordionValues();
-
-		setSuppliesAccordionValues(values);
+		await supplyRepository.add(supply);
 
 		setAddDialogOpen(false);
+
+		await reload();
 	};
 
 	const edit = async (supply: SupplyInputValue) => {
-		const id = selectedSupply()?.id();
+		const id = selectedSupply()?.id;
 
 		if (!id) return;
 
-		const command: UpdateSupplyCommand = {
-			supplyId: id,
-			supplyName: SupplyName.of(supply.supplyName),
-			supplierId: SupplierId.of(supply.supplierId),
-			unitName: UnitName.of(supply.unitName),
-		};
-
-		await api.updateSupply(command);
-
-		const values = await listSuppliesAccordionValues();
-
-		setSuppliesAccordionValues(values);
+		await supplyRepository.edit({
+			id,
+			name: supply.supplyName,
+			unitName: supply.unitName,
+		});
 
 		setEditDialogOpen(false);
+
+		await reload();
 	};
 
 	onMount(async () => {
@@ -116,12 +118,12 @@ const SupplyListPage: Component = () => {
 
 		setSuppliesAccordionValues(values);
 
-		const supps = await api.listSuppliers();
+		const supps = await supplierRepository.list();
 
 		setSuppliers(
 			supps.map((s) => ({
-				supplierId: s.id().value(),
-				supplierName: s.name().value(),
+				supplierId: s.id,
+				supplierName: s.name,
 			})),
 		);
 	});
@@ -131,26 +133,44 @@ const SupplyListPage: Component = () => {
 			<section class="flex justify-between items-center">
 				<div class="flex items-center gap-5">
 					<TextInput
+						prefix={<WheatIcon class='size-4'/>}
 						label="仕入品名"
-						onInput={(value) => setSearchSupplyName(value)}
+						onInput={(value) => {
+							setSearchSupplyName(value);
+							reload();
+						}}
 					/>
 					<TextInput
+						prefix={<StoreIcon class='size-4'/>}
 						label="仕入先名"
-						onInput={(value) => setSearchSupplierName(value)}
+						onInput={(value) => {
+							setSearchSupplierName(value);
+							reload();
+						}}
+						onChange={reload}
 					/>
-					<Button color='info'>
-						<SearchIcon />
-					</Button>
 				</div>
 				<Button onClick={() => setAddDialogOpen(true)}>追加</Button>
 			</section>
 
 			<section class="grow h-[70vh] overflow-auto">
-				<div class="flex flex-col gap-10 pb-100">
-					{suppliesAccordionValues().map((value) => (
-						<SuppliesAccordion value={value} onSelect={select} />
-					))}
-				</div>
+				<Show
+					when={suppliesAccordionValues().length > 0}
+					fallback={
+						<div class="flex justify-center">
+							<p class="text-gray-400">データがありません</p>
+						</div>
+					}
+				>
+					<div class="flex flex-col gap-10 pb-100">
+						{suppliesAccordionValues().map((value) => (
+							<SuppliesAccordion
+								value={value}
+								onSelect={select}
+							/>
+						))}
+					</div>
+				</Show>
 			</section>
 
 			<dialog class="modal" open={addDialogOpen()}>

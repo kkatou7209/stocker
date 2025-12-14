@@ -1,27 +1,24 @@
-import { SearchIcon } from 'lucide-solid';
-import { type Component, createSignal, onMount } from 'solid-js';
+import { StoreIcon } from 'lucide-solid';
+import { type Component, createSignal, onMount, Show } from 'solid-js';
 import { useApp } from '@/app/contexts/AppContext';
 import type { Supplier } from '@/entities/stock/models/supplier';
-import { SupplierId } from '@/entities/stock/values/supplier-id';
-import { SupplierName } from '@/entities/stock/values/supplier-name';
+import { useSupplierRespository } from '@/entities/stock/respository/supplier';
 import type { SupplierTableRecord } from '@/features/stock/models/supplier-table-record';
 import SupplierInput, {
 	type SupplierInputValue,
-} from '@/features/stock/ui/SupplierInput';
-import SupplierTable from '@/features/stock/ui/SupplierTable';
-import { useApi } from '@/shared/api';
-import type {
-	AddSupplierCommand,
-	UpdateSupplierCommand,
-} from '@/shared/api/usecases';
+} from '@/features/stock/ui/supplier/SupplierInput';
+import SupplierTable from '@/features/stock/ui/supplier/SupplierTable';
 import Button from '@/shared/ui/Button';
 import TextInput from '@/shared/ui/TextInput';
 
 const SupplierListPage: Component = () => {
 	const app = useApp();
-	const api = useApi();
+	const supplierRepository = useSupplierRespository();
 
 	app.setPageTitle('仕入先');
+
+	const [searchSupplierName, setSearchSupplierName] =
+		createSignal<string>('');
 
 	const [records, setRecords] = createSignal<SupplierTableRecord[]>([]);
 
@@ -34,23 +31,26 @@ const SupplierListPage: Component = () => {
 
 	const [editDialogOpen, setEditDialogOpen] = createSignal(false);
 
-	const getRecords = async (): Promise<SupplierTableRecord[]> => {
-		const suppliers = await api.listSuppliers();
+	const reload = async () => {
+		const suppliers = await supplierRepository.find({
+			supplierName: searchSupplierName(),
+			supplyName: null,
+		});
 
 		const records: SupplierTableRecord[] = [];
 
 		for (const supplier of suppliers) {
 			records.push({
-				id: supplier.id().value(),
-				name: supplier.name().value(),
+				id: supplier.id,
+				name: supplier.name,
 			});
 		}
 
-		return records;
+		setRecords(records);
 	};
 
 	const select = async (record: SupplierTableRecord) => {
-		const supp = await api.getSupplier(SupplierId.of(record.id));
+		const supp = await supplierRepository.get(record.id);
 
 		if (!supp) {
 			setSupplier(null);
@@ -61,75 +61,80 @@ const SupplierListPage: Component = () => {
 		setSupplier(supp);
 
 		setSupplierInput({
-			supplierName: supp.name().value(),
+			supplierName: supp.name,
 		});
 
 		setEditDialogOpen(true);
 	};
 
 	const add = async (input: SupplierInputValue) => {
-		const command: AddSupplierCommand = {
-			supplierName: SupplierName.of(input.supplierName),
-		};
-
-		await api.addSupplier(command);
+		await supplierRepository.add({
+			name: input.supplierName,
+		});
 
 		setAddDialogOpen(false);
 
-		const records = await getRecords();
-
-		setRecords(records);
+		await reload();
 	};
 
 	const edit = async (input: SupplierInputValue) => {
-		const id = supplier()?.id();
+		const id = supplier()?.id;
 
 		if (!id) return;
 
-		const command: UpdateSupplierCommand = {
-			supplierId: id,
-			supplierName: SupplierName.of(input.supplierName),
-		};
-
-		await api.updateSupplier(command);
+		await supplierRepository.edit({
+			id,
+			name: input.supplierName,
+		});
 
 		setEditDialogOpen(false);
 
-		const records = await getRecords();
-
-		setRecords(records);
+		await reload();
 	};
 
 	onMount(async () => {
-		const records = await getRecords();
-
-		setRecords(records);
+		await reload();
 	});
 
 	return (
-		<article class="size-full">
-			<div class="drawer-content pt-10 sm:px-3 lg:px-10">
-				<div class="flex flex-col gap-10 transition-all duration-150">
-					<section class="flex justify-between">
-						<div class="flex items-center gap-5">
-							<TextInput label="仕入先名" />
-							<Button color="info">
-								<SearchIcon />
-							</Button>
-						</div>
-						<Button onClick={() => setAddDialogOpen(true)}>
-							<span>追加</span>
-						</Button>
-					</section>
-					<section>
-						<SupplierTable value={records()} onSelect={select} />
-					</section>
+		<article class="size-full flex flex-col gap-10 p-10">
+			<section class="flex justify-between">
+				<div class="flex items-center gap-5">
+					<TextInput
+						prefix={<StoreIcon class="size-4" />}
+						label="仕入先名"
+						value={searchSupplierName()}
+						onInput={(v) => {
+							setSearchSupplierName(v);
+							reload();
+						}}
+					/>
 				</div>
-			</div>
+				<Button onClick={() => setAddDialogOpen(true)}>
+					<span>追加</span>
+				</Button>
+			</section>
+			<section>
+				<Show
+					when={records().length > 0}
+					fallback={
+						<div class="flex justify-center">
+							<p class="text-gray-400">
+								データがありません
+							</p>
+						</div>
+					}
+				>
+					<SupplierTable
+						value={records()}
+						onSelect={select}
+					/>
+				</Show>
+			</section>
 
 			<dialog class="modal" open={addDialogOpen()}>
 				<div class="modal-box w-100">
-					<SupplierInput onAction={add} />
+					<SupplierInput onAction={add} actionLabel="追加" />
 				</div>
 				<button
 					type="button"
@@ -141,9 +146,10 @@ const SupplierListPage: Component = () => {
 			<dialog class="modal" open={editDialogOpen()}>
 				<div class="modal-box w-100">
 					<SupplierInput
-                        value={supplierInput()}
-                        onAction={edit}
-                    />
+						value={supplierInput()}
+						onAction={edit}
+						actionLabel="更新"
+					/>
 				</div>
 				<button
 					type="button"

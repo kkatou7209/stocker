@@ -1,48 +1,28 @@
-import type {
-	AddSupplierUsecase,
-	AddSupplyUsecase,
-	GetSupplierUsecase,
-	GetSupplyUsecase,
-	ListSupplierSupplies,
-	ListSuppliersUsecase,
-	ListSuppliesUsecase,
-	UpdateSupplierUsecase,
-	UpdateSupplyUsecase,
-} from '@/shared/api/usecases';
+import type { JournalEndpoints } from '@/shared/api/endpoints/jurnal';
+import type { StocktakingEndpoints } from '@/shared/api/endpoints/stocktaking';
+import type { SupplierEndpoint } from '@/shared/api/endpoints/supplier';
+import type { SupplyEndpoint } from '@/shared/api/endpoints/supply';
 import {
-	mockAddSupplierUsecase,
-	mockAddSupplyUsecase,
-	mockGetSupplierUsecase,
-	mockGetSupplyUsecase,
-	mockListSupplierSupplies,
-	mockListSuppliersUsecase,
-	mockListSuppliesUsecase,
-	mockUpdateSupplierUsecase,
-	mockUpdateSupplyUsecase,
-} from '@/shared/mock/api';
+	mockJournalENdpoints,
+	mockStocktakingEndpoints,
+	mockSupplierEndpoints,
+	mockSupplyEndpoints,
+} from '@/shared/mock/endpoints';
 
-export interface StockUsecases {
-	readonly addSupplier: AddSupplierUsecase;
-	readonly listSuppliers: ListSuppliersUsecase;
-	readonly getSupplier: GetSupplierUsecase;
-	readonly updateSupplier: UpdateSupplierUsecase;
-	readonly listSupplierSupplies: ListSupplierSupplies;
-	readonly addSupply: AddSupplyUsecase;
-	readonly listSupplies: ListSuppliesUsecase;
-	readonly getSupply: GetSupplyUsecase;
-	readonly updateSupply: UpdateSupplyUsecase;
+export interface Api {
+	readonly supplier: SupplierEndpoint;
+	readonly supply: SupplyEndpoint;
+	readonly journal: JournalEndpoints;
+	readonly stocktaking: StocktakingEndpoints;
 }
 
-export const useApi = (): StockUsecases => {
-	return {
-		addSupplier: mockAddSupplierUsecase,
-		listSuppliers: mockListSuppliersUsecase,
-		getSupplier: mockGetSupplierUsecase,
-		updateSupplier: mockUpdateSupplierUsecase,
-		addSupply: mockAddSupplyUsecase,
-		listSupplies: mockListSuppliesUsecase,
-		listSupplierSupplies: mockListSupplierSupplies,
-		getSupply: mockGetSupplyUsecase,
-		updateSupply: mockUpdateSupplyUsecase,
-	};
+const mockApi: Api = Object.freeze({
+	supplier: mockSupplierEndpoints,
+	supply: mockSupplyEndpoints,
+	journal: mockJournalENdpoints,
+	stocktaking: mockStocktakingEndpoints,
+});
+
+export const useApi = (): Api => {
+	return mockApi;
 };

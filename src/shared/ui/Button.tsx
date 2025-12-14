@@ -1,8 +1,11 @@
 import { children, type ParentComponent } from 'solid-js';
+import type { JSX } from 'solid-js/h/jsx-runtime';
 
 export interface ButtonProps {
 	class?: string;
-    color?: 'primary' | 'info' | 'ghost';
+	type?: HTMLButtonElement['type'];
+	color?: 'primary' | 'info' | 'ghost' | 'link' | 'outline' | 'soft';
+	children?: JSX.Element;
 	onClick?: () => unknown;
 }
 
@@ -11,8 +14,8 @@ const Button: ParentComponent<ButtonProps> = (props) => {
 
 	return (
 		<button
-			type="button"
-			class={`btn ${props.color ? `btn-${props.color}` : 'btn-primary'}`}
+			type={props.type ?? 'button'}
+			class={`btn ${props.color ? `btn-${props.color}` : 'btn-primary'} ${props.class}`}
 			onclick={props.onClick}
 		>
 			{resolved()}

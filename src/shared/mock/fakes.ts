@@ -1,51 +1,204 @@
-import { Supplier } from '@/entities/stock/models/supplier';
-import { Supply } from '@/entities/stock/models/supply';
-import { SupplierId } from '@/entities/stock/values/supplier-id';
-import { SupplierName } from '@/entities/stock/values/supplier-name';
-import { SupplyId } from '@/entities/stock/values/supply-id';
-import { SupplyName } from '@/entities/stock/values/supply-name';
-import { UnitName } from '@/entities/stock/values/unit-name';
+import * as luxon from 'luxon';
+import type { JournalData } from '@/shared/api/endpoints/jurnal';
+import type { StocktakingData } from '@/shared/api/endpoints/stocktaking';
+import type { SupplierData } from '@/shared/api/endpoints/supplier';
 
-export const fakeSupplies: Supply[] = [
-	Supply.restore(
-		SupplyId.of('001'),
-		SupplyName.of('小麦A'),
-		UnitName.of('g'),
-		SupplierId.of('001'),
-	),
-	Supply.restore(
-		SupplyId.of('002'),
-		SupplyName.of('小麦B'),
-		UnitName.of('g'),
-		SupplierId.of('001'),
-	),
-	Supply.restore(
-		SupplyId.of('003'),
-		SupplyName.of('小麦C'),
-		UnitName.of('g'),
-		SupplierId.of('001'),
-	),
-	Supply.restore(
-		SupplyId.of('004'),
-		SupplyName.of('小麦D'),
-		UnitName.of('g'),
-		SupplierId.of('002'),
-	),
-	Supply.restore(
-		SupplyId.of('005'),
-		SupplyName.of('小麦E'),
-		UnitName.of('g'),
-		SupplierId.of('002'),
-	),
-	Supply.restore(
-		SupplyId.of('006'),
-		SupplyName.of('小麦F'),
-		UnitName.of('g'),
-		SupplierId.of('002'),
-	),
+let _nextSupplierId = 4;
+let _nextSupplyId = 12;
+let _nextJournalId = 3;
+let _nextStocktakinglId = 2;
+
+export const nextSupplierId = (): string =>
+	(_nextSupplierId++).toString().padStart(3, '0');
+
+export const nextSupplyId = (): string =>
+	(_nextSupplyId++).toString().padStart(3, '0');
+
+export const nextJournalId = (): string =>
+	(_nextJournalId++).toString().padStart(3, '0');
+
+export const nextStocktakinglId = (): string =>
+	(_nextStocktakinglId++).toString().padStart(3, '0');
+
+export const fakeSuppliers: SupplierData[] = [
+	{
+		id: '001',
+		name: '仕入先A',
+		supplies: [
+			{
+				id: '001',
+				name: '仕入品A',
+				unitName: 'g',
+				supplierId: '001',
+			},
+			{
+				id: '002',
+				name: '仕入品B',
+				unitName: 'g',
+				supplierId: '001',
+			},
+			{
+				id: '006',
+				name: '仕入品F',
+				unitName: 'g',
+				supplierId: '001',
+			},
+		],
+	},
+	{
+		id: '002',
+		name: '仕入先B',
+		supplies: [
+			{
+				id: '003',
+				name: '仕入品C',
+				unitName: 'g',
+				supplierId: '002',
+			},
+			{
+				id: '007',
+				name: '仕入品G',
+				unitName: 'g',
+				supplierId: '002',
+			},
+			{
+				id: '010',
+				name: '仕入品J',
+				unitName: 'kg',
+				supplierId: '002',
+			},
+			{
+				id: '011',
+				name: '仕入品K',
+				unitName: 'kg',
+				supplierId: '002',
+			},
+		],
+	},
+	{
+		id: '003',
+		name: '仕入先C',
+		supplies: [
+			{
+				id: '004',
+				name: '仕入品D',
+				unitName: 'kg',
+				supplierId: '003',
+			},
+			{
+				id: '005',
+				name: '仕入品E',
+				unitName: 'g',
+				supplierId: '003',
+			},
+			{
+				id: '008',
+				name: '仕入品H',
+				unitName: 'g',
+				supplierId: '003',
+			},
+			{
+				id: '009',
+				name: '仕入品I',
+				unitName: 'g',
+				supplierId: '003',
+			},
+		],
+	},
 ];
 
-export const fakeSuppliers: Supplier[] = [
-	Supplier.restore(SupplierId.of('001'), SupplierName.of('仕入先A')),
-	Supplier.restore(SupplierId.of('002'), SupplierName.of('仕入先B')),
+export const fakeJournals: JournalData[] = [
+	{
+		id: '001',
+		entryDate: luxon.DateTime.utc(2025, 12, 1).toJSDate(),
+		records: [
+			{
+				supplierId: '001',
+				supplierName: '仕入先A',
+				supplyId: '001',
+				supplyName: '仕入品A',
+				unitName: 'g',
+				unitPrice: 100,
+				quantity: 10,
+				totalPrice: 1000,
+				taxRate: 0.8,
+				totalPriceIncludeTax: 1080,
+			},
+			{
+				supplierId: '001',
+				supplierName: '仕入先A',
+				supplyId: '002',
+				supplyName: '仕入品B',
+				unitName: 'g',
+				unitPrice: 100,
+				quantity: 10,
+				totalPrice: 1000,
+				taxRate: 0.8,
+				totalPriceIncludeTax: 1080,
+			},
+		],
+	},
+	{
+		id: '002',
+		entryDate: luxon.DateTime.utc(2025, 12, 2).toJSDate(),
+		records: [
+			{
+				supplierId: '001',
+				supplierName: '仕入先A',
+				supplyId: '001',
+				supplyName: '仕入品A',
+				unitName: 'g',
+				unitPrice: 100,
+				quantity: 10,
+				totalPrice: 1000,
+				taxRate: 0.8,
+				totalPriceIncludeTax: 1080,
+			},
+			{
+				supplierId: '001',
+				supplierName: '仕入先A',
+				supplyId: '002',
+				supplyName: '仕入品B',
+				unitName: 'g',
+				unitPrice: 100,
+				quantity: 10,
+				totalPrice: 1000,
+				taxRate: 0.8,
+				totalPriceIncludeTax: 1080,
+			},
+		],
+	},
+];
+
+export const fakeStocktakings: StocktakingData[] = [
+	{
+		id: '001',
+		stocktakingDate: new Date('2025-01-23'),
+		records: [
+			{
+				supplyId: '001',
+				supplyName: '仕入品A',
+				unitName: 'g',
+				unitPrice: 100,
+				quantity: 20,
+				totalPrice: 2000,
+			},
+			{
+				supplyId: '002',
+				supplyName: '仕入品B',
+				unitName: 'g',
+				unitPrice: 120,
+				quantity: 10,
+				totalPrice: 1200,
+			},
+			{
+				supplyId: '003',
+				supplyName: '仕入品C',
+				unitName: 'g',
+				unitPrice: 150,
+				quantity: 15,
+				totalPrice: 1750,
+			},
+		],
+	},
 ];
