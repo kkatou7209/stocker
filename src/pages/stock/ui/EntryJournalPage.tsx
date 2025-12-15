@@ -1,4 +1,4 @@
-import { FilePenIcon } from 'lucide-solid';
+import { FilePenLineIcon } from 'lucide-solid';
 import * as luxon from 'luxon';
 import { type Component, createSignal, onMount } from 'solid-js';
 import { useApp } from '@/app/contexts/AppContext';
@@ -14,6 +14,8 @@ const EntryJournalPage: Component = () => {
 	const supplierRepository = useSupplierRespository();
 	const journalRepository = useJournalepository();
 
+	const [id, setId] = createSignal<string | null>(null);
+
 	const [entryDate, setEntryDate] = createSignal(
 		luxon.DateTime.now().toJSDate(),
 	);
@@ -22,18 +24,19 @@ const EntryJournalPage: Component = () => {
 
 	app.setPageTitle('記帳');
 
-	const add = async () => {
-		const date = entryDate();
+	const reload = async () => {
 
-		if (!date) return;
+		const journal = await journalRepository.getAt(entryDate());
 
-		await journalRepository.add({
-			entryDate: date,
-			records: [...records()],
-		});
-	};
+		if (journal) {
 
-	onMount(async () => {
+			setId(journal.id);
+	
+			setRecords(journal.records);
+
+			return;
+		}
+
 		const suppliers = await supplierRepository.list();
 
 		const records: JournalRecord[] = suppliers.flatMap((supplier) => {
@@ -54,9 +57,58 @@ const EntryJournalPage: Component = () => {
 		});
 
 		setRecords(records);
-	});
+	}
 
-	onMount(() => {});
+	const add = async () => {
+
+		console.log(records())
+
+		const date = entryDate();
+
+		const journal = await journalRepository.add({
+			entryDate: date,
+			records: [...records()],
+		});
+
+		setId(journal.id);
+
+		app.toastInfo('登録しました。');
+	};
+
+	const edit = async () => {
+
+		const journalId = id();
+
+		if (!journalId) return;
+
+		const date = entryDate();
+
+		await journalRepository.edit({
+			id: journalId,
+			entryDate: date,
+			records: [...records()],
+		});
+
+		app.toastInfo('更新しました。');
+	}
+
+	const onDateChange = async (date: Date | null) => {
+
+		if (!date) {
+			setId(null);
+			setRecords([]);
+			return;
+		}
+
+		setEntryDate(date);
+
+		await reload();
+	}
+
+	onMount(async () => {
+
+		await reload();
+	});
 
 	return (
 		<article class="size-full flex flex-col gap-10 p-10">
@@ -64,16 +116,17 @@ const EntryJournalPage: Component = () => {
 				<DateInput
 					label="記帳日"
 					value={entryDate()}
-					onChange={setEntryDate}
+					onChange={onDateChange}
 				/>
-				<Button onClick={add}>
-					<FilePenIcon class="size-4" />
+				<Button onClick={() => id() ? edit() : add()}>
+					<FilePenLineIcon class="size-4" />
 					<span>登録</span>
 				</Button>
 			</section>
 			<section class="max-h-[70vh] overflow-auto">
-				<JournalSheet value={records()} />
+				<JournalSheet value={records()} onChange={setRecords}/>
 			</section>
+
 		</article>
 	);
 };

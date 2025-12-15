@@ -39,7 +39,9 @@ export interface JournalEndpoints {
 
 	getJournalById: (id: string) => Promise<JournalData | null>;
 
-	createJournal: (command: CreateJournalCommand) => Promise<void>;
+	getJournalAt: (date: Date) => Promise<JournalData | null>;
+
+	createJournal: (command: CreateJournalCommand) => Promise<JournalData>;
 
 	updateJournal: (command: UpdateJournalCommand) => Promise<void>;
 

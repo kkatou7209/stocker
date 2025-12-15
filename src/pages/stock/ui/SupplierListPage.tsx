@@ -68,16 +68,16 @@ const SupplierListPage: Component = () => {
 	};
 
 	const add = async (input: SupplierInputValue) => {
+
 		await supplierRepository.add({
 			name: input.supplierName,
 		});
-
-		setAddDialogOpen(false);
 
 		await reload();
 	};
 
 	const edit = async (input: SupplierInputValue) => {
+		
 		const id = supplier()?.id;
 
 		if (!id) return;
@@ -86,8 +86,6 @@ const SupplierListPage: Component = () => {
 			id,
 			name: input.supplierName,
 		});
-
-		setEditDialogOpen(false);
 
 		await reload();
 	};

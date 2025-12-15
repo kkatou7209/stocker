@@ -1,4 +1,4 @@
-import { type Component, createEffect, createSignal } from 'solid-js';
+import { type Component, createEffect, createSignal, onMount } from 'solid-js';
 import type { JournalRecord } from '@/entities/stock/models/journal';
 import { useFormat } from '@/shared/lib/format';
 import NumberInput from '@/shared/ui/NumberInput';
@@ -109,7 +109,7 @@ const JournalRecordInput: Component<{
 
 	const [quantity, setQuantity] = createSignal(0);
 
-	const [taxRate, _] = createSignal(0);
+	const [taxRate, setTaxRate] = createSignal(0);
 
 	const [totalPrice, setTotalPrice] = createSignal(0);
 
@@ -130,6 +130,17 @@ const JournalRecordInput: Component<{
 			totalPrice: totalPrice(),
 			totalPriceIncludeTax: totalPriceIncludeTax(),
 		});
+	});
+
+	onMount(() => {
+
+		const record = props.value;
+
+		setUnitPrice(record.unitPrice);
+		setQuantity(record.quantity);
+		setTaxRate(record.taxRate);
+		setTotalPrice(record.totalPrice);
+		setTotalPriceIncludeTax(record.totalPriceIncludeTax);
 	});
 
 	return (

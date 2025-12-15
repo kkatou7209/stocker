@@ -12,11 +12,15 @@ class Repository {
 		return this.api.journal.getJournalById(id);
 	};
 
+	public getAt = async (date: Date): Promise<Journal | null> => {
+		return this.api.journal.getJournalAt(date);
+	};
+
 	public add = async (journal: {
 		entryDate: Date;
 		records: JournalRecord[];
-	}): Promise<void> => {
-		await this.api.journal.createJournal({
+	}): Promise<Journal> => {
+		return await this.api.journal.createJournal({
 			entryDate: journal.entryDate,
 			records: [...journal.records],
 		});

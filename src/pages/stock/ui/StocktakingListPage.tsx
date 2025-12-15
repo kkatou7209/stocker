@@ -6,6 +6,7 @@ import StocktakingTable from '@/features/stock/ui/stocktaking/StocktakingTable';
 import DateInput from '@/shared/ui/DateInput';
 
 const StocktakingListPage: Component = () => {
+    
 	const stocktakingRepository = useStocktakingRepository();
 
     const [periodStart, setPeriodStart] = createSignal<Date | null>(null);

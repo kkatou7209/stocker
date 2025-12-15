@@ -3,7 +3,7 @@ import type { StocktakingEndpoints } from '@/shared/api/endpoints/stocktaking';
 import type { SupplierEndpoint } from '@/shared/api/endpoints/supplier';
 import type { SupplyEndpoint } from '@/shared/api/endpoints/supply';
 import {
-	mockJournalENdpoints,
+	mockJournalEndpoints,
 	mockStocktakingEndpoints,
 	mockSupplierEndpoints,
 	mockSupplyEndpoints,
@@ -19,7 +19,7 @@ export interface Api {
 const mockApi: Api = Object.freeze({
 	supplier: mockSupplierEndpoints,
 	supply: mockSupplyEndpoints,
-	journal: mockJournalENdpoints,
+	journal: mockJournalEndpoints,
 	stocktaking: mockStocktakingEndpoints,
 });
 

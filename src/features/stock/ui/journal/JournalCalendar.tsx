@@ -9,6 +9,8 @@ const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] as const;
 type Month = (typeof months)[number];
 
 const JournalCalendar: Component<{
+    year?: number;
+    month?: Month;
 	journals?: Journal[];
 	onMonthChange?: (year: number, month: number) => unknown;
 }> = (props) => {
@@ -86,8 +88,8 @@ const JournalCalendar: Component<{
 	onMount(() => {
 		const today = luxon.DateTime.now();
 
-		setYear(today.year);
-		setMonth(today.month);
+		setYear(props.year ?? today.year);
+		setMonth(props.month ?? today.month);
 
 		reload();
 	});

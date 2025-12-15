@@ -90,14 +90,14 @@ const SupplyListPage: Component = () => {
 	};
 
 	const add = async (supply: SupplyInputValue) => {
-		await supplyRepository.add(supply);
 
-		setAddDialogOpen(false);
+		await supplyRepository.add(supply);
 
 		await reload();
 	};
 
 	const edit = async (supply: SupplyInputValue) => {
+
 		const id = selectedSupply()?.id;
 
 		if (!id) return;
@@ -107,8 +107,6 @@ const SupplyListPage: Component = () => {
 			name: supply.supplyName,
 			unitName: supply.unitName,
 		});
-
-		setEditDialogOpen(false);
 
 		await reload();
 	};
@@ -150,7 +148,10 @@ const SupplyListPage: Component = () => {
 						onChange={reload}
 					/>
 				</div>
-				<Button onClick={() => setAddDialogOpen(true)}>追加</Button>
+				<Button onClick={() => setAddDialogOpen(true)}>
+					<WheatIcon class='size-4'/>
+					<span>追加</span>
+				</Button>
 			</section>
 
 			<section class="grow h-[70vh] overflow-auto">

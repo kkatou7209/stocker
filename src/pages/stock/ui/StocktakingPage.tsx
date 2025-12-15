@@ -31,6 +31,8 @@ const StocktakingPage: Component = () => {
 			stocktakingDate: stocktakingDate(),
 			records: [...stocktakingRecords()],
 		});
+
+		app.toastInfo('登録しました。');
 	}
 
 	onMount(async () => {

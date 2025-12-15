@@ -1,4 +1,8 @@
-import type { JournalEndpoints } from '@/shared/api/endpoints/jurnal';
+import { Journal } from '@/entities/stock/models/journal';
+import type {
+	JournalData,
+	JournalEndpoints,
+} from '@/shared/api/endpoints/jurnal';
 import type {
 	StocktakingData,
 	StocktakingEndpoints,
@@ -117,18 +121,33 @@ export const mockSupplyEndpoints: SupplyEndpoint = {
 	},
 };
 
-export const mockJournalENdpoints: JournalEndpoints = {
+export const mockJournalEndpoints: JournalEndpoints = {
 	listAllJournals: async () => [...fakeJournals],
 
 	getJournalById: async (id: string) =>
 		fakeJournals.find((j) => j.id === id) ?? null,
 
+	getJournalAt: async (date) => {
+		return (
+			fakeJournals.find(
+				(j) =>
+					j.entryDate.getFullYear() === date.getFullYear() &&
+					j.entryDate.getMonth() === date.getMonth() &&
+					j.entryDate.getDate() === date.getDate(),
+			) ?? null
+		);
+	},
+
 	createJournal: async (command) => {
-		fakeJournals.push({
+		const journal: JournalData = {
 			id: nextJournalId(),
 			entryDate: command.entryDate,
 			records: [...command.records],
-		});
+		};
+
+		fakeJournals.push(journal);
+
+		return journal;
 	},
 
 	updateJournal: async (command) => {
