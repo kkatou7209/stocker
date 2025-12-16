@@ -20,7 +20,7 @@ class Repository {
 		records: StocktakingRecord[];
 	}): Promise<Stocktaking> => {
 		const registered =
-			await this.api.stocktaking.addStocktaking(stocktaking);
+			await this.api.stocktaking.createStocktaking(stocktaking);
 
 		return registered;
 	};

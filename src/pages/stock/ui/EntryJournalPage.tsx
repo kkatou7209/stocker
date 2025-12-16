@@ -1,3 +1,6 @@
+/**
+ * @fileoverview page for writing journal
+ */
 import { FilePenLineIcon } from 'lucide-solid';
 import * as luxon from 'luxon';
 import { type Component, createSignal, onMount } from 'solid-js';
@@ -10,6 +13,7 @@ import Button from '@/shared/ui/Button';
 import DateInput from '@/shared/ui/DateInput';
 
 const EntryJournalPage: Component = () => {
+
 	const app = useApp();
 	const supplierRepository = useSupplierRespository();
 	const journalRepository = useJournalepository();
@@ -60,8 +64,6 @@ const EntryJournalPage: Component = () => {
 	}
 
 	const add = async () => {
-
-		console.log(records())
 
 		const date = entryDate();
 

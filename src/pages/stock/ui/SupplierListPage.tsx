@@ -12,6 +12,7 @@ import Button from '@/shared/ui/Button';
 import TextInput from '@/shared/ui/TextInput';
 
 const SupplierListPage: Component = () => {
+	
 	const app = useApp();
 	const supplierRepository = useSupplierRespository();
 
@@ -50,6 +51,7 @@ const SupplierListPage: Component = () => {
 	};
 
 	const select = async (record: SupplierTableRecord) => {
+
 		const supp = await supplierRepository.get(record.id);
 
 		if (!supp) {
@@ -73,11 +75,13 @@ const SupplierListPage: Component = () => {
 			name: input.supplierName,
 		});
 
+		app.toastInfo('登録しました。')
+
 		await reload();
 	};
 
 	const edit = async (input: SupplierInputValue) => {
-		
+
 		const id = supplier()?.id;
 
 		if (!id) return;
@@ -86,6 +90,8 @@ const SupplierListPage: Component = () => {
 			id,
 			name: input.supplierName,
 		});
+
+		app.toastInfo('更新しました。');
 
 		await reload();
 	};

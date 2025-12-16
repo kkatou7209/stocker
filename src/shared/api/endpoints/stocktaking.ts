@@ -29,11 +29,26 @@ export interface StocktakingQuery {
 }
 
 export interface StocktakingEndpoints {
+	/**
+	 * list all stocktaking data
+	 */
 	listAllStocktakings: () => Promise<StocktakingData[]>;
+	/**
+	 * get a stocktaking data by id
+	 */
 	getStocktakingById: (id: string) => Promise<StocktakingData | null>;
+	/**
+	 * update a stocktaking data
+	 */
 	updateStocktaking: (command: UpdateStocktakingCommand) => Promise<void>;
-	addStocktaking: (
+	/**
+	 * create a new stocktaking data
+	 */
+	createStocktaking: (
 		command: AddStocktakingCommand,
 	) => Promise<StocktakingData>;
+	/**
+	 * search stocktakign data
+	 */
 	searchStocktakings: (query: StocktakingQuery) => Promise<StocktakingData[]>;
 }

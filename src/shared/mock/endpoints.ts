@@ -35,7 +35,7 @@ export const mockSupplierEndpoints: SupplierEndpoint = {
 		return fakeSuppliers.find((s) => s.id === id) ?? null;
 	},
 
-	addSupplier: async (command: AddSupplierCommand) => {
+	createSupplier: async (command: AddSupplierCommand) => {
 		const data = AddSupplierCommand.parse(command);
 
 		fakeSuppliers.push({
@@ -94,7 +94,7 @@ export const mockSupplyEndpoints: SupplyEndpoint = {
 		);
 	},
 
-	addSupply: async (command: AddSupplyCommand) => {
+	createSupply: async (command: AddSupplyCommand) => {
 		const data = AddSupplyCommand.parse(command);
 
 		for (const supplier of fakeSuppliers) {
@@ -221,7 +221,7 @@ export const mockStocktakingEndpoints: StocktakingEndpoints = {
 	getStocktakingById: async (id: string) =>
 		fakeStocktakings.find((s) => s.id === id) ?? null,
 
-	addStocktaking: async (command) => {
+	createStocktaking: async (command) => {
 		const id = nextStocktakinglId();
 
 		const stocktaking: StocktakingData = {

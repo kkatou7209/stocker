@@ -35,15 +35,28 @@ export interface JournalQuery {
 }
 
 export interface JournalEndpoints {
+	/**
+	 * list all journals
+	 */
 	listAllJournals: () => Promise<JournalData[]>;
-
+	/**
+	 * get a journal by id
+	 */
 	getJournalById: (id: string) => Promise<JournalData | null>;
-
+	/**
+	 * get a jorunal at specific date
+	 */
 	getJournalAt: (date: Date) => Promise<JournalData | null>;
-
+	/**
+	 * create a new journal
+	 */
 	createJournal: (command: CreateJournalCommand) => Promise<JournalData>;
-
+	/**
+	 * update a jorunal
+	 */
 	updateJournal: (command: UpdateJournalCommand) => Promise<void>;
-
+	/**
+	 * search jorunals
+	 */
 	searchJournals: (query: JournalQuery) => Promise<JournalData[]>;
 }

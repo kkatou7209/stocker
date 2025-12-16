@@ -26,7 +26,7 @@ class Repository {
 	 * add a new supplier
 	 */
 	public add = async (supplier: { name: string }): Promise<void> => {
-		await this.api.supplier.addSupplier({
+		await this.api.supplier.createSupplier({
 			supplierName: supplier.name,
 		});
 	};

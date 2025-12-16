@@ -17,7 +17,7 @@ class Repository {
 		unitName: string;
 		supplierId: string;
 	}): Promise<void> => {
-		await this.api.supply.addSupply(supply);
+		await this.api.supply.createSupply(supply);
 	};
 
 	public edit = async (supply: {

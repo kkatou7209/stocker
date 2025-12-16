@@ -13,6 +13,7 @@ const JournalCalendar: Component<{
     month?: Month;
 	journals?: Journal[];
 	onMonthChange?: (year: number, month: number) => unknown;
+    onJournalClick?: (journal: Journal) => unknown;
 }> = (props) => {
 	const journals = () => props.journals;
 
@@ -146,7 +147,10 @@ const JournalCalendar: Component<{
 													fallback={''}
 												>
 													<span class="text-base-content hover:opacity-50">
-														<FileTextIcon />
+														<FileTextIcon onclick={() => {
+                                                            const journal = journalOfDate(date);
+                                                            journal && props.onJournalClick?.(journal);
+                                                        }}/>
 													</span>
 												</Show>
 											</div>

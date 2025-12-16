@@ -18,6 +18,7 @@ import Button from '@/shared/ui/Button';
 import TextInput from '@/shared/ui/TextInput';
 
 const SupplyListPage: Component = () => {
+	
 	const app = useApp();
 	const supplyRepository = useSupplyRepository();
 	const supplierRepository = useSupplierRespository();
@@ -49,12 +50,14 @@ const SupplyListPage: Component = () => {
 	);
 
 	const reload = async () => {
+
 		const suppliers = await supplierRepository.find({
 			supplierName: searchSupplierName(),
 			supplyName: searchSupplyName(),
 		});
 
 		const values: SuppliesAccordionValue[] = suppliers.map((supplier) => {
+
 			const value: SuppliesAccordionValue = {
 				supplierId: supplier.id,
 				supplierName: supplier.name,
@@ -72,6 +75,7 @@ const SupplyListPage: Component = () => {
 	};
 
 	const select = async (value: SupplyAccordionValue) => {
+
 		setSelectedSupply(null);
 
 		const supply = await supplyRepository.get(value.supplyId);
@@ -93,6 +97,8 @@ const SupplyListPage: Component = () => {
 
 		await supplyRepository.add(supply);
 
+		app.toastInfo('登録しました。')
+
 		await reload();
 	};
 
@@ -108,10 +114,13 @@ const SupplyListPage: Component = () => {
 			unitName: supply.unitName,
 		});
 
+		app.toastInfo('更新しました。')
+
 		await reload();
 	};
 
 	onMount(async () => {
+
 		const values = await listSuppliesAccordionValues();
 
 		setSuppliesAccordionValues(values);

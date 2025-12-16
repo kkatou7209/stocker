@@ -11,6 +11,7 @@ import Button from '@/shared/ui/Button';
 import DateInput from '@/shared/ui/DateInput';
 
 const StocktakingPage: Component = () => {
+	
 	const app = useApp();
 	const supplyRepository = useSupplyRepository();
 	const stocktakingRepository = useStocktakingRepository();
@@ -36,6 +37,7 @@ const StocktakingPage: Component = () => {
 	}
 
 	onMount(async () => {
+
 		const supplies: Supply[] = await supplyRepository.list();
 
 		const records: StocktakingRecord[] = supplies.map((supply) => {
