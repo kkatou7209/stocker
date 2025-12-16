@@ -1,1 +1,7 @@
-# Stocker : A simple stock management tools for everyone.
+# Stocker : A simple stock management tool.
+
+- Simple UI
+
+- Light & Dark themes
+
+- Intuitive Usability
