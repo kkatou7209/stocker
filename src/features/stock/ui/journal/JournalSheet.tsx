@@ -109,15 +109,10 @@ const JournalRecordInput: Component<{
 
 	const [quantity, setQuantity] = createSignal(0);
 
-	const [taxRate, setTaxRate] = createSignal(0);
-
 	const [totalPrice, setTotalPrice] = createSignal(0);
-
-	const [totalPriceIncludeTax, setTotalPriceIncludeTax] = createSignal(0);
 
 	createEffect(() => {
 		setTotalPrice(unitPrice() * quantity());
-		setTotalPriceIncludeTax(totalPrice() * ((taxRate() / 100) + 1))
 		props.onChange({
 			supplyName: props.value.supplyName,
 			supplierName: props.value.supplierName,
@@ -126,9 +121,7 @@ const JournalRecordInput: Component<{
 			supplyId: props.value.supplyId,
 			unitPrice: unitPrice(),
 			quantity: quantity(),
-			taxRate: taxRate() / 100,
 			totalPrice: totalPrice(),
-			totalPriceIncludeTax: totalPriceIncludeTax(),
 		});
 	});
 
@@ -138,9 +131,7 @@ const JournalRecordInput: Component<{
 
 		setUnitPrice(record.unitPrice);
 		setQuantity(record.quantity);
-		setTaxRate(record.taxRate);
 		setTotalPrice(record.totalPrice);
-		setTotalPriceIncludeTax(record.totalPriceIncludeTax);
 	});
 
 	return (

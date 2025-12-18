@@ -25,17 +25,9 @@ export const JournalRecord = z.object({
 	 */
 	quantity: z.number().nonnegative(),
 	/**
-	 * tax rate of purchasing
-	 */
-	taxRate: z.number().nonnegative(),
-	/**
 	 * sum of purchased prices
 	 */
 	totalPrice: z.number().nonnegative(),
-	/**
-	 * sum of purchased prices include tax
-	 */
-	totalPriceIncludeTax: z.number().nonnegative(),
 	/**
 	 * id of purchased supply
 	 */

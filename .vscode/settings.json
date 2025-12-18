@@ -12,4 +12,9 @@
         "source.organizeImports.biome": "explicit",
         "source.fixAll.biome": "explicit"
     },
+    "rust-analyzer.files.exclude": [
+        "src",
+        "public",
+        "node_modules"
+    ]
 }
