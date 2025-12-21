@@ -18,10 +18,6 @@ export const StocktakingRecord = z.object({
 	 */
 	quantity: z.number().nonnegative(),
 	/**
-	 * sum of prices of supply
-	 */
-	totalPrice: z.number().nonnegative(),
-	/**
 	 * id of supply
 	 */
 	supplyId: z.string().nonempty(),

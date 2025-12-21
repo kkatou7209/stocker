@@ -1,20 +1,25 @@
-use crate::core::domain::values::stock::{
-    SupplierId, SupplierName, SupplyId, SupplyName, UnitName,
-};
+use crate::core::domain::values::stock::*;
 
 #[derive(Debug, Clone)]
 pub struct Supply {
     id: SupplyId,
     name: SupplyName,
     unit_name: UnitName,
+    supplier_id: SupplierId,
 }
 
 impl Supply {
-    pub fn restore(id: SupplyId, name: SupplyName, unit_name: UnitName) -> Self {
+    pub fn new(
+        id: SupplyId,
+        name: SupplyName,
+        unit_name: UnitName,
+        supplier_id: SupplierId,
+    ) -> Self {
         Self {
             id,
             name,
             unit_name,
+            supplier_id,
         }
     }
 
@@ -34,8 +39,16 @@ impl Supply {
         self.name = name;
     }
 
+    pub fn supplier_id(&self) -> &SupplierId {
+        &self.supplier_id
+    }
+
     pub fn rename_unit(&mut self, name: UnitName) {
         self.unit_name = name;
+    }
+
+    pub fn change_supplier(&mut self, supplier_id: SupplierId) {
+        self.supplier_id = supplier_id
     }
 }
 
@@ -60,5 +73,79 @@ impl Supplier {
 
     pub fn rename(&mut self, name: SupplierName) {
         self.name = name;
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct Journal {
+    id: JournalId,
+    entry_datetime: EntryDateTime,
+    records: Vec<JournalRecord>,
+}
+
+impl Journal {
+    pub fn restore(
+        id: JournalId,
+        entry_datetime: EntryDateTime,
+        records: Vec<JournalRecord>,
+    ) -> Self {
+        Self {
+            id,
+            entry_datetime,
+            records,
+        }
+    }
+
+    pub fn id(&self) -> &JournalId {
+        &self.id
+    }
+
+    pub fn entry_datetime(&self) -> &EntryDateTime {
+        &self.entry_datetime
+    }
+
+    pub fn records(&self) -> &[JournalRecord] {
+        &self.records
+    }
+
+    pub fn swap_records(&mut self, records: Vec<JournalRecord>) {
+        self.records = records.into_iter().collect();
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct Stocktaking {
+    id: StocktakingId,
+    stocktaken_datetime: StocktakenDateTime,
+    records: Vec<StocktakingRecord>,
+}
+
+impl Stocktaking {
+    pub fn restore(
+        id: StocktakingId,
+        stocktaken_datetime: StocktakenDateTime,
+        records: Vec<StocktakingRecord>,
+    ) -> Self {
+        Self {
+            id,
+            stocktaken_datetime,
+            records,
+        }
+    }
+
+    pub fn id(&self) -> &StocktakingId {
+        &self.id
+    }
+
+    pub fn stocktaken_at(&self) -> &StocktakenDateTime {
+        &self.stocktaken_datetime
+    }
+
+    pub fn records(&self) -> &[StocktakingRecord] {
+        &self.records
+    }
+
+    pub fn swap_records(&mut self, records: impl IntoIterator<Item = StocktakingRecord>) {
+        self.records = records.into_iter().collect();
     }
 }

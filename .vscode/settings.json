@@ -16,5 +16,6 @@
         "src",
         "public",
         "node_modules"
-    ]
+    ],
+    "rust-analyzer.imports.granularity.group": "module"
 }

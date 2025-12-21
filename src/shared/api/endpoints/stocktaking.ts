@@ -5,7 +5,6 @@ export const StocktakingRecordData = z.object({
 	unitName: z.string().nonempty(),
 	unitPrice: z.number().nonnegative(),
 	quantity: z.number().nonnegative(),
-	totalPrice: z.number().nonnegative(),
 	supplyId: z.string().nonempty(),
 });
 

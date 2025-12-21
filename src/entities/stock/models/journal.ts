@@ -25,10 +25,6 @@ export const JournalRecord = z.object({
 	 */
 	quantity: z.number().nonnegative(),
 	/**
-	 * sum of purchased prices
-	 */
-	totalPrice: z.number().nonnegative(),
-	/**
 	 * id of purchased supply
 	 */
 	supplyId: z.string().nonempty(),

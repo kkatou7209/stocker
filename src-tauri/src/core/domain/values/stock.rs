@@ -1,6 +1,6 @@
 use std::ops::{Add, Mul};
 
-use anyhow::{anyhow, Result};
+use crate::core::{Error, Result};
 
 #[derive(Debug, Clone)]
 pub struct SupplierId {
@@ -8,11 +8,11 @@ pub struct SupplierId {
 }
 
 impl SupplierId {
-    pub fn new(value: impl AsRef<String>) -> Result<Self> {
+    pub fn new(value: impl AsRef<str>) -> Result<Self> {
         let value = value.as_ref().trim().to_string();
 
         if value.is_empty() {
-            return Err(anyhow!("empty string cannot be set"));
+            return Err(Error::DomainError("empty string cannot be set."));
         }
 
         return Ok(Self { value });
@@ -20,6 +20,12 @@ impl SupplierId {
 
     pub fn as_str(&self) -> &str {
         &self.value
+    }
+}
+
+impl ToString for SupplierId {
+    fn to_string(&self) -> String {
+        self.value.to_string()
     }
 }
 
@@ -29,11 +35,11 @@ pub struct SupplierName {
 }
 
 impl SupplierName {
-    pub fn new(value: impl AsRef<String>) -> Result<Self> {
+    pub fn new(value: impl AsRef<str>) -> Result<Self> {
         let value = value.as_ref().trim().to_string();
 
         if value.is_empty() {
-            return Err(anyhow!("empty string cannot be set"));
+            return Err(Error::DomainError("empty string cannot be set"));
         }
 
         return Ok(Self { value });
@@ -44,17 +50,23 @@ impl SupplierName {
     }
 }
 
+impl ToString for SupplierName {
+    fn to_string(&self) -> String {
+        self.value.to_string()
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct SupplyId {
     value: String,
 }
 
 impl SupplyId {
-    pub fn new(value: impl AsRef<String>) -> Result<Self> {
+    pub fn new(value: impl AsRef<str>) -> Result<Self> {
         let value = value.as_ref().trim().to_string();
 
         if value.is_empty() {
-            return Err(anyhow!("empty string cannot be set"));
+            return Err(Error::DomainError("empty string cannot be set"));
         }
 
         return Ok(SupplyId { value });
@@ -65,17 +77,23 @@ impl SupplyId {
     }
 }
 
+impl ToString for SupplyId {
+    fn to_string(&self) -> String {
+        self.value.to_string()
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct SupplyName {
     value: String,
 }
 
 impl SupplyName {
-    pub fn new(value: impl AsRef<String>) -> Result<Self> {
+    pub fn new(value: impl AsRef<str>) -> Result<Self> {
         let value = value.as_ref().trim().to_string();
 
         if value.is_empty() {
-            return Err(anyhow!("empty string cannot be set"));
+            return Err(Error::DomainError("empty string cannot be set"));
         }
 
         return Ok(Self { value });
@@ -83,6 +101,12 @@ impl SupplyName {
 
     pub fn as_str(&self) -> &str {
         &self.value
+    }
+}
+
+impl ToString for SupplyName {
+    fn to_string(&self) -> String {
+        self.value.to_string()
     }
 }
 
@@ -92,11 +116,11 @@ pub struct JournalId {
 }
 
 impl JournalId {
-    pub fn new(value: impl AsRef<String>) -> Result<Self> {
+    pub fn new(value: impl AsRef<str>) -> Result<Self> {
         let value = value.as_ref().trim().to_string();
 
         if value.is_empty() {
-            return Err(anyhow!("empty string cannot be set"));
+            return Err(Error::DomainError("empty string cannot be set"));
         }
 
         return Ok(Self { value });
@@ -104,6 +128,73 @@ impl JournalId {
 
     pub fn as_str(&self) -> &str {
         &self.value
+    }
+}
+
+impl ToString for JournalId {
+    fn to_string(&self) -> String {
+        self.value.to_string()
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct JournalRecord {
+    supply_id: SupplyId,
+    supply_name: SupplyName,
+    supplier_id: SupplierId,
+    suplier_name: SupplierName,
+    unit_name: UnitName,
+    unit_price: PurchaseUnitPrice,
+    quantity: PurchaseQuantity,
+}
+
+impl JournalRecord {
+    pub fn new(
+        supply_id: SupplyId,
+        supply_name: SupplyName,
+        supplier_id: SupplierId,
+        suplier_name: SupplierName,
+        unit_name: UnitName,
+        unit_price: PurchaseUnitPrice,
+        quantity: PurchaseQuantity,
+    ) -> Self {
+        Self {
+            supply_id,
+            supply_name,
+            supplier_id,
+            suplier_name,
+            unit_name,
+            unit_price,
+            quantity,
+        }
+    }
+
+    pub fn supply_id(&self) -> &SupplyId {
+        &self.supply_id
+    }
+
+    pub fn supply_name(&self) -> &SupplyName {
+        &self.supply_name
+    }
+
+    pub fn supplier_id(&self) -> &SupplierId {
+        &self.supplier_id
+    }
+
+    pub fn supplier_name(&self) -> &SupplierName {
+        &self.suplier_name
+    }
+
+    pub fn unit_name(&self) -> &UnitName {
+        &self.unit_name
+    }
+
+    pub fn unit_price(&self) -> &PurchaseUnitPrice {
+        &self.unit_price
+    }
+
+    pub fn quantity(&self) -> &PurchaseQuantity {
+        &self.quantity
     }
 }
 
@@ -130,11 +221,11 @@ pub struct UnitName {
 }
 
 impl UnitName {
-    pub fn new(value: impl AsRef<String>) -> Result<Self> {
+    pub fn new(value: impl AsRef<str>) -> Result<Self> {
         let value = value.as_ref().trim().to_string();
 
         if value.is_empty() {
-            return Err(anyhow!("empty string cannot be set"));
+            return Err(Error::DomainError("empty string cannot be set"));
         }
 
         return Ok(Self { value });
@@ -142,6 +233,12 @@ impl UnitName {
 
     pub fn as_str(&self) -> &str {
         &self.value
+    }
+}
+
+impl ToString for UnitName {
+    fn to_string(&self) -> String {
+        self.value.to_string()
     }
 }
 
@@ -154,7 +251,11 @@ impl PurchaseUnitPrice {
     pub fn new(value: impl Into<u32>) -> Result<Self> {
         let value = value.into();
 
-        return Ok(Self { value });
+        if value <= 0 {
+            return Err(Error::DomainError("price must be greater than 0"));
+        }
+
+        Ok(Self { value })
     }
 
     pub fn as_u32(&self) -> u32 {
@@ -218,11 +319,11 @@ pub struct StocktakingId {
 }
 
 impl StocktakingId {
-    pub fn new(value: impl AsRef<String>) -> Result<Self> {
+    pub fn new(value: impl AsRef<str>) -> Result<Self> {
         let value = value.as_ref().trim().to_string();
 
         if value.is_empty() {
-            return Err(anyhow!("empty string cannot be set"));
+            return Err(Error::DomainError("empty string cannot be set"));
         }
 
         return Ok(Self { value });
@@ -233,12 +334,18 @@ impl StocktakingId {
     }
 }
 
+impl ToString for StocktakingId {
+    fn to_string(&self) -> String {
+        self.value.to_string()
+    }
+}
+
 #[derive(Debug, Clone)]
-pub struct StocktakingDateTime {
+pub struct StocktakenDateTime {
     value: i64,
 }
 
-impl StocktakingDateTime {
+impl StocktakenDateTime {
     pub fn new(value: impl Into<i64>) -> Self {
         Self {
             value: value.into(),
@@ -262,7 +369,7 @@ impl StocktakingQuantity {
         return Ok(Self { value });
     }
 
-    pub fn as_f64(&self) -> u32 {
+    pub fn as_u32(&self) -> u32 {
         self.value
     }
 }
@@ -279,7 +386,7 @@ impl StocktakingUnitPrice {
         return Ok(Self { value });
     }
 
-    pub fn as_f64(&self) -> u32 {
+    pub fn as_u32(&self) -> u32 {
         self.value
     }
 }
@@ -293,10 +400,61 @@ impl StocktakingPrice {
     pub fn new(value: impl Into<u32>) -> Result<Self> {
         let value = value.into();
 
+        if value <= 0 {
+            return Err(Error::DomainError("price must be greater than 0"));
+        }
+
         return Ok(Self { value });
     }
 
     pub fn as_f64(&self) -> u32 {
         self.value
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct StocktakingRecord {
+    supply_id: SupplyId,
+    supply_name: SupplyName,
+    unit_name: UnitName,
+    unit_price: StocktakingUnitPrice,
+    quantity: StocktakingQuantity,
+}
+
+impl StocktakingRecord {
+    pub fn new(
+        supply_id: SupplyId,
+        supply_name: SupplyName,
+        unit_name: UnitName,
+        unit_price: StocktakingUnitPrice,
+        quantity: StocktakingQuantity,
+    ) -> Self {
+        Self {
+            supply_id,
+            supply_name,
+            unit_name,
+            unit_price,
+            quantity,
+        }
+    }
+
+    pub fn supply_id(&self) -> &SupplyId {
+        &self.supply_id
+    }
+
+    pub fn supply_name(&self) -> &SupplyName {
+        &self.supply_name
+    }
+
+    pub fn unit_name(&self) -> &UnitName {
+        &self.unit_name
+    }
+
+    pub fn unit_price(&self) -> &StocktakingUnitPrice {
+        &self.unit_price
+    }
+
+    pub fn quantity(&self) -> &StocktakingQuantity {
+        &self.quantity
     }
 }
