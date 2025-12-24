@@ -10,7 +10,7 @@ export const StocktakingRecordData = z.object({
 
 export const StocktakingData = z.object({
 	id: z.string().nonempty(),
-	stocktakingDate: z.date().nonoptional(),
+	stocktakingDate: z.number().nonoptional(),
 	records: z.array(StocktakingRecordData),
 });
 

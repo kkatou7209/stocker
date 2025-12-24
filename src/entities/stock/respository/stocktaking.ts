@@ -8,21 +8,38 @@ class Repository {
 	private api = useApi();
 
 	public list = async (): Promise<Stocktaking[]> => {
-		return await this.api.stocktaking.listAllStocktakings();
+		const stocktakings = await this.api.stocktaking.listAllStocktakings();
+
+		return stocktakings.map((stocktaking) => ({
+			...stocktaking,
+			stocktakingDate: new Date(stocktaking.stocktakingDate),
+		}));
 	};
 
 	public get = async (id: string): Promise<Stocktaking | null> => {
-		return await this.api.stocktaking.getStocktakingById(id);
+		const stocktaking = await this.api.stocktaking.getStocktakingById(id);
+
+		if (!stocktaking) return null;
+
+		return {
+			...stocktaking,
+			stocktakingDate: new Date(stocktaking.stocktakingDate),
+		};
 	};
 
 	public add = async (stocktaking: {
 		stocktakingDate: Date;
 		records: StocktakingRecord[];
 	}): Promise<Stocktaking> => {
-		const registered =
-			await this.api.stocktaking.createStocktaking(stocktaking);
+		const registered = await this.api.stocktaking.createStocktaking({
+			...stocktaking,
+			stocktakingDate: stocktaking.stocktakingDate.getTime(),
+		});
 
-		return registered;
+		return {
+			...registered,
+			stocktakingDate: new Date(stocktaking.stocktakingDate),
+		};
 	};
 
 	public edit = async (stocktaking: {
@@ -30,14 +47,23 @@ class Repository {
 		stocktakingDate: Date;
 		records: StocktakingRecord[];
 	}): Promise<void> => {
-		await this.api.stocktaking.updateStocktaking(stocktaking);
+		await this.api.stocktaking.updateStocktaking({
+			...stocktaking,
+			stocktakingDate: stocktaking.stocktakingDate.getTime(),
+		});
 	};
 
 	public find = async (query: {
 		periodStart?: Date;
 		periodEnd?: Date;
 	}): Promise<Stocktaking[]> => {
-		return await this.api.stocktaking.searchStocktakings(query);
+		const stocktakings =
+			await this.api.stocktaking.searchStocktakings(query);
+
+		return stocktakings.map((stocktaking) => ({
+			...stocktaking,
+			stocktakingDate: new Date(stocktaking.stocktakingDate),
+		}));
 	};
 }
 

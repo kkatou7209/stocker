@@ -1,8 +1,8 @@
-pub mod configurator;
 pub mod domain;
 pub mod provided_ports;
 pub mod required_ports;
-pub mod services;
+pub(crate) mod services;
+pub mod stocker;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -13,4 +13,7 @@ pub enum Error {
 
     #[error("Infrastructure error: {0}")]
     InfrastructureError(&'static str),
+
+    #[error("Configuration error: {0}")]
+    ConfigurationError(&'static str),
 }

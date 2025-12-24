@@ -2,7 +2,7 @@ use std::ops::{Add, Mul};
 
 use crate::core::{Error, Result};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SupplierId {
     value: String,
 }
@@ -29,7 +29,7 @@ impl ToString for SupplierId {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SupplierName {
     value: String,
 }
@@ -56,7 +56,7 @@ impl ToString for SupplierName {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SupplyId {
     value: String,
 }
@@ -83,7 +83,7 @@ impl ToString for SupplyId {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SupplyName {
     value: String,
 }
@@ -110,7 +110,7 @@ impl ToString for SupplyName {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct JournalId {
     value: String,
 }
@@ -137,7 +137,7 @@ impl ToString for JournalId {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct JournalRecord {
     supply_id: SupplyId,
     supply_name: SupplyName,
@@ -198,7 +198,7 @@ impl JournalRecord {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct EntryDateTime {
     value: i64,
 }
@@ -215,7 +215,7 @@ impl EntryDateTime {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct UnitName {
     value: String,
 }
@@ -242,7 +242,7 @@ impl ToString for UnitName {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PurchaseUnitPrice {
     value: u32,
 }
@@ -263,7 +263,7 @@ impl PurchaseUnitPrice {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct PurchaseQuantity {
     value: u32,
 }
@@ -277,14 +277,6 @@ impl PurchaseQuantity {
 
     pub fn as_u32(&self) -> u32 {
         self.value
-    }
-}
-
-impl Mul<PurchaseUnitPrice> for PurchaseQuantity {
-    type Output = PurchasePrice;
-
-    fn mul(self, rhs: PurchaseUnitPrice) -> Self::Output {
-        PurchasePrice::new(self.value * rhs.as_u32()).unwrap()
     }
 }
 
@@ -305,15 +297,7 @@ impl PurchasePrice {
     }
 }
 
-impl Add for PurchasePrice {
-    type Output = PurchasePrice;
-
-    fn add(self, rhs: Self) -> Self::Output {
-        PurchasePrice::new(self.value + rhs.value).unwrap()
-    }
-}
-
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StocktakingId {
     value: String,
 }
@@ -340,7 +324,7 @@ impl ToString for StocktakingId {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct StocktakenDateTime {
     value: i64,
 }

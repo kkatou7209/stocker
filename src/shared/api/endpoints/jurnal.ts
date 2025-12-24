@@ -14,7 +14,7 @@ export type JournalRecordData = z.infer<typeof JournalRecordData>;
 
 export const JournalData = z.object({
 	id: z.string().nonempty(),
-	entryDate: z.date().nonoptional(),
+	entryDate: z.number().nonoptional(),
 	records: z.array(JournalRecordData),
 });
 

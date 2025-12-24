@@ -30,7 +30,7 @@ const StocktakingSheet: Component<{
             props.onChange?.(records());
         }
 
-        const total = records().reduce((price, record) => price + record.totalPrice, 0);
+        const total = records().reduce((price, record) => price + record.quantity * record.unitPrice, 0);
 
         setTotalPrice(total);
     };
@@ -102,7 +102,6 @@ const StocktakingRecordInput: Component<{
 			unitName: props.value.unitName,
 			unitPrice: unitPrice(),
 			quantity: quantity(),
-			totalPrice: totalPrice(),
 		};
 
 		props.onChange?.(record);

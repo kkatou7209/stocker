@@ -1,4 +1,5 @@
 mod dto;
+pub mod mock;
 mod persistence;
 
 pub use dto::*;

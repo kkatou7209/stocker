@@ -5,25 +5,40 @@ class Repository {
 	private api = useApi();
 
 	public list = async (): Promise<Journal[]> => {
-		return this.api.journal.listAllJournals();
+		const journals = await this.api.journal.listAllJournals();
+
+		return journals.map((journal) => ({
+			...journal,
+			entryDate: new Date(journal.entryDate),
+		}));
 	};
 
 	public get = async (id: string): Promise<Journal | null> => {
-		return this.api.journal.getJournalById(id);
+		const journal = await this.api.journal.getJournalById(id);
+
+		if (!journal) return null;
+
+		return { ...journal, entryDate: new Date(journal.entryDate) };
 	};
 
 	public getAt = async (date: Date): Promise<Journal | null> => {
-		return this.api.journal.getJournalAt(date);
+		const journal = await this.api.journal.getJournalAt(date);
+
+		if (!journal) return null;
+
+		return { ...journal, entryDate: new Date(journal.entryDate) };
 	};
 
 	public add = async (journal: {
 		entryDate: Date;
 		records: JournalRecord[];
 	}): Promise<Journal> => {
-		return await this.api.journal.createJournal({
-			entryDate: journal.entryDate,
+		const registered = await this.api.journal.createJournal({
+			entryDate: journal.entryDate.getTime(),
 			records: [...journal.records],
 		});
+
+		return { ...registered, entryDate: new Date(registered.entryDate) };
 	};
 
 	public edit = async (journal: {
@@ -33,7 +48,7 @@ class Repository {
 	}): Promise<void> => {
 		await this.api.journal.updateJournal({
 			id: journal.id,
-			entryDate: journal.entryDate,
+			entryDate: journal.entryDate.getTime(),
 			records: [...journal.records],
 		});
 	};
@@ -44,7 +59,12 @@ class Repository {
 		supplierName?: string;
 		supplyName?: string;
 	}): Promise<Journal[]> => {
-		return await this.api.journal.searchJournals(query);
+		const journals = await this.api.journal.searchJournals(query);
+
+		return journals.map((journal) => ({
+			...journal,
+			entryDate: new Date(journal.entryDate),
+		}));
 	};
 }
 

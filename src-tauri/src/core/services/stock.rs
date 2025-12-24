@@ -1,17 +1,30 @@
+use std::sync::Arc;
+
 use crate::core::domain::entities::stock::{Journal, Stocktaking, Supplier, Supply};
 use crate::core::domain::values::stock::*;
 use crate::core::{provided_ports, Result};
 use crate::core::{provided_ports::*, required_ports};
 use crate::core::{required_ports::*, Error};
 
-pub struct SupplyService<SupplyRepository, SupplierRepository> {
-    supply_repository: SupplyRepository,
-    supplier_repository: SupplierRepository,
+/// supply usecase
+pub struct SupplyService {
+    supply_repository: Arc<dyn ForSupplyPersistence>,
+    supplier_repository: Arc<dyn ForSupplierPersistence>,
 }
 
-impl<SupplyRepository: ForSupplyPersistence, SupplierRepository: ForSupplierPersistence>
-    SupplyUsecase for SupplyService<SupplyRepository, SupplierRepository>
-{
+impl SupplyService {
+    pub fn new(
+        supply_repository: Arc<dyn ForSupplyPersistence>,
+        supplier_repository: Arc<dyn ForSupplierPersistence>,
+    ) -> Self {
+        Self {
+            supply_repository,
+            supplier_repository,
+        }
+    }
+}
+
+impl SupplyUsecase for SupplyService {
     fn get(&self, query: provided_ports::GetSupplyQuery) -> Result<Option<SupplyDTO>> {
         let supply_id = SupplyId::new(query.supply_id.as_str())?;
 
@@ -122,17 +135,26 @@ impl<SupplyRepository: ForSupplyPersistence, SupplierRepository: ForSupplierPers
         supply.rename_unit(UnitName::new(commad.unit_name)?);
         supply.change_supplier(supplier.id().clone());
 
+        self.supply_repository.save(supply)?;
+
         Ok(())
     }
 }
 
-pub struct SupplierService<SupplierRepository> {
-    supplier_repository: SupplierRepository,
+/// supplier usecase
+pub struct SupplierService {
+    supplier_repository: Arc<dyn ForSupplierPersistence>,
 }
 
-impl<SupplierRepository: ForSupplierPersistence> SupplierUsecase
-    for SupplierService<SupplierRepository>
-{
+impl SupplierService {
+    pub fn new(supplier_repository: Arc<dyn ForSupplierPersistence>) -> Self {
+        Self {
+            supplier_repository,
+        }
+    }
+}
+
+impl SupplierUsecase for SupplierService {
     fn get(&self, query: provided_ports::GetSupplierQuery) -> Result<Option<SupplierDTO>> {
         let supplier_id = SupplierId::new(query.supplier_id)?;
 
@@ -220,18 +242,28 @@ impl<SupplierRepository: ForSupplierPersistence> SupplierUsecase
     }
 }
 
-pub struct JournalService<SupplyRepository, SupplierRepository, JournalRepository> {
-    supply_respository: SupplyRepository,
-    supplier_repository: SupplierRepository,
-    journal_respository: JournalRepository,
+/// journal usecase
+pub struct JournalService {
+    supply_respository: Arc<dyn ForSupplyPersistence>,
+    supplier_repository: Arc<dyn ForSupplierPersistence>,
+    journal_respository: Arc<dyn ForJournalPersistence>,
 }
 
-impl<
-        SupplyRepository: ForSupplyPersistence,
-        SupplierRepository: ForSupplierPersistence,
-        JournalRepository: ForJournalPersistence,
-    > JournalUsecase for JournalService<SupplyRepository, SupplierRepository, JournalRepository>
-{
+impl JournalService {
+    pub fn new(
+        supply_respository: Arc<dyn ForSupplyPersistence>,
+        supplier_repository: Arc<dyn ForSupplierPersistence>,
+        journal_respository: Arc<dyn ForJournalPersistence>,
+    ) -> Self {
+        Self {
+            supply_respository,
+            supplier_repository,
+            journal_respository,
+        }
+    }
+}
+
+impl JournalUsecase for JournalService {
     fn get(&self, query: provided_ports::GetJournalQuery) -> Result<Option<JournalDTO>> {
         let journal_id = JournalId::new(query.journal_id)?;
 
@@ -431,19 +463,28 @@ impl<
     }
 }
 
-pub struct StocktakingService<SupplyRepository, SupplierRepository, StocktakingRepository> {
-    supply_respository: SupplyRepository,
-    supplier_repository: SupplierRepository,
-    stocktaking_respository: StocktakingRepository,
+/// stocktaking usecase
+pub struct StocktakingService {
+    supply_respository: Arc<dyn ForSupplyPersistence>,
+    supplier_repository: Arc<dyn ForSupplierPersistence>,
+    stocktaking_respository: Arc<dyn ForStocktakingPersistence>,
 }
 
-impl<
-        SupplyRepository: ForSupplyPersistence,
-        SupplierRepository: ForSupplierPersistence,
-        StocktakingRepository: ForStocktakingPersstence,
-    > StocktakingUsecase
-    for StocktakingService<SupplyRepository, SupplierRepository, StocktakingRepository>
-{
+impl StocktakingService {
+    pub fn new(
+        supply_respository: Arc<dyn ForSupplyPersistence>,
+        supplier_repository: Arc<dyn ForSupplierPersistence>,
+        stocktaking_respository: Arc<dyn ForStocktakingPersistence>,
+    ) -> Self {
+        Self {
+            supply_respository,
+            supplier_repository,
+            stocktaking_respository,
+        }
+    }
+}
+
+impl StocktakingUsecase for StocktakingService {
     fn get(&self, query: provided_ports::GetStocktakingQuery) -> Result<Option<StocktakingDTO>> {
         let stocktaking_id = StocktakingId::new(query.stocktaking_id)?;
 

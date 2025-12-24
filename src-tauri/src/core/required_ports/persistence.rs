@@ -32,7 +32,7 @@ pub trait ForJournalPersistence {
     fn save(&self, journal: Journal) -> Result<()>;
 }
 
-pub trait ForStocktakingPersstence {
+pub trait ForStocktakingPersistence {
     fn next_id(&self) -> Result<StocktakingId>;
     fn list(&self) -> Result<Vec<Stocktaking>>;
     fn find(&self, query: FindStocktakingsQuery) -> Result<Vec<Stocktaking>>;
