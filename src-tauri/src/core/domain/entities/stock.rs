@@ -52,6 +52,12 @@ impl Supply {
     }
 }
 
+impl PartialEq for Supply {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Supplier {
     id: SupplierId,
@@ -73,6 +79,12 @@ impl Supplier {
 
     pub fn rename(&mut self, name: SupplierName) {
         self.name = name;
+    }
+}
+
+impl PartialEq for Supplier {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
     }
 }
 
@@ -113,6 +125,12 @@ impl Journal {
     }
 }
 
+impl PartialEq for Journal {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct Stocktaking {
     id: StocktakingId,
@@ -147,5 +165,11 @@ impl Stocktaking {
 
     pub fn swap_records(&mut self, records: impl IntoIterator<Item = StocktakingRecord>) {
         self.records = records.into_iter().collect();
+    }
+}
+
+impl PartialEq for Stocktaking {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
     }
 }

@@ -12,7 +12,7 @@ impl SupplierId {
         let value = value.as_ref().trim().to_string();
 
         if value.is_empty() {
-            return Err(Error::DomainError("empty string cannot be set."));
+            return Err(Error::DomainError(format!("empty string cannot be set.")));
         }
 
         return Ok(Self { value });
@@ -39,7 +39,7 @@ impl SupplierName {
         let value = value.as_ref().trim().to_string();
 
         if value.is_empty() {
-            return Err(Error::DomainError("empty string cannot be set"));
+            return Err(Error::DomainError(format!("empty string cannot be set")));
         }
 
         return Ok(Self { value });
@@ -66,7 +66,7 @@ impl SupplyId {
         let value = value.as_ref().trim().to_string();
 
         if value.is_empty() {
-            return Err(Error::DomainError("empty string cannot be set"));
+            return Err(Error::DomainError(format!("empty string cannot be set")));
         }
 
         return Ok(SupplyId { value });
@@ -93,7 +93,7 @@ impl SupplyName {
         let value = value.as_ref().trim().to_string();
 
         if value.is_empty() {
-            return Err(Error::DomainError("empty string cannot be set"));
+            return Err(Error::DomainError(format!("empty string cannot be set")));
         }
 
         return Ok(Self { value });
@@ -120,7 +120,7 @@ impl JournalId {
         let value = value.as_ref().trim().to_string();
 
         if value.is_empty() {
-            return Err(Error::DomainError("empty string cannot be set"));
+            return Err(Error::DomainError(format!("empty string cannot be set")));
         }
 
         return Ok(Self { value });
@@ -225,7 +225,7 @@ impl UnitName {
         let value = value.as_ref().trim().to_string();
 
         if value.is_empty() {
-            return Err(Error::DomainError("empty string cannot be set"));
+            return Err(Error::DomainError(format!("empty string cannot be set")));
         }
 
         return Ok(Self { value });
@@ -252,7 +252,7 @@ impl PurchaseUnitPrice {
         let value = value.into();
 
         if value <= 0 {
-            return Err(Error::DomainError("price must be greater than 0"));
+            return Err(Error::DomainError(format!("price must be greater than 0")));
         }
 
         Ok(Self { value })
@@ -307,7 +307,7 @@ impl StocktakingId {
         let value = value.as_ref().trim().to_string();
 
         if value.is_empty() {
-            return Err(Error::DomainError("empty string cannot be set"));
+            return Err(Error::DomainError(format!("empty string cannot be set")));
         }
 
         return Ok(Self { value });
@@ -385,7 +385,7 @@ impl StocktakingPrice {
         let value = value.into();
 
         if value <= 0 {
-            return Err(Error::DomainError("price must be greater than 0"));
+            return Err(Error::DomainError(format!("price must be greater than 0")));
         }
 
         return Ok(Self { value });

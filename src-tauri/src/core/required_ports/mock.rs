@@ -193,7 +193,9 @@ impl ForSupplierPersistence for MockSupplierRepository {
         let mut storage = self.storage.lock().unwrap();
 
         if storage.suppliers.iter().any(|s| s.id().eq(supplier.id())) {
-            return Err(Error::InfrastructureError("supplier already exists."));
+            return Err(Error::InfrastructureError(format!(
+                "supplier already exists."
+            )));
         }
 
         storage.suppliers.push(supplier.clone());
@@ -314,7 +316,9 @@ impl ForJournalPersistence for MockJournalRepository {
         let mut storage = self.storage.lock().unwrap();
 
         if storage.journals.iter().any(|j| j.id().eq(journal.id())) {
-            return Err(Error::InfrastructureError("journal already exists."));
+            return Err(Error::InfrastructureError(format!(
+                "journal already exists."
+            )));
         }
 
         storage.journals.push(journal.clone());
@@ -411,7 +415,9 @@ impl ForStocktakingPersistence for MockStocktakingRepository {
             .iter()
             .any(|s| s.id().eq(stockatking.id()))
         {
-            return Err(Error::InfrastructureError("stocktaking already exists."));
+            return Err(Error::InfrastructureError(format!(
+                "stocktaking already exists."
+            )));
         }
 
         storage.stocktakings.push(stockatking.clone());

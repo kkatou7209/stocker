@@ -9,11 +9,11 @@ pub type Result<T> = std::result::Result<T, Error>;
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("Domain error: {0}")]
-    DomainError(&'static str),
+    DomainError(String),
 
     #[error("Infrastructure error: {0}")]
-    InfrastructureError(&'static str),
+    InfrastructureError(String),
 
     #[error("Configuration error: {0}")]
-    ConfigurationError(&'static str),
+    ConfigurationError(String),
 }

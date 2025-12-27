@@ -97,7 +97,7 @@ impl SupplyUsecase for SupplyService {
         let supplier = self
             .supplier_repository
             .get(required_ports::GetSupplierQuery { supplier_id })?
-            .ok_or(Error::DomainError("supplier does not exist."))?;
+            .ok_or(Error::DomainError(format!("supplier does not exist.")))?;
 
         let supply = Supply::new(
             id,
@@ -122,14 +122,14 @@ impl SupplyUsecase for SupplyService {
         let mut supply = self
             .supply_repository
             .get(required_ports::GetSupplyQuery { supply_id })?
-            .ok_or(Error::DomainError("supply does not exist."))?;
+            .ok_or(Error::DomainError(format!("supply does not exist.")))?;
 
         let supplier_id = SupplierId::new(commad.supplier_id)?;
 
         let supplier = self
             .supplier_repository
             .get(required_ports::GetSupplierQuery { supplier_id })?
-            .ok_or(Error::DomainError("supplier does not exist."))?;
+            .ok_or(Error::DomainError(format!("supplier does not exist.")))?;
 
         supply.rename(SupplyName::new(commad.supply_name)?);
         supply.rename_unit(UnitName::new(commad.unit_name)?);
@@ -232,7 +232,7 @@ impl SupplierUsecase for SupplierService {
         let mut supplier = self
             .supplier_repository
             .get(required_ports::GetSupplierQuery { supplier_id })?
-            .ok_or(Error::DomainError("suppler does not exist."))?;
+            .ok_or(Error::DomainError(format!("suppler does not exist.")))?;
 
         supplier.rename(SupplierName::new(command.supplier_name)?);
 
@@ -285,7 +285,7 @@ impl JournalUsecase for JournalService {
                     supplier_id: record.supplier_id().to_string(),
                     supplier_name: record.supplier_name().to_string(),
                     supply_id: record.supply_id().to_string(),
-                    supply_name: record.supply_id().to_string(),
+                    supply_name: record.supply_name().to_string(),
                     unit_name: record.unit_name().to_string(),
                     unit_price: record.unit_price().as_u32(),
                     quantity: record.quantity().as_u32(),
@@ -311,7 +311,7 @@ impl JournalUsecase for JournalService {
                         supplier_id: record.supplier_id().to_string(),
                         supplier_name: record.supplier_name().to_string(),
                         supply_id: record.supply_id().to_string(),
-                        supply_name: record.supply_id().to_string(),
+                        supply_name: record.supply_name().to_string(),
                         unit_name: record.unit_name().to_string(),
                         unit_price: record.unit_price().as_u32(),
                         quantity: record.quantity().as_u32(),
@@ -351,7 +351,7 @@ impl JournalUsecase for JournalService {
                         supplier_id: record.supplier_id().to_string(),
                         supplier_name: record.supplier_name().to_string(),
                         supply_id: record.supply_id().to_string(),
-                        supply_name: record.supply_id().to_string(),
+                        supply_name: record.supply_name().to_string(),
                         unit_name: record.unit_name().to_string(),
                         unit_price: record.unit_price().as_u32(),
                         quantity: record.quantity().as_u32(),
@@ -377,7 +377,7 @@ impl JournalUsecase for JournalService {
         let supply_ids = supply_ids?;
 
         if !self.supply_respository.has(&supply_ids)? {
-            return Err(Error::DomainError("supply does not exist."));
+            return Err(Error::DomainError(format!("supply does not exist.")));
         }
 
         let supplier_ids: Vec<Result<SupplierId>> = command
@@ -391,7 +391,7 @@ impl JournalUsecase for JournalService {
         let supplier_ids = supplier_ids?;
 
         if !self.supplier_repository.has(&supplier_ids)? {
-            return Err(Error::DomainError("supplier does not exist."));
+            return Err(Error::DomainError(format!("supplier does not exist.")));
         }
 
         let mut records: Vec<JournalRecord> = Vec::new();
@@ -422,7 +422,7 @@ impl JournalUsecase for JournalService {
                     supplier_id: record.supplier_id().to_string(),
                     supplier_name: record.supplier_name().to_string(),
                     supply_id: record.supply_id().to_string(),
-                    supply_name: record.supply_id().to_string(),
+                    supply_name: record.supply_name().to_string(),
                     unit_name: record.unit_name().to_string(),
                     unit_price: record.unit_price().as_u32(),
                     quantity: record.quantity().as_u32(),
@@ -439,7 +439,7 @@ impl JournalUsecase for JournalService {
         let mut journal = self
             .journal_respository
             .get(journal_id)?
-            .ok_or(Error::DomainError("journal does not exist."))?;
+            .ok_or(Error::DomainError(format!("journal does not exist.")))?;
 
         let mut records: Vec<JournalRecord> = Vec::new();
 
@@ -588,7 +588,7 @@ impl StocktakingUsecase for StocktakingService {
         let supply_ids = supply_ids?;
 
         if !self.supply_respository.has(&supply_ids)? {
-            return Err(Error::DomainError("supply does not exist."));
+            return Err(Error::DomainError(format!("supply does not exist.")));
         }
 
         let mut records: Vec<StocktakingRecord> = Vec::new();
@@ -636,7 +636,7 @@ impl StocktakingUsecase for StocktakingService {
         let mut stocktaking = self
             .stocktaking_respository
             .get(required_ports::GetStocktakingQuery { stocktaking_id })?
-            .ok_or(Error::DomainError("stocktaking does not exist."))?;
+            .ok_or(Error::DomainError(format!("stocktaking does not exist.")))?;
 
         let mut records: Vec<StocktakingRecord> = Vec::new();
 
