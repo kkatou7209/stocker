@@ -10,8 +10,19 @@ mod supplier_test;
 #[cfg(test)]
 mod supply_test;
 
+#[cfg(test)]
+mod journal_test;
+
+use std::num::TryFromIntError;
+
 pub use jorunal::*;
 pub use migration::*;
 pub use stocktaking::*;
 pub use supplier::*;
 pub use supply::*;
+
+impl From<crate::core::Error> for rusqlite::Error {
+    fn from(value: crate::core::Error) -> Self {
+        rusqlite::Error::ToSqlConversionFailure(Box::new(value))
+    }
+}

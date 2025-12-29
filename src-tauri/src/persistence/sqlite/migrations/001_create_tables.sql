@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS journal_records (
     unit_name TEXT NOT NULL,
     unit_price INTEGER NOT NULL,
     quantity INTEGER NOT NULL,
-    journal_id INTEGER NOT NULL
+    journal_id INTEGER NOT NULL,
     FOREIGN KEY(supplier_id) REFERENCES suppliers(id),
     FOREIGN KEY(supply_id) REFERENCES supplies(id),
     FOREIGN KEY(journal_id) REFERENCES journals(id)

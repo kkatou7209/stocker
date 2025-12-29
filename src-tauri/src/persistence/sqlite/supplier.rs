@@ -92,10 +92,8 @@ impl ForSupplierPersistence for SqliteSupplierRepository {
         let supplier_results = statement
             .query_map([], |row| {
                 let supplier = Supplier::restore(
-                    SupplierId::new(row.get::<_, i64>(0)?.to_string())
-                        .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
-                    SupplierName::new(row.get::<_, String>(1)?)
-                        .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
+                    SupplierId::new(row.get::<_, i64>(0)?.to_string())?,
+                    SupplierName::new(row.get::<_, String>(1)?)?,
                 );
 
                 Ok(supplier)
@@ -138,10 +136,8 @@ impl ForSupplierPersistence for SqliteSupplierRepository {
                 },
                 |row| {
                     let supplier = Supplier::restore(
-                        SupplierId::new(row.get::<_, i64>(0)?.to_string())
-                            .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
-                        SupplierName::new(row.get::<_, String>(1)?)
-                            .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
+                        SupplierId::new(row.get::<_, i64>(0)?.to_string())?,
+                        SupplierName::new(row.get::<_, String>(1)?)?,
                     );
 
                     Ok(supplier)
@@ -181,10 +177,8 @@ impl ForSupplierPersistence for SqliteSupplierRepository {
                 },
                 |row| {
                     let supplier = Supplier::restore(
-                        SupplierId::new(row.get::<_, i64>(0)?.to_string())
-                            .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
-                        SupplierName::new(row.get::<_, String>(1)?)
-                            .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
+                        SupplierId::new(row.get::<_, i64>(0)?.to_string())?,
+                        SupplierName::new(row.get::<_, String>(1)?)?,
                     );
 
                     Ok(supplier)

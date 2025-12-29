@@ -93,14 +93,10 @@ impl ForSupplyPersistence for SqliteSupplyRepository {
         let supply_results = statement
             .query_map([], |row| {
                 let supply = Supply::new(
-                    SupplyId::new(row.get::<_, i64>(0)?.to_string())
-                        .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
-                    SupplyName::new(row.get::<_, String>(1)?)
-                        .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
-                    UnitName::new(row.get::<_, String>(2)?)
-                        .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
-                    SupplierId::new(row.get::<_, i64>(3)?.to_string())
-                        .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
+                    SupplyId::new(row.get::<_, i64>(0)?.to_string())?,
+                    SupplyName::new(row.get::<_, String>(1)?)?,
+                    UnitName::new(row.get::<_, String>(2)?)?,
+                    SupplierId::new(row.get::<_, i64>(3)?.to_string())?,
                 );
 
                 Ok(supply)
@@ -148,14 +144,10 @@ impl ForSupplyPersistence for SqliteSupplyRepository {
                 },
                 |row| {
                     let supply = Supply::new(
-                        SupplyId::new(row.get::<_, i64>(0)?.to_string())
-                            .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
-                        SupplyName::new(row.get::<_, String>(1)?)
-                            .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
-                        UnitName::new(row.get::<_, String>(2)?)
-                            .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
-                        SupplierId::new(row.get::<_, i64>(3)?.to_string())
-                            .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
+                        SupplyId::new(row.get::<_, i64>(0)?.to_string())?,
+                        SupplyName::new(row.get::<_, String>(1)?)?,
+                        UnitName::new(row.get::<_, String>(2)?)?,
+                        SupplierId::new(row.get::<_, i64>(3)?.to_string())?,
                     );
 
                     Ok(supply)
@@ -200,14 +192,10 @@ impl ForSupplyPersistence for SqliteSupplyRepository {
                 },
                 |row| {
                     let supply = Supply::new(
-                        SupplyId::new(row.get::<_, i64>(0)?.to_string())
-                            .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
-                        SupplyName::new(row.get::<_, String>(1)?)
-                            .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
-                        UnitName::new(row.get::<_, String>(2)?)
-                            .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
-                        SupplierId::new(row.get::<_, i64>(1)?.to_string())
-                            .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
+                        SupplyId::new(row.get::<_, i64>(0)?.to_string())?,
+                        SupplyName::new(row.get::<_, String>(1)?)?,
+                        UnitName::new(row.get::<_, String>(2)?)?,
+                        SupplierId::new(row.get::<_, i64>(1)?.to_string())?,
                     );
 
                     Ok(supply)
