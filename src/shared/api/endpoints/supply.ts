@@ -37,7 +37,7 @@ export interface SupplyEndpoint {
 	/**
 	 * add a new supply
 	 */
-	readonly createSupply: (command: AddSupplyCommand) => Promise<void>;
+	readonly registerSupply: (command: AddSupplyCommand) => Promise<void>;
 	/**
 	 * update a supply
 	 */

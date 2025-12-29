@@ -1,8 +1,7 @@
-import { MapEvents } from '@/shared/types';
 import 'cally';
-import { CalendarDaysIcon, ChevronLeftIcon, ChevronRightIcon, CircleXIcon, XIcon } from 'lucide-solid';
+import { CalendarDaysIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-solid';
 import * as luxon from 'luxon';
-import { type Component, createEffect, createSignal, JSX, onMount } from 'solid-js';
+import { type Component, createEffect, createSignal } from 'solid-js';
 
 const DateInput: Component<{
 	value?: Date | null;

@@ -110,7 +110,7 @@ export const fakeSuppliers: SupplierData[] = [
 export const fakeJournals: JournalData[] = [
 	{
 		id: '001',
-		entryDate: luxon.DateTime.utc(2025, 12, 1).toJSDate(),
+		entryDate: luxon.DateTime.utc(2025, 12, 1).toJSDate().getTime(),
 		records: [
 			{
 				supplierId: '001',
@@ -120,9 +120,6 @@ export const fakeJournals: JournalData[] = [
 				unitName: 'g',
 				unitPrice: 100,
 				quantity: 10,
-				totalPrice: 1000,
-				taxRate: 0.8,
-				totalPriceIncludeTax: 1080,
 			},
 			{
 				supplierId: '001',
@@ -132,15 +129,12 @@ export const fakeJournals: JournalData[] = [
 				unitName: 'g',
 				unitPrice: 100,
 				quantity: 10,
-				totalPrice: 1000,
-				taxRate: 0.8,
-				totalPriceIncludeTax: 1080,
 			},
 		],
 	},
 	{
 		id: '002',
-		entryDate: luxon.DateTime.utc(2025, 12, 2).toJSDate(),
+		entryDate: luxon.DateTime.utc(2025, 12, 2).toJSDate().getTime(),
 		records: [
 			{
 				supplierId: '001',
@@ -150,9 +144,6 @@ export const fakeJournals: JournalData[] = [
 				unitName: 'g',
 				unitPrice: 100,
 				quantity: 10,
-				totalPrice: 1000,
-				taxRate: 0.8,
-				totalPriceIncludeTax: 1080,
 			},
 			{
 				supplierId: '001',
@@ -162,9 +153,6 @@ export const fakeJournals: JournalData[] = [
 				unitName: 'g',
 				unitPrice: 100,
 				quantity: 10,
-				totalPrice: 1000,
-				taxRate: 0.8,
-				totalPriceIncludeTax: 1080,
 			},
 		],
 	},
@@ -173,7 +161,7 @@ export const fakeJournals: JournalData[] = [
 export const fakeStocktakings: StocktakingData[] = [
 	{
 		id: '001',
-		stocktakingDate: new Date('2025-01-23'),
+		stocktakingDate: luxon.DateTime.utc(2025, 1, 23).millisecond,
 		records: [
 			{
 				supplyId: '001',
@@ -181,7 +169,6 @@ export const fakeStocktakings: StocktakingData[] = [
 				unitName: 'g',
 				unitPrice: 100,
 				quantity: 20,
-				totalPrice: 2000,
 			},
 			{
 				supplyId: '002',
@@ -189,7 +176,6 @@ export const fakeStocktakings: StocktakingData[] = [
 				unitName: 'g',
 				unitPrice: 120,
 				quantity: 10,
-				totalPrice: 1200,
 			},
 			{
 				supplyId: '003',
@@ -197,7 +183,6 @@ export const fakeStocktakings: StocktakingData[] = [
 				unitName: 'g',
 				unitPrice: 150,
 				quantity: 15,
-				totalPrice: 1750,
 			},
 		],
 	},

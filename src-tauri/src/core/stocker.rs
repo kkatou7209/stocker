@@ -1,18 +1,14 @@
 use std::sync::Arc;
 
-use crate::core::provided_ports::{
-    JournalUsecase, StocktakingUsecase, SupplierUsecase, SupplyUsecase,
-};
+use crate::core::provided_ports::*;
 use crate::core::required_ports::*;
-use crate::core::services::stock::{
-    JournalService, StocktakingService, SupplierService, SupplyService,
-};
+use crate::core::services::stock::*;
 
 pub struct Stocker {
-    supply_respository: Arc<dyn ForSupplyPersistence>,
-    supplier_repository: Arc<dyn ForSupplierPersistence>,
-    jorunal_repository: Arc<dyn ForJournalPersistence>,
-    stocktaking_repository: Arc<dyn ForStocktakingPersistence>,
+    supply_respository: Arc<dyn ForSupplyPersistence + Send + Sync + 'static>,
+    supplier_repository: Arc<dyn ForSupplierPersistence + Send + Sync + 'static>,
+    jorunal_repository: Arc<dyn ForJournalPersistence + Send + Sync + 'static>,
+    stocktaking_repository: Arc<dyn ForStocktakingPersistence + Send + Sync + 'static>,
 }
 
 pub struct Ports<SupplyRepository, SupplierRepository, JournalRepository, StocktakingRepository>
@@ -58,22 +54,28 @@ impl Stocker {
     }
 
     pub fn supplier_usecase(&self) -> impl SupplierUsecase {
-        SupplierService::new(Arc::clone(&self.supplier_repository))
+        let supplier_repository = Arc::clone(&self.supplier_repository);
+
+        SupplierService::new(supplier_repository)
     }
 
     pub fn journal_usecase(&self) -> impl JournalUsecase {
-        JournalService::new(
-            Arc::clone(&self.supply_respository),
-            Arc::clone(&self.supplier_repository),
-            Arc::clone(&self.jorunal_repository),
-        )
+        let supply_repository = Arc::clone(&self.supply_respository);
+        let supplier_repository = Arc::clone(&self.supplier_repository);
+        let journal_repository = Arc::clone(&self.jorunal_repository);
+
+        JournalService::new(supply_repository, supplier_repository, journal_repository)
     }
 
     pub fn stocktaking_usecase(&self) -> impl StocktakingUsecase {
+        let supply_repository = Arc::clone(&self.supply_respository);
+        let supplier_repository = Arc::clone(&self.supplier_repository);
+        let stocktaking_repository = Arc::clone(&self.stocktaking_repository);
+
         StocktakingService::new(
-            Arc::clone(&self.supply_respository),
-            Arc::clone(&self.supplier_repository),
-            Arc::clone(&self.stocktaking_repository),
+            supply_repository,
+            supplier_repository,
+            stocktaking_repository,
         )
     }
 }

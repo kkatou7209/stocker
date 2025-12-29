@@ -1,4 +1,3 @@
-import { Journal } from '@/entities/stock/models/journal';
 import type {
 	JournalData,
 	JournalEndpoints,
@@ -94,7 +93,7 @@ export const mockSupplyEndpoints: SupplyEndpoint = {
 		);
 	},
 
-	createSupply: async (command: AddSupplyCommand) => {
+	registerSupply: async (command: AddSupplyCommand) => {
 		const data = AddSupplyCommand.parse(command);
 
 		for (const supplier of fakeSuppliers) {
@@ -129,12 +128,15 @@ export const mockJournalEndpoints: JournalEndpoints = {
 
 	getJournalAt: async (date) => {
 		return (
-			fakeJournals.find(
-				(j) =>
-					j.entryDate.getFullYear() === date.getFullYear() &&
-					j.entryDate.getMonth() === date.getMonth() &&
-					j.entryDate.getDate() === date.getDate(),
-			) ?? null
+			fakeJournals.find((j) => {
+				const entryDate = new Date(j.entryDate);
+
+				return (
+					entryDate.getFullYear() === date.getFullYear() &&
+					entryDate.getMonth() === date.getMonth() &&
+					entryDate.getDate() === date.getDate()
+				);
+			}) ?? null
 		);
 	},
 
@@ -167,17 +169,13 @@ export const mockJournalEndpoints: JournalEndpoints = {
 
 		if (query.periodEnd) {
 			journals = journals.filter(
-				(f) =>
-					f.entryDate.getTime() <=
-					(query.periodEnd?.getTime() as number),
+				(f) => f.entryDate <= (query.periodEnd?.getTime() as number),
 			);
 		}
 
 		if (query.periodStart) {
 			journals = journals.filter(
-				(f) =>
-					f.entryDate.getTime() >=
-					(query.periodStart?.getTime() as number),
+				(f) => f.entryDate >= (query.periodStart?.getTime() as number),
 			);
 		}
 
@@ -253,60 +251,17 @@ export const mockStocktakingEndpoints: StocktakingEndpoints = {
 		if (query.periodStart) {
 			const periodStart = query.periodStart as Date;
 
-			stocktakings = stocktakings.filter((s) => {
-				if (
-					s.stocktakingDate.getFullYear() > periodStart.getFullYear()
-				) {
-					return true;
-				}
-
-				const sameYear =
-					s.stocktakingDate.getFullYear() ===
-					periodStart.getFullYear();
-
-				if (
-					sameYear &&
-					s.stocktakingDate.getMonth() > periodStart.getMonth()
-				) {
-					return true;
-				}
-
-				const sameMonth =
-					sameYear &&
-					s.stocktakingDate.getMonth() === periodStart.getMonth();
-
-				return sameMonth
-					? s.stocktakingDate.getDate() >= periodStart.getDate()
-					: false;
-			});
+			stocktakings = stocktakings.filter(
+				(s) => periodStart.getTime() <= s.stocktakingDate,
+			);
 		}
 
 		if (query.periodEnd) {
 			const periodEnd = query.periodEnd as Date;
 
-			stocktakings = stocktakings.filter((s) => {
-				if (s.stocktakingDate.getFullYear() < periodEnd.getFullYear()) {
-					return true;
-				}
-
-				const sameYear =
-					s.stocktakingDate.getFullYear() === periodEnd.getFullYear();
-
-				if (
-					sameYear &&
-					s.stocktakingDate.getMonth() < periodEnd.getMonth()
-				) {
-					return true;
-				}
-
-				const sameMonth =
-					sameYear &&
-					s.stocktakingDate.getMonth() === periodEnd.getMonth();
-
-				return sameMonth
-					? s.stocktakingDate.getDate() <= periodEnd.getDate()
-					: false;
-			});
+			stocktakings = stocktakings.filter(
+				(s) => s.stocktakingDate <= periodEnd.getTime(),
+			);
 		}
 
 		return stocktakings;

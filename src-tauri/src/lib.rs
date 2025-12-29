@@ -1,19 +1,14 @@
-use std::fs::File;
-use std::path::Path;
+mod command;
+mod core;
+mod persistence;
+
 use std::{env, fs};
 
 use tauri::Manager;
 
-use crate::persistence::sqlite::migrate;
-
-mod core;
-mod persistence;
-
-// Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
+use crate::command::*;
+use crate::core::stocker::{Ports, Stocker};
+use crate::persistence::sqlite::*;
 
 const DB_NAME: &str = "app.db";
 
@@ -38,10 +33,26 @@ pub fn run() {
 
             migrate(db_path.to_string_lossy())?;
 
+            let stocker = Stocker::plug(Ports {
+                for_supply_persistence: SqliteSupplyRepository::new(db_path.to_string_lossy()),
+                for_supplier_persistence: SqliteSupplierRepository::new(db_path.to_string_lossy()),
+                for_journal_persistence: SqliteJournalRepository::new(db_path.to_string_lossy()),
+                for_stocktaking_persistence: SqliteStocktakingRepository::new(
+                    db_path.to_string_lossy(),
+                ),
+            });
+
+            app.manage(stocker);
+
             Ok(())
         })
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(tauri::generate_handler![
+            list_all_supplies,
+            get_supply_by_id,
+            register_supply,
+            update_supply,
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

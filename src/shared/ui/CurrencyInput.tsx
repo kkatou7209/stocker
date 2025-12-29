@@ -5,7 +5,6 @@ import {
 	type Setter,
 } from 'solid-js';
 import {
-	CurrencyLoclae,
 	type FormatterLocale,
 	useFormat,
 } from '@/shared/lib/format';
