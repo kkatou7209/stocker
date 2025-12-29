@@ -341,7 +341,7 @@ impl StocktakenDateTime {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StocktakingQuantity {
     value: u32,
 }
@@ -358,7 +358,7 @@ impl StocktakingQuantity {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StocktakingUnitPrice {
     value: u32,
 }
@@ -375,7 +375,7 @@ impl StocktakingUnitPrice {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StocktakingPrice {
     value: u32,
 }
@@ -396,7 +396,7 @@ impl StocktakingPrice {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StocktakingRecord {
     supply_id: SupplyId,
     supply_name: SupplyName,

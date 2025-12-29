@@ -37,6 +37,6 @@ pub trait ForStocktakingPersistence {
     fn list(&self) -> Result<Vec<Stocktaking>>;
     fn find(&self, query: FindStocktakingsQuery) -> Result<Vec<Stocktaking>>;
     fn get(&self, query: GetStocktakingQuery) -> Result<Option<Stocktaking>>;
-    fn add(&self, stockatking: Stocktaking) -> Result<()>;
+    fn add(&self, stocktaking: Stocktaking) -> Result<()>;
     fn save(&self, stocktaking: Stocktaking) -> Result<()>;
 }

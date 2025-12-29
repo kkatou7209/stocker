@@ -102,5 +102,8 @@ CREATE TABLE IF NOT EXISTS stocktaking_records (
     unit_price INTEGER NOT NULL,
     quantity INTEGER NOT NULL,
     supply_id INTEGER NOT NULL,
-    FOREIGN KEY(supply_id) REFERENCES supplies(id)
+    supply_name TEXT NOT NULL,
+    stocktaking_id INTEGER NOT NULL,
+    FOREIGN KEY(supply_id) REFERENCES supplies(id),
+    FOREIGN KEY(stocktaking_id) REFERENCES stocktakings(id)
 );

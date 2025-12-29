@@ -27,6 +27,10 @@ fn journal_repository_test() {
 
     let repository = SqliteJournalRepository::new(tmp_path.to_string_lossy());
 
+    let next_id = repository.next_id().unwrap();
+
+    assert_eq!(next_id, JournalId::new("1").unwrap());
+
     repository
         .add(Journal::restore(
             JournalId::new("1").unwrap(),

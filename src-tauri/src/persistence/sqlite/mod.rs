@@ -13,6 +13,9 @@ mod supply_test;
 #[cfg(test)]
 mod journal_test;
 
+#[cfg(test)]
+mod stocktaking_test;
+
 use std::num::TryFromIntError;
 
 pub use jorunal::*;

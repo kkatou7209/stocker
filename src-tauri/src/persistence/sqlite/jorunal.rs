@@ -61,8 +61,7 @@ impl ForJournalPersistence for SqliteJournalRepository {
                     journal_records.supplier_name,
                     journal_records.unit_name,
                     journal_records.unit_price,
-                    journal_records.quantity,
-                    journal_records.journal_id
+                    journal_records.quantity
                 FROM journals
                 INNER JOIN journal_records
                     ON journal_records.journal_id = journals.id
