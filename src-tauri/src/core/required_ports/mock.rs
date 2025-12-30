@@ -68,6 +68,18 @@ impl ForSupplyPersistence for MockSupplyRepository {
         Ok(None)
     }
 
+    fn get_of_supplier(&self, supplier_id: SupplierId) -> Result<Vec<Supply>> {
+        let supplies = &self.storage.lock().unwrap().supplies;
+
+        let supplies: Vec<Supply> = supplies
+            .iter()
+            .filter(|supply| supply.supplier_id().eq(&supplier_id))
+            .cloned()
+            .collect();
+
+        Ok(supplies)
+    }
+
     fn find(&self, query: FindSuppliesQuery) -> Result<Vec<Supply>> {
         let storage = self.storage.lock().unwrap();
         let mut supplies: Vec<&Supply> = storage.supplies.iter().collect();
@@ -178,10 +190,26 @@ impl ForSupplierPersistence for MockSupplierRepository {
 
         let supplier_name = query.supplier_name;
 
+        let supply_name = query.supply_name;
+
         let mut suppliers: Vec<&Supplier> = storage.suppliers.iter().collect();
 
         if let Some(name) = supplier_name {
             suppliers.retain(|s| s.name().as_str().contains(name.as_str()));
+        }
+
+        if let Some(name) = supply_name {
+            let supplies = storage
+                .supplies
+                .iter()
+                .filter(|supply| supply.name().as_str().contains(name.as_str()))
+                .collect::<Vec<&Supply>>();
+
+            suppliers.retain(|supplier| {
+                supplies
+                    .iter()
+                    .any(|supply| supply.supplier_id().eq(supplier.id()))
+            });
         }
 
         let suppliers: Vec<Supplier> = suppliers.into_iter().cloned().collect();

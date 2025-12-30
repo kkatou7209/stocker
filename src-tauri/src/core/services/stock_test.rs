@@ -397,7 +397,6 @@ fn stocktaking_service_test() {
 
     let service = StocktakingService::new(
         Arc::new(supply_respository),
-        Arc::new(supplier_respository),
         Arc::new(stocktaking_repository),
     );
 

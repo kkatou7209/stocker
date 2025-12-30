@@ -4,6 +4,7 @@ use crate::core::provided_ports::{self, *};
 use crate::core::stocker::Stocker;
 
 #[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct SupplyData {
     pub id: String,
     pub name: String,
@@ -12,6 +13,7 @@ pub struct SupplyData {
 }
 
 #[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AddSupplyCommand {
     pub supplier_id: String,
     pub supply_name: String,
@@ -19,6 +21,7 @@ pub struct AddSupplyCommand {
 }
 
 #[derive(Debug, Clone, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct UpdateSupplyCommand {
     pub supply_id: String,
     pub supply_name: String,

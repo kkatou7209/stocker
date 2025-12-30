@@ -48,10 +48,30 @@ pub fn run() {
         })
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
+            // supply comamnds
             list_all_supplies,
             get_supply_by_id,
             register_supply,
             update_supply,
+            // supplier commands
+            list_all_suppliers,
+            get_supplier_by_id,
+            register_supplier,
+            update_supplier,
+            search_suppliers,
+            // journal commands
+            list_all_journals,
+            get_journal_by_id,
+            get_journal_at,
+            record_journal,
+            update_journal,
+            search_journals,
+            // stocktaking commands
+            list_all_stocktakings,
+            get_stocktaking_by_id,
+            record_stocktaking,
+            update_stocktaking,
+            search_stocktakings,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

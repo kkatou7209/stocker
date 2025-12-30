@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS suppliers_id_sequence (
     value INTEGER DEFAULT 0
 );
 
-INSERT INTO suppliers_id_sequence (
+INSERT OR IGNORE INTO suppliers_id_sequence (
     name,
     value
 ) VALUES (
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS supplies_id_sequence (
     value INTEGER DEFAULT 0
 );
 
-INSERT INTO supplies_id_sequence (
+INSERT OR IGNORE INTO supplies_id_sequence (
     name,
     value
 ) VALUES (
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS journals_id_sequence (
     value INTEGER DEFAULT 0
 );
 
-INSERT INTO journals_id_sequence (
+INSERT OR IGNORE INTO journals_id_sequence (
     name,
     value
 ) VALUES (
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS stocktakings_id_sequence (
     value INTEGER DEFAULT 0
 );
 
-INSERT INTO stocktakings_id_sequence (
+INSERT OR IGNORE INTO stocktakings_id_sequence (
     name,
     value
 ) VALUES (

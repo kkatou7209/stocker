@@ -48,7 +48,7 @@ export interface SupplierEndpoint {
 	/**
 	 * add a new supplier
 	 */
-	readonly createSupplier: (command: AddSupplierCommand) => Promise<void>;
+	readonly registerSupplier: (command: AddSupplierCommand) => Promise<void>;
 	/**
 	 * update a supplier
 	 */

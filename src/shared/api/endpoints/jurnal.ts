@@ -20,16 +20,16 @@ export const JournalData = z.object({
 
 export type JournalData = z.infer<typeof JournalData>;
 
-export type CreateJournalCommand = Omit<JournalData, 'id'>;
+export type RecordJournalCommand = Omit<JournalData, 'id'>;
 
 export type UpdateJournalCommand = JournalData;
 
-export interface JournalQuery {
-	periodStart?: Date | null;
-	periodEnd?: Date | null;
+export type JournalQuery = {
+	periodStart?: number | null;
+	periodEnd?: number | null;
 	supplierName?: string | null;
 	supplyName?: string | null;
-}
+};
 
 export interface JournalEndpoints {
 	/**
@@ -47,7 +47,7 @@ export interface JournalEndpoints {
 	/**
 	 * create a new journal
 	 */
-	createJournal: (command: CreateJournalCommand) => Promise<JournalData>;
+	recordJournal: (command: RecordJournalCommand) => Promise<JournalData>;
 	/**
 	 * update a jorunal
 	 */

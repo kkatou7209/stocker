@@ -31,7 +31,7 @@ class Repository {
 		stocktakingDate: Date;
 		records: StocktakingRecord[];
 	}): Promise<Stocktaking> => {
-		const registered = await this.api.stocktaking.createStocktaking({
+		const registered = await this.api.stocktaking.recordStocktaking({
 			...stocktaking,
 			stocktakingDate: stocktaking.stocktakingDate.getTime(),
 		});

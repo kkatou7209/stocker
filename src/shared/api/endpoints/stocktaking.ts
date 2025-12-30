@@ -22,10 +22,10 @@ export type AddStocktakingCommand = Omit<StocktakingData, 'id'>;
 
 export type UpdateStocktakingCommand = StocktakingData;
 
-export interface StocktakingQuery {
+export type StocktakingQuery = {
 	periodStart?: Date;
 	periodEnd?: Date;
-}
+};
 
 export interface StocktakingEndpoints {
 	/**
@@ -43,7 +43,7 @@ export interface StocktakingEndpoints {
 	/**
 	 * create a new stocktaking data
 	 */
-	createStocktaking: (
+	recordStocktaking: (
 		command: AddStocktakingCommand,
 	) => Promise<StocktakingData>;
 	/**

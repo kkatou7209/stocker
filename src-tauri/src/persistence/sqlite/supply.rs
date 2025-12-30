@@ -159,6 +159,53 @@ impl ForSupplyPersistence for SqliteSupplyRepository {
         Ok(supply)
     }
 
+    fn get_of_supplier(&self, supplier_id: SupplierId) -> Result<Vec<Supply>> {
+        let conn = Connection::open(&self.db_path)
+            .map_err(|e| Error::InfrastructureError(format!("failed to open connection: {}", e)))?;
+
+        let mut statement = conn
+            .prepare(
+                r"
+                SELECT
+                    id,
+                    name,
+                    unit_name,
+                    supplier_id
+                FROM supplies
+                WHERE supplier_id = :supplier_id
+                ",
+            )
+            .map_err(|e| {
+                Error::InfrastructureError(format!("failed to prepare statement: {}", e))
+            })?;
+
+        let supplies: Vec<Supply> = statement
+            .query_map(
+                named_params! {
+                    ":supplier_id": supplier_id.as_str(),
+                },
+                |row| {
+                    let supply = Supply::new(
+                        SupplyId::new(row.get::<_, i64>(0)?.to_string())?,
+                        SupplyName::new(row.get::<_, String>(1)?)?,
+                        UnitName::new(row.get::<_, String>(2)?)?,
+                        SupplierId::new(row.get::<_, i64>(3)?.to_string())?,
+                    );
+
+                    Ok(supply)
+                },
+            )
+            .map_err(|e| Error::InfrastructureError(format!("failed to query: {}", e)))?
+            .map(|supply| {
+                supply.map_err(|e| {
+                    Error::InfrastructureError(format!("failed to convert rows: {}", e))
+                })
+            })
+            .collect::<Result<Vec<Supply>>>()?;
+
+        Ok(supplies)
+    }
+
     fn find(&self, query: FindSuppliesQuery) -> Result<Vec<Supply>> {
         let conn = Connection::open(&self.db_path)
             .map_err(|e| Error::InfrastructureError(format!("failed to open connection: {}", e)))?;

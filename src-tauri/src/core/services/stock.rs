@@ -46,6 +46,24 @@ impl SupplyUsecase for SupplyService {
         }))
     }
 
+    fn get_of_supplier(&self, supplier_id: String) -> Result<Vec<SupplyDTO>> {
+        let supplier_id = SupplierId::new(supplier_id)?;
+
+        let supplies = self.supply_repository.get_of_supplier(supplier_id)?;
+
+        let supplies: Vec<SupplyDTO> = supplies
+            .iter()
+            .map(|supply| SupplyDTO {
+                id: supply.id().to_string(),
+                name: supply.name().to_string(),
+                unit_name: supply.unit_name().to_string(),
+                supplier_id: supply.supplier_id().to_string(),
+            })
+            .collect();
+
+        Ok(supplies)
+    }
+
     fn list(&self) -> Result<Vec<SupplyDTO>> {
         let supplies = self.supply_repository.list()?;
 
@@ -66,11 +84,23 @@ impl SupplyUsecase for SupplyService {
         let query = FindSuppliesQuery {
             supply_name: query
                 .supply_name
-                .map(|name| SupplyName::new(name))
+                .and_then(|name| {
+                    if name.trim().is_empty() {
+                        None
+                    } else {
+                        Some(SupplyName::new(name.trim()))
+                    }
+                })
                 .transpose()?,
             supplier_name: query
                 .supplier_name
-                .map(|name| SupplierName::new(name))
+                .and_then(|name| {
+                    if name.trim().is_empty() {
+                        None
+                    } else {
+                        Some(SupplierName::new(name.trim()))
+                    }
+                })
                 .transpose()?,
         };
 
@@ -194,7 +224,23 @@ impl SupplierUsecase for SupplierService {
         let query = required_ports::FindSupplierQuery {
             supplier_name: query
                 .supplier_name
-                .map(|name| SupplierName::new(name))
+                .and_then(|name| {
+                    if name.trim().is_empty() {
+                        None
+                    } else {
+                        Some(SupplierName::new(name))
+                    }
+                })
+                .transpose()?,
+            supply_name: query
+                .supply_name
+                .and_then(|name| {
+                    if name.trim().is_empty() {
+                        None
+                    } else {
+                        Some(SupplyName::new(name))
+                    }
+                })
                 .transpose()?,
         };
 
@@ -329,11 +375,23 @@ impl JournalUsecase for JournalService {
             period_end: query.period_end.map(|end| EntryDateTime::new(end)),
             supplier_name: query
                 .supplier_name
-                .map(|name| SupplierName::new(name))
+                .and_then(|name| {
+                    if name.trim().is_empty() {
+                        None
+                    } else {
+                        Some(SupplierName::new(name.trim()))
+                    }
+                })
                 .transpose()?,
             supply_name: query
                 .supply_name
-                .map(|name| SupplyName::new(name))
+                .and_then(|name| {
+                    if name.trim().is_empty() {
+                        None
+                    } else {
+                        Some(SupplyName::new(name.trim()))
+                    }
+                })
                 .transpose()?,
         };
 
@@ -466,19 +524,16 @@ impl JournalUsecase for JournalService {
 /// stocktaking usecase
 pub struct StocktakingService {
     supply_respository: Arc<dyn ForSupplyPersistence>,
-    supplier_repository: Arc<dyn ForSupplierPersistence>,
     stocktaking_respository: Arc<dyn ForStocktakingPersistence>,
 }
 
 impl StocktakingService {
     pub fn new(
         supply_respository: Arc<dyn ForSupplyPersistence>,
-        supplier_repository: Arc<dyn ForSupplierPersistence>,
         stocktaking_respository: Arc<dyn ForStocktakingPersistence>,
     ) -> Self {
         Self {
             supply_respository,
-            supplier_repository,
             stocktaking_respository,
         }
     }

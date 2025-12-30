@@ -19,6 +19,7 @@ pub struct GetSupplierQuery {
 #[derive(Debug, Clone)]
 pub struct FindSupplierQuery {
     pub supplier_name: Option<SupplierName>,
+    pub supply_name: Option<SupplyName>,
 }
 
 #[derive(Debug, Clone)]

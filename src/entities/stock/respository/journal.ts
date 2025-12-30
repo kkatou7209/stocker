@@ -33,7 +33,7 @@ class Repository {
 		entryDate: Date;
 		records: JournalRecord[];
 	}): Promise<Journal> => {
-		const registered = await this.api.journal.createJournal({
+		const registered = await this.api.journal.recordJournal({
 			entryDate: journal.entryDate.getTime(),
 			records: [...journal.records],
 		});

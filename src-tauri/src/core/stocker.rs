@@ -69,13 +69,8 @@ impl Stocker {
 
     pub fn stocktaking_usecase(&self) -> impl StocktakingUsecase {
         let supply_repository = Arc::clone(&self.supply_respository);
-        let supplier_repository = Arc::clone(&self.supplier_repository);
         let stocktaking_repository = Arc::clone(&self.stocktaking_repository);
 
-        StocktakingService::new(
-            supply_repository,
-            supplier_repository,
-            stocktaking_repository,
-        )
+        StocktakingService::new(supply_repository, stocktaking_repository)
     }
 }

@@ -80,6 +80,7 @@ pub struct GetSupplierQuery {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SearchSuppliersQuery {
     pub supplier_name: Option<String>,
+    pub supply_name: Option<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

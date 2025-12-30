@@ -158,12 +158,25 @@ impl ForSupplierPersistence for SqliteSupplierRepository {
         let mut statement = conn
             .prepare(
                 r"
+                WITH supplier_ids AS (
+                    SELECT
+                        supplier_id
+                    FROM supplies
+                    WHERE
+                        (:supply_name IS NULL OR name LIKE :supply_name)
+                )
                 SELECT
                     id,
                     name
                 FROM suppliers
                 WHERE
-                    (:name IS NULL OR name LIKE :name)
+                    (:supplier_name IS NULL OR name LIKE :supplier_name)
+                    AND
+                    (
+                        :supply_name IS NULL -- includes no supply suppliers if supply name not provided
+                        OR
+                        id IN (SELECT supplier_id FROM supplier_ids)
+                    )
                 ",
             )
             .map_err(|e| {
@@ -173,7 +186,8 @@ impl ForSupplierPersistence for SqliteSupplierRepository {
         let supplier_results = statement
             .query_map(
                 named_params! {
-                    ":name": query.supplier_name.and_then(|name| Some(format!("%{}%", name.to_string()))),
+                    ":supplier_name": query.supplier_name.and_then(|name| Some(format!("%{}%", name.to_string()))),
+                    ":supply_name": query.supply_name.and_then(|name| Some(format!("%{}%", name.to_string()))),
                 },
                 |row| {
                     let supplier = Supplier::restore(

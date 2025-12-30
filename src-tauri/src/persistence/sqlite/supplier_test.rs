@@ -59,6 +59,7 @@ fn supplier_repository_test() {
     let suppliers = repository
         .find(FindSupplierQuery {
             supplier_name: Some(SupplierName::new("A").unwrap()),
+            supply_name: None,
         })
         .unwrap();
 

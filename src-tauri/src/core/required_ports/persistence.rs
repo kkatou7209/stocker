@@ -8,6 +8,7 @@ pub trait ForSupplyPersistence {
     fn has(&self, supply_ids: &[SupplyId]) -> Result<bool>;
     fn list(&self) -> Result<Vec<Supply>>;
     fn get(&self, query: GetSupplyQuery) -> Result<Option<Supply>>;
+    fn get_of_supplier(&self, supplier_id: SupplierId) -> Result<Vec<Supply>>;
     fn find(&self, query: FindSuppliesQuery) -> Result<Vec<Supply>>;
     fn add(&self, supply: Supply) -> Result<()>;
     fn save(&self, supply: Supply) -> Result<()>;

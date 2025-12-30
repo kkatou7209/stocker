@@ -34,7 +34,7 @@ export const mockSupplierEndpoints: SupplierEndpoint = {
 		return fakeSuppliers.find((s) => s.id === id) ?? null;
 	},
 
-	createSupplier: async (command: AddSupplierCommand) => {
+	registerSupplier: async (command: AddSupplierCommand) => {
 		const data = AddSupplierCommand.parse(command);
 
 		fakeSuppliers.push({
@@ -140,7 +140,7 @@ export const mockJournalEndpoints: JournalEndpoints = {
 		);
 	},
 
-	createJournal: async (command) => {
+	recordJournal: async (command) => {
 		const journal: JournalData = {
 			id: nextJournalId(),
 			entryDate: command.entryDate,
@@ -219,7 +219,7 @@ export const mockStocktakingEndpoints: StocktakingEndpoints = {
 	getStocktakingById: async (id: string) =>
 		fakeStocktakings.find((s) => s.id === id) ?? null,
 
-	createStocktaking: async (command) => {
+	recordStocktaking: async (command) => {
 		const id = nextStocktakinglId();
 
 		const stocktaking: StocktakingData = {
