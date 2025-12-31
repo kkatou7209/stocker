@@ -2,7 +2,7 @@ use std::ops::{Add, Mul};
 
 use crate::core::{Error, Result};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct SupplierId {
     value: String,
 }
@@ -29,7 +29,7 @@ impl ToString for SupplierId {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct SupplierName {
     value: String,
 }
@@ -56,7 +56,7 @@ impl ToString for SupplierName {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct SupplyId {
     value: String,
 }
@@ -83,7 +83,7 @@ impl ToString for SupplyId {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct SupplyName {
     value: String,
 }
@@ -110,7 +110,7 @@ impl ToString for SupplyName {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct JournalId {
     value: String,
 }

@@ -31,14 +31,14 @@ export const tauriStocktakingEndpoint: StocktakingEndpoints = {
 	updateStocktaking: async (
 		command: UpdateStocktakingCommand,
 	): Promise<void> => {
-		await invoke('update_stocktaking', command);
+		await invoke('update_stocktaking', { command });
 	},
 	recordStocktaking: async (
 		command: AddStocktakingCommand,
 	): Promise<StocktakingData> => {
 		const stocktaking = await invoke<StocktakingData>(
 			'record_stocktaking',
-			command,
+			{ command },
 		);
 
 		const validated = StocktakingData.parse(stocktaking);
@@ -50,7 +50,7 @@ export const tauriStocktakingEndpoint: StocktakingEndpoints = {
 	): Promise<StocktakingData[]> => {
 		const stocktakings = await invoke<StocktakingData[]>(
 			'search_stocktakings',
-			query,
+			{ query },
 		);
 
 		const validated = z.array(StocktakingData).parse(stocktakings);

@@ -25,8 +25,12 @@ const StocktakingSheet: Component<{
 
         const index = records().findIndex(r => r.supplyId === value.supplyId);
 
-        if (index > 0) {
-            records()[index] = value;
+		console.log(index, value)
+
+        if (index >= 0) {
+			const rec = records();
+            rec[index] = value;
+			setRecords(rec);
             props.onChange?.(records());
         }
 
@@ -56,7 +60,7 @@ const StocktakingSheet: Component<{
 					fallback={
 						<tr>
 							<td class="text-center" colspan={5}>
-								データがりません
+								登録されている仕入品がありません。
 							</td>
 						</tr>
 					}
@@ -69,14 +73,19 @@ const StocktakingSheet: Component<{
 					)}
 				</For>
 			</tbody>
-            <tfoot>
-                <tr class='bg-base-300 rounded-none'>
-                    <td colspan={4}>合計</td>
-                    <td class='text-end'>
-                        {formatter.number.format(totalPrice())} 円
-                    </td>
-                </tr>
-            </tfoot>
+			<Show
+				when={records().length > 0}
+				fallback={''}
+			>
+				<tfoot>
+					<tr class='bg-base-300 rounded-none'>
+						<td colspan={4}>合計</td>
+						<td class='text-end'>
+							{formatter.number.format(totalPrice())} 円
+						</td>
+					</tr>
+				</tfoot>
+			</Show>
 		</table>
 	);
 };
@@ -94,6 +103,7 @@ const StocktakingRecordInput: Component<{
 	const [totalPrice, setTotalPrice] = createSignal(0);
 
 	createEffect(() => {
+
 		setTotalPrice(unitPrice() * quantity());
 
 		const record: StocktakingRecord = {

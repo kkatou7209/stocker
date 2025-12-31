@@ -54,10 +54,8 @@ impl ForSupplyPersistence for MockSupplyRepository {
         Ok(supplies.iter().cloned().collect())
     }
 
-    fn get(&self, query: GetSupplyQuery) -> Result<Option<Supply>> {
+    fn get(&self, id: SupplyId) -> Result<Option<Supply>> {
         let supplies = &self.storage.lock().unwrap().supplies;
-
-        let id = query.supply_id;
 
         for supply in supplies {
             if supply.id().eq(&id) {
@@ -170,9 +168,7 @@ impl ForSupplierPersistence for MockSupplierRepository {
         Ok(suppliers)
     }
 
-    fn get(&self, query: GetSupplierQuery) -> Result<Option<Supplier>> {
-        let id = query.supplier_id;
-
+    fn get(&self, id: SupplierId) -> Result<Option<Supplier>> {
         let supplier = self
             .storage
             .lock()
@@ -420,9 +416,7 @@ impl ForStocktakingPersistence for MockStocktakingRepository {
         Ok(stocktakings)
     }
 
-    fn get(&self, query: GetStocktakingQuery) -> Result<Option<Stocktaking>> {
-        let id = query.stocktaking_id;
-
+    fn get(&self, id: StocktakingId) -> Result<Option<Stocktaking>> {
         let stocktaking = self
             .storage
             .lock()

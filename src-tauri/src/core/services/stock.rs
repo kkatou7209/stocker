@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::sync::Arc;
 
 use crate::core::domain::entities::stock::{Journal, Stocktaking, Supplier, Supply};
@@ -28,9 +29,7 @@ impl SupplyUsecase for SupplyService {
     fn get(&self, query: provided_ports::GetSupplyQuery) -> Result<Option<SupplyDTO>> {
         let supply_id = SupplyId::new(query.supply_id.as_str())?;
 
-        let supply = self
-            .supply_repository
-            .get(required_ports::GetSupplyQuery { supply_id })?;
+        let supply = self.supply_repository.get(supply_id)?;
 
         if supply.is_none() {
             return Ok(None);
@@ -126,7 +125,7 @@ impl SupplyUsecase for SupplyService {
 
         let supplier = self
             .supplier_repository
-            .get(required_ports::GetSupplierQuery { supplier_id })?
+            .get(supplier_id)?
             .ok_or(Error::DomainError(format!("supplier does not exist.")))?;
 
         let supply = Supply::new(
@@ -151,14 +150,14 @@ impl SupplyUsecase for SupplyService {
 
         let mut supply = self
             .supply_repository
-            .get(required_ports::GetSupplyQuery { supply_id })?
+            .get(supply_id)?
             .ok_or(Error::DomainError(format!("supply does not exist.")))?;
 
         let supplier_id = SupplierId::new(commad.supplier_id)?;
 
         let supplier = self
             .supplier_repository
-            .get(required_ports::GetSupplierQuery { supplier_id })?
+            .get(supplier_id)?
             .ok_or(Error::DomainError(format!("supplier does not exist.")))?;
 
         supply.rename(SupplyName::new(commad.supply_name)?);
@@ -188,9 +187,7 @@ impl SupplierUsecase for SupplierService {
     fn get(&self, query: provided_ports::GetSupplierQuery) -> Result<Option<SupplierDTO>> {
         let supplier_id = SupplierId::new(query.supplier_id)?;
 
-        let supplier = self
-            .supplier_repository
-            .get(required_ports::GetSupplierQuery { supplier_id })?;
+        let supplier = self.supplier_repository.get(supplier_id)?;
 
         if supplier.is_none() {
             return Ok(None);
@@ -277,7 +274,7 @@ impl SupplierUsecase for SupplierService {
 
         let mut supplier = self
             .supplier_repository
-            .get(required_ports::GetSupplierQuery { supplier_id })?
+            .get(supplier_id)?
             .ok_or(Error::DomainError(format!("suppler does not exist.")))?;
 
         supplier.rename(SupplierName::new(command.supplier_name)?);
@@ -424,31 +421,31 @@ impl JournalUsecase for JournalService {
     fn record(&self, command: RecordJournalCommand) -> Result<JournalDTO> {
         let id = self.journal_respository.next_id()?;
 
-        let supply_ids: Vec<Result<SupplyId>> = command
+        let supply_ids: Vec<SupplyId> = command
             .records
             .iter()
             .map(|record| SupplyId::new(&record.supply_id))
-            .collect();
+            .collect::<Result<HashSet<SupplyId>>>()?
+            .into_iter()
+            .collect::<Vec<SupplyId>>();
 
-        let supply_ids: Result<Vec<SupplyId>> = supply_ids.into_iter().collect();
+        let supply_exists = self.supply_respository.has(&supply_ids)?;
 
-        let supply_ids = supply_ids?;
-
-        if !self.supply_respository.has(&supply_ids)? {
+        if !supply_exists {
             return Err(Error::DomainError(format!("supply does not exist.")));
         }
 
-        let supplier_ids: Vec<Result<SupplierId>> = command
+        let supplier_ids = command
             .records
             .iter()
             .map(|record| SupplierId::new(&record.supplier_id))
-            .collect();
+            .collect::<Result<HashSet<SupplierId>>>()?
+            .into_iter()
+            .collect::<Vec<SupplierId>>();
 
-        let supplier_ids: Result<Vec<SupplierId>> = supplier_ids.into_iter().collect();
+        let supplier_exists = self.supplier_repository.has(&supplier_ids)?;
 
-        let supplier_ids = supplier_ids?;
-
-        if !self.supplier_repository.has(&supplier_ids)? {
+        if !supplier_exists {
             return Err(Error::DomainError(format!("supplier does not exist.")));
         }
 
@@ -543,9 +540,7 @@ impl StocktakingUsecase for StocktakingService {
     fn get(&self, query: provided_ports::GetStocktakingQuery) -> Result<Option<StocktakingDTO>> {
         let stocktaking_id = StocktakingId::new(query.stocktaking_id)?;
 
-        let stocktaking = self
-            .stocktaking_respository
-            .get(required_ports::GetStocktakingQuery { stocktaking_id })?;
+        let stocktaking = self.stocktaking_respository.get(stocktaking_id)?;
 
         if stocktaking.is_none() {
             return Ok(None);
@@ -690,7 +685,7 @@ impl StocktakingUsecase for StocktakingService {
 
         let mut stocktaking = self
             .stocktaking_respository
-            .get(required_ports::GetStocktakingQuery { stocktaking_id })?
+            .get(stocktaking_id)?
             .ok_or(Error::DomainError(format!("stocktaking does not exist.")))?;
 
         let mut records: Vec<StocktakingRecord> = Vec::new();

@@ -23,8 +23,8 @@ export type AddStocktakingCommand = Omit<StocktakingData, 'id'>;
 export type UpdateStocktakingCommand = StocktakingData;
 
 export type StocktakingQuery = {
-	periodStart?: Date;
-	periodEnd?: Date;
+	periodStart?: number;
+	periodEnd?: number;
 };
 
 export interface StocktakingEndpoints {

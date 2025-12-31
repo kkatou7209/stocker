@@ -2,7 +2,7 @@ import { PackageOpenIcon } from 'lucide-solid';
 import * as luxon from 'luxon';
 import { type Component, createSignal, onMount } from 'solid-js';
 import { useApp } from '@/app/contexts/AppContext';
-import type { Stocktaking, StocktakingRecord } from '@/entities/stock/models/stocktaking';
+import type { StocktakingRecord } from '@/entities/stock/models/stocktaking';
 import type { Supply } from '@/entities/stock/models/supply';
 import { useStocktakingRepository } from '@/entities/stock/respository/stocktaking';
 import { useSupplyRepository } from '@/entities/stock/respository/supply';

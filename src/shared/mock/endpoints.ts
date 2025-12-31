@@ -169,13 +169,13 @@ export const mockJournalEndpoints: JournalEndpoints = {
 
 		if (query.periodEnd) {
 			journals = journals.filter(
-				(f) => f.entryDate <= (query.periodEnd?.getTime() as number),
+				(f) => f.entryDate <= (query.periodEnd as number),
 			);
 		}
 
 		if (query.periodStart) {
 			journals = journals.filter(
-				(f) => f.entryDate >= (query.periodStart?.getTime() as number),
+				(f) => f.entryDate >= (query.periodStart as number),
 			);
 		}
 
@@ -249,18 +249,18 @@ export const mockStocktakingEndpoints: StocktakingEndpoints = {
 		let stocktakings = [...fakeStocktakings];
 
 		if (query.periodStart) {
-			const periodStart = query.periodStart as Date;
+			const periodStart = query.periodStart;
 
 			stocktakings = stocktakings.filter(
-				(s) => periodStart.getTime() <= s.stocktakingDate,
+				(s) => periodStart <= s.stocktakingDate,
 			);
 		}
 
 		if (query.periodEnd) {
-			const periodEnd = query.periodEnd as Date;
+			const periodEnd = query.periodEnd;
 
 			stocktakings = stocktakings.filter(
-				(s) => s.stocktakingDate <= periodEnd.getTime(),
+				(s) => s.stocktakingDate <= periodEnd,
 			);
 		}
 

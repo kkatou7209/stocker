@@ -56,11 +56,7 @@ fn supply_repository_test() {
         ))
         .unwrap();
 
-    let supply = repository
-        .get(required_ports::GetSupplyQuery {
-            supply_id: SupplyId::new("1").unwrap(),
-        })
-        .unwrap();
+    let supply = repository.get(SupplyId::new("1").unwrap()).unwrap();
 
     assert!(supply.is_some_and(|supply| {
         assert_eq!(supply.id(), &SupplyId::new("1").unwrap());

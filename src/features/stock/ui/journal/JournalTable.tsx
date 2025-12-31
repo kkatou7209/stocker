@@ -1,11 +1,19 @@
-import { type Component, For } from 'solid-js';
+import { type Component, createEffect, createSignal, For } from 'solid-js';
 import type { JournalRecord } from '@/entities/stock/models/journal';
 import { useFormat } from '@/shared/lib/format';
 
 const JournalTable: Component<{ value?: JournalRecord[] }> = (props) => {
 	const formatter = useFormat('ja-JP');
 
+	const [totalPrice, setTotalPrice] = createSignal(0);
+
 	const records = () => props.value ?? [];
+
+	createEffect(() => {
+		const price = records().reduce((price, record) => price + (record.unitPrice * record.quantity), 0);
+
+		setTotalPrice(price);
+	})
 
 	return (
 		<table class="table text-nowrap table-pin-rows">
@@ -41,13 +49,22 @@ const JournalTable: Component<{ value?: JournalRecord[] }> = (props) => {
 								{record.unitName}
 							</td>
 							<td class="text-end">
-								{formatter.number.format(record.totalPrice)} 円
+								{formatter.number.format(record.unitPrice * record.quantity)} 円
 							</td>
 						</tr>
 					)}
 				</For>
 			</tbody>
-			<tfoot></tfoot>
+			<tfoot>
+				<tr>
+					<td colspan={4}>
+						合計
+					</td>
+					<td class='text-end'>
+						{formatter.number.format(totalPrice())} 円
+					</td>
+				</tr>
+			</tfoot>
 		</table>
 	);
 };

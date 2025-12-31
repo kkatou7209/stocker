@@ -98,11 +98,7 @@ fn stocktaking_repository_test() {
         ))
         .unwrap();
 
-    let stocktaking = repository
-        .get(required_ports::GetStocktakingQuery {
-            stocktaking_id: StocktakingId::new("1").unwrap(),
-        })
-        .unwrap();
+    let stocktaking = repository.get(StocktakingId::new("1").unwrap()).unwrap();
 
     assert!(stocktaking.is_some_and(|stocktaking| {
         assert_eq!(stocktaking.id(), &StocktakingId::new("1").unwrap());

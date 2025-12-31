@@ -59,7 +59,12 @@ class Repository {
 		supplierName?: string;
 		supplyName?: string;
 	}): Promise<Journal[]> => {
-		const journals = await this.api.journal.searchJournals(query);
+		const journals = await this.api.journal.searchJournals({
+			periodStart: query.periodStart?.getTime(),
+			periodEnd: query.periodEnd?.getTime(),
+			supplierName: query.supplierName,
+			supplyName: query.supplyName,
+		});
 
 		return journals.map((journal) => ({
 			...journal,

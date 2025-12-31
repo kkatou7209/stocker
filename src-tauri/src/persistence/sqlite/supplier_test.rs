@@ -36,11 +36,7 @@ fn supplier_repository_test() {
 
     assert!(has_supplies);
 
-    let supplier = repository
-        .get(required_ports::GetSupplierQuery {
-            supplier_id: SupplierId::new("1").unwrap(),
-        })
-        .unwrap();
+    let supplier = repository.get(SupplierId::new("1").unwrap()).unwrap();
 
     assert!(supplier.is_some_and(|supplier| {
         assert_eq!(supplier.id(), &SupplierId::new("1").unwrap());
@@ -76,11 +72,7 @@ fn supplier_repository_test() {
         ))
         .unwrap();
 
-    let supplier = repository
-        .get(required_ports::GetSupplierQuery {
-            supplier_id: SupplierId::new("1").unwrap(),
-        })
-        .unwrap();
+    let supplier = repository.get(SupplierId::new("1").unwrap()).unwrap();
 
     assert!(supplier.is_some_and(|supplier| {
         assert_eq!(supplier.id(), &SupplierId::new("1").unwrap());

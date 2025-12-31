@@ -32,7 +32,7 @@ impl ForJournalPersistence for SqliteJournalRepository {
                 r"
                 UPDATE journals_id_sequence
                 SET value = value + 1
-                WHERE name = 'jorunal_id'
+                WHERE name = 'journal_id'
                 RETURNING value
                 ",
                 [],
@@ -65,6 +65,7 @@ impl ForJournalPersistence for SqliteJournalRepository {
                 FROM journals
                 INNER JOIN journal_records
                     ON journal_records.journal_id = journals.id
+                ORDER BY journals.recorded_at ASC
                 ",
             )
             .map_err(|e| {
@@ -256,6 +257,7 @@ impl ForJournalPersistence for SqliteJournalRepository {
                     (:supply_name IS NULL OR journal_records.supply_name LIKE :supply_name)
                     AND
                     (:supplier_name IS NULL OR journal_records.supplier_name LIKE :supplier_name)
+                ORDER BY journals.recorded_at ASC
                 ",
             )
             .map_err(|e| {

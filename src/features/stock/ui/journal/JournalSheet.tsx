@@ -1,4 +1,4 @@
-import { type Component, createEffect, createSignal, onMount } from 'solid-js';
+import { type Component, createEffect, createSignal, For, onMount, Show } from 'solid-js';
 import type { JournalRecord } from '@/entities/stock/models/journal';
 import { useFormat } from '@/shared/lib/format';
 import NumberInput from '@/shared/ui/NumberInput';
@@ -32,7 +32,7 @@ const JournalSheet: Component<{
 			props.onChange?.(records());
 		}
 
-		const total = records().reduce((price, record) => price + record.totalPrice, 0);
+		const total = records().reduce((price, record) => price + (record.unitPrice * record.quantity), 0);
 
 		setTotalPrice(total);
 	}
@@ -71,30 +71,47 @@ const JournalSheet: Component<{
 				</tr>
 			</thead>
 			<tbody>
-				{
-					suppliers().map(supp => (
+				<For
+					each={suppliers()}
+					fallback={
+						<tr>
+							<td class="text-center" colspan={6}>
+								登録されている仕入品がありません。
+							</td>
+						</tr>
+					}
+				>
+					{(supp) => (
 						<>
 							<tr class='bg-base-200'>
 								<td colspan={6}>{supp.name}</td>
 							</tr>
-							{
-								supp.records.map(record =>
+							<For
+								each={supp.records}
+								fallback={''}
+							>
+								{(record) => (
 									<JournalRecordInput
 										value={record}
 										onChange={onChange}
 									/>
-								)
-							}
+								)}
+							</For>
 						</>
-					))
-				}
+					)}
+				</For>
 			</tbody>
-			<tfoot>
-				<tr class='rounded-none bg-base-300'>
-					<td colSpan={5}>合計</td>
-					<td class='text-end'>{formatter.number.format(totalPrice())} 円</td>
-				</tr>
-			</tfoot>
+			<Show
+				when={records().length > 0}
+				fallback={''}
+			>
+				<tfoot>
+					<tr class='rounded-none bg-base-300'>
+						<td colSpan={5}>合計</td>
+						<td class='text-end'>{formatter.number.format(totalPrice())} 円</td>
+					</tr>
+				</tfoot>
+			</Show>
 		</table>
 	);
 };
@@ -121,7 +138,6 @@ const JournalRecordInput: Component<{
 			supplyId: props.value.supplyId,
 			unitPrice: unitPrice(),
 			quantity: quantity(),
-			totalPrice: totalPrice(),
 		});
 	});
 
@@ -131,7 +147,8 @@ const JournalRecordInput: Component<{
 
 		setUnitPrice(record.unitPrice);
 		setQuantity(record.quantity);
-		setTotalPrice(record.totalPrice);
+
+		setTotalPrice(unitPrice() * quantity());
 	});
 
 	return (

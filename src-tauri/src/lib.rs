@@ -10,26 +10,24 @@ use crate::command::*;
 use crate::core::stocker::{Ports, Stocker};
 use crate::persistence::sqlite::*;
 
-const DB_NAME: &str = "app.db";
+const DB_NAME: &str = "stocker_1.0.0.db";
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
+            // database path
             let db_path = if tauri::is_dev() {
-                let current = env::current_dir()?;
-                let path = current.join("db");
-
-                if !path.exists() {
-                    fs::create_dir_all(&path)?;
-                }
-
-                path.join(DB_NAME)
+                env::current_dir()?.join("data")
             } else {
-                app.path().app_data_dir()?.join(DB_NAME)
+                app.path().app_data_dir()?.join("data")
             };
 
-            let db_path = db_path.as_path();
+            if !db_path.exists() {
+                fs::create_dir_all(&db_path)?;
+            }
+
+            let db_path = db_path.join(DB_NAME);
 
             migrate(db_path.to_string_lossy())?;
 

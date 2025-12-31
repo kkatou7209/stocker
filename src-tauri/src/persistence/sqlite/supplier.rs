@@ -12,6 +12,7 @@ use crate::core::required_ports::*;
 use crate::core::Error;
 use crate::core::Result;
 
+// supplier repository implementation of SQLite
 pub struct SqliteSupplierRepository {
     db_path: String,
 }
@@ -63,7 +64,7 @@ impl ForSupplierPersistence for SqliteSupplierRepository {
             })?;
 
         let count = statement
-            .query_one(
+            .query_row(
                 params_from_iter(supplier_ids.iter().map(|id| id.as_str())),
                 |r| r.get::<_, i64>(0),
             )
@@ -111,7 +112,7 @@ impl ForSupplierPersistence for SqliteSupplierRepository {
         Ok(suppliers)
     }
 
-    fn get(&self, query: required_ports::GetSupplierQuery) -> Result<Option<Supplier>> {
+    fn get(&self, id: SupplierId) -> Result<Option<Supplier>> {
         let conn = Connection::open(&self.db_path)
             .map_err(|e| Error::InfrastructureError(format!("fail to open connection: {}", e)))?;
 
@@ -132,7 +133,7 @@ impl ForSupplierPersistence for SqliteSupplierRepository {
         let supplier = statement
             .query_row(
                 named_params! {
-                    ":id": query.supplier_id.as_str(),
+                    ":id": id.as_str(),
                 },
                 |row| {
                     let supplier = Supplier::restore(
@@ -226,11 +227,14 @@ impl ForSupplierPersistence for SqliteSupplierRepository {
                     id,
                     name
                 ) VALUES (
-                    ?,
-                    ?
-                );
+                    :id,
+                    :name
+                )
                 ",
-                [supplier.id().as_str(), supplier.name().as_str()],
+                named_params! {
+                    ":id": supplier.id().as_str(),
+                    ":name": supplier.name().as_str(),
+                },
             )
             .map_err(|e| {
                 Error::InfrastructureError(format!("failed to insert new supplier: {}", e))

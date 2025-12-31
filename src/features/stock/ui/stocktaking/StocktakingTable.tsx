@@ -13,7 +13,7 @@ const StocktakingTable: Component<{
 
     onMount(() => {
 
-        const total = props.value.reduce((price, record) => price + record.totalPrice, 0);
+        const total = props.value.reduce((price, record) => price + (record.unitPrice * record.quantity), 0);
 
         setTotalPrice(total);
     });
@@ -43,7 +43,7 @@ const StocktakingTable: Component<{
 								{record.unitName}
 							</td>
 							<td class='text-end'>
-								{formatter.number.format(record.totalPrice)} 円
+								{formatter.number.format(record.unitPrice * record.quantity)} 円
 							</td>
 						</tr>
 					)}

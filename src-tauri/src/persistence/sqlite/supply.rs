@@ -47,6 +47,7 @@ impl ForSupplyPersistence for SqliteSupplyRepository {
     }
 
     fn has(&self, supply_ids: &[SupplyId]) -> Result<bool> {
+        println!("{:?}", supply_ids);
         let conn = Connection::open(&self.db_path)
             .map_err(|e| Error::InfrastructureError(format!("failed to open connection: {}", e)))?;
 
@@ -67,6 +68,8 @@ impl ForSupplyPersistence for SqliteSupplyRepository {
                 |r| r.get::<_, i64>(0),
             )
             .map_err(|e| Error::InfrastructureError(format!("failed to query: {}", e)))?;
+
+        println!("count: {}", count);
 
         Ok(count == supply_ids.len() as i64)
     }
@@ -114,10 +117,7 @@ impl ForSupplyPersistence for SqliteSupplyRepository {
         Ok(supplies)
     }
 
-    fn get(
-        &self,
-        query: GetSupplyQuery,
-    ) -> Result<Option<crate::core::domain::entities::stock::Supply>> {
+    fn get(&self, id: SupplyId) -> Result<Option<crate::core::domain::entities::stock::Supply>> {
         let conn = Connection::open(&self.db_path)
             .map_err(|e| Error::InfrastructureError(format!("failed to open connection: {}", e)))?;
 
@@ -140,7 +140,7 @@ impl ForSupplyPersistence for SqliteSupplyRepository {
         let supply = statement
             .query_row(
                 named_params! {
-                    ":id": query.supply_id.as_str()
+                    ":id": id.as_str()
                 },
                 |row| {
                     let supply = Supply::new(

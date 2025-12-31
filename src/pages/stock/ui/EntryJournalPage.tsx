@@ -12,6 +12,9 @@ import JournalSheet from '@/features/stock/ui/journal/JournalSheet';
 import Button from '@/shared/ui/Button';
 import DateInput from '@/shared/ui/DateInput';
 
+/**
+ * @summary page for entrying journal.
+ */
 const EntryJournalPage: Component = () => {
 
 	const app = useApp();
@@ -40,6 +43,8 @@ const EntryJournalPage: Component = () => {
 
 			return;
 		}
+
+		setId(null);
 
 		const suppliers = await supplierRepository.list();
 

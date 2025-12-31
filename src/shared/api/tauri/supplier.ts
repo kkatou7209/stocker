@@ -12,8 +12,6 @@ export const tauriSupplierEndpoint: SupplierEndpoint = {
 	listAllSuppliers: async (): Promise<SupplierData[]> => {
 		const suppliers = await invoke<SupplierData[]>('list_all_suppliers');
 
-		console.log(suppliers);
-
 		return suppliers;
 	},
 	getSupplierById: async (id: string): Promise<SupplierData | null> => {

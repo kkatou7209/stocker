@@ -247,7 +247,7 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
         Ok(stocktakings)
     }
 
-    fn get(&self, query: GetStocktakingQuery) -> Result<Option<Stocktaking>> {
+    fn get(&self, id: StocktakingId) -> Result<Option<Stocktaking>> {
         let conn = Connection::open(&self.db_path)
             .map_err(|e| Error::InfrastructureError(format!("failed to open connection: {}", e)))?;
 
@@ -276,7 +276,7 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
         let mut stocktaking = statement
             .query_row(
                 named_params! {
-                    ":id": query.stocktaking_id.as_str(),
+                    ":id": id.as_str(),
                 },
                 |row| {
                     let stocktaking = Stocktaking::restore(
@@ -294,7 +294,7 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
         let stocktaking_records = statement
             .query_map(
                 named_params! {
-                    ":id": query.stocktaking_id.as_str(),
+                    ":id": id.as_str(),
                 },
                 |row| {
                     let stocktaking_record = StocktakingRecord::new(

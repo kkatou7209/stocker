@@ -26,7 +26,7 @@ pub struct StocktakingRecordData {
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RecordStocktakingCommand {
-    stocktaking_data: i64,
+    stocktaking_date: i64,
     records: Vec<StocktakingRecordData>,
 }
 
@@ -34,7 +34,7 @@ pub struct RecordStocktakingCommand {
 #[serde(rename_all = "camelCase")]
 pub struct UpdateStocktakingCommand {
     id: String,
-    stocktaking_data: i64,
+    stocktaking_date: i64,
     records: Vec<StocktakingRecordData>,
 }
 
@@ -113,7 +113,7 @@ pub fn record_stocktaking(
     let stocktaking = app
         .stocktaking_usecase()
         .record(provided_ports::RecordStocktakingCommand {
-            stocktaken_date: command.stocktaking_data,
+            stocktaken_date: command.stocktaking_date,
             records: command
                 .records
                 .into_iter()
@@ -155,7 +155,7 @@ pub fn update_stocktaking(
     app.stocktaking_usecase()
         .edit(provided_ports::EditStocktakingCommand {
             stocktaking_id: command.id,
-            stocktaken_date: command.stocktaking_data,
+            stocktaken_date: command.stocktaking_date,
             records: command
                 .records
                 .into_iter()

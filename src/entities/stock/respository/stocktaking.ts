@@ -57,8 +57,10 @@ class Repository {
 		periodStart?: Date;
 		periodEnd?: Date;
 	}): Promise<Stocktaking[]> => {
-		const stocktakings =
-			await this.api.stocktaking.searchStocktakings(query);
+		const stocktakings = await this.api.stocktaking.searchStocktakings({
+			periodStart: query.periodStart?.getTime(),
+			periodEnd: query.periodEnd?.getTime(),
+		});
 
 		return stocktakings.map((stocktaking) => ({
 			...stocktaking,
