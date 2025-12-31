@@ -1,4 +1,4 @@
-use chrono::{DateTime, Datelike, NaiveDate};
+use chrono::{DateTime, Datelike, Local, NaiveDate, TimeZone};
 use serde::{Deserialize, Serialize};
 
 use crate::core::provided_ports::{
@@ -162,19 +162,27 @@ pub fn get_journal_at(
     app: tauri::State<Stocker>,
     date: i64,
 ) -> Result<Option<JournalData>, String> {
-    let date = DateTime::from_timestamp_millis(date).unwrap();
+    let date = Local.timestamp_millis_opt(date).unwrap();
 
-    let date = NaiveDate::from_ymd_opt(date.year(), date.month(), date.day()).unwrap();
+    let start = date.date_naive().and_hms_milli_opt(0, 0, 0, 0).unwrap();
 
-    let start = date.and_hms_milli_opt(0, 0, 0, 0).unwrap();
+    let start = Local
+        .from_local_datetime(&start)
+        .unwrap()
+        .timestamp_millis();
 
-    let end = date.and_hms_milli_opt(23, 59, 59, 999).unwrap();
+    let end = date
+        .date_naive()
+        .and_hms_milli_opt(23, 59, 59, 999)
+        .unwrap();
+
+    let end = Local.from_local_datetime(&end).unwrap().timestamp_millis();
 
     let journals = app
         .journal_usecase()
         .search(SearchJournalsQuery {
-            period_start: Some(start.and_utc().timestamp_millis()),
-            period_end: Some(end.and_utc().timestamp_millis()),
+            period_start: Some(start),
+            period_end: Some(end),
             supplier_name: None,
             supply_name: None,
         })

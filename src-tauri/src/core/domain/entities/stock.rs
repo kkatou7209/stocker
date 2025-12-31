@@ -1,6 +1,8 @@
+use std::hash::Hash;
+
 use crate::core::domain::values::stock::*;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq)]
 pub struct Supply {
     id: SupplyId,
     name: SupplyName,
@@ -58,7 +60,13 @@ impl PartialEq for Supply {
     }
 }
 
-#[derive(Debug, Clone)]
+impl Hash for Supply {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.id.hash(state);
+    }
+}
+
+#[derive(Debug, Clone, Eq)]
 pub struct Supplier {
     id: SupplierId,
     name: SupplierName,
@@ -88,7 +96,13 @@ impl PartialEq for Supplier {
     }
 }
 
-#[derive(Debug, Clone)]
+impl Hash for Supplier {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.id.hash(state);
+    }
+}
+
+#[derive(Debug, Clone, Eq)]
 pub struct Journal {
     id: JournalId,
     entry_datetime: EntryDateTime,
@@ -131,7 +145,13 @@ impl PartialEq for Journal {
     }
 }
 
-#[derive(Debug, Clone)]
+impl Hash for Journal {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.id.hash(state);
+    }
+}
+
+#[derive(Debug, Clone, Eq)]
 pub struct Stocktaking {
     id: StocktakingId,
     stocktaken_datetime: StocktakenDateTime,
@@ -171,5 +191,11 @@ impl Stocktaking {
 impl PartialEq for Stocktaking {
     fn eq(&self, other: &Self) -> bool {
         self.id == other.id
+    }
+}
+
+impl Hash for Stocktaking {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.id.hash(state);
     }
 }

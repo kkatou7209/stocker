@@ -67,6 +67,7 @@ pub fn run() {
             // stocktaking commands
             list_all_stocktakings,
             get_stocktaking_by_id,
+            get_stocktaking_at,
             record_stocktaking,
             update_stocktaking,
             search_stocktakings,

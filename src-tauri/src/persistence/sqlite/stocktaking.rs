@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+use std::hash::Hash;
 use std::path::Path;
 
 use rusqlite::named_params;
@@ -85,7 +87,9 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                     Error::InfrastructureError(format!("failed to convert rows: {}", e))
                 })
             })
-            .collect::<Result<Vec<Stocktaking>>>()?;
+            .collect::<Result<HashSet<Stocktaking>>>()?
+            .into_iter()
+            .collect::<Vec<Stocktaking>>();
 
         let stocktaking_records = statement
             .query_map([], |row| {
@@ -187,7 +191,9 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                     Error::InfrastructureError(format!("failed to convert rows: {}", e))
                 })
             })
-            .collect::<Result<Vec<Stocktaking>>>()?;
+            .collect::<Result<HashSet<Stocktaking>>>()?
+            .into_iter()
+            .collect::<Vec<Stocktaking>>();
 
         let stocktaking_records = statement
             .query_map(

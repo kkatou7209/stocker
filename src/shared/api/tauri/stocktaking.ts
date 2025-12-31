@@ -57,4 +57,12 @@ export const tauriStocktakingEndpoint: StocktakingEndpoints = {
 
 		return validated;
 	},
+	getStocktakingAt: async (date: number): Promise<StocktakingData | null> => {
+		const stocktaking = await invoke<StocktakingData | null>(
+			'get_stocktaking_at',
+			{ date },
+		);
+
+		return stocktaking;
+	},
 };

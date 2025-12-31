@@ -3,7 +3,7 @@
  */
 import * as luxon from 'luxon';
 import { type Component, createSignal, onMount } from 'solid-js';
-import type { Journal, JournalRecord } from '@/entities/stock/models/journal';
+import type { Journal } from '@/entities/stock/models/journal';
 import { useJournalepository } from '@/entities/stock/respository/journal';
 import JournalCalendar from '@/features/stock/ui/journal/JournalCalendar';
 import JournalTable from '@/features/stock/ui/journal/JournalTable';

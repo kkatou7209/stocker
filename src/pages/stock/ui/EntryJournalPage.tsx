@@ -21,7 +21,15 @@ const EntryJournalPage: Component = () => {
 	const supplierRepository = useSupplierRespository();
 	const journalRepository = useJournalepository();
 
-	const [id, setId] = createSignal<string | null>(null);
+	const isNewJournal = () => {
+		const id = journalId();
+
+		if (!id) return true;
+
+		return id.trim().length === 0;
+	}
+
+	const [journalId, setJournalId] = createSignal<string | null>(null);
 
 	const [entryDate, setEntryDate] = createSignal(
 		luxon.DateTime.now().toJSDate(),
@@ -37,14 +45,14 @@ const EntryJournalPage: Component = () => {
 
 		if (journal) {
 
-			setId(journal.id);
+			setJournalId(journal.id);
 	
 			setRecords(journal.records);
 
 			return;
 		}
 
-		setId(null);
+		setJournalId(null);
 
 		const suppliers = await supplierRepository.list();
 
@@ -77,21 +85,21 @@ const EntryJournalPage: Component = () => {
 			records: [...records()],
 		});
 
-		setId(journal.id);
+		setJournalId(journal.id);
 
 		app.toastInfo('登録しました。');
 	};
 
 	const edit = async () => {
 
-		const journalId = id();
+		const id = journalId();
 
-		if (!journalId) return;
+		if (!id) return;
 
 		const date = entryDate();
 
 		await journalRepository.edit({
-			id: journalId,
+			id,
 			entryDate: date,
 			records: [...records()],
 		});
@@ -102,7 +110,7 @@ const EntryJournalPage: Component = () => {
 	const onDateChange = async (date: Date | null) => {
 
 		if (!date) {
-			setId(null);
+			setJournalId(null);
 			setRecords([]);
 			return;
 		}
@@ -125,7 +133,7 @@ const EntryJournalPage: Component = () => {
 					value={entryDate()}
 					onChange={onDateChange}
 				/>
-				<Button onClick={() => id() ? edit() : add()}>
+				<Button onClick={() => isNewJournal() ? add() : edit()}>
 					<FilePenLineIcon class="size-4" />
 					<span>登録</span>
 				</Button>
@@ -133,7 +141,6 @@ const EntryJournalPage: Component = () => {
 			<section class="max-h-[70vh] overflow-auto">
 				<JournalSheet value={records()} onChange={setRecords}/>
 			</section>
-
 		</article>
 	);
 };

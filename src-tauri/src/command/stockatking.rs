@@ -1,3 +1,4 @@
+use chrono::{DateTime, Datelike, Local, NaiveDate, TimeZone};
 use serde::{Deserialize, Serialize};
 
 use crate::core::provided_ports::{
@@ -206,4 +207,57 @@ pub fn search_stocktakings(
         .collect::<Vec<StocktakingData>>();
 
     Ok(stocktakings)
+}
+
+#[tauri::command]
+pub fn get_stocktaking_at(
+    app: tauri::State<Stocker>,
+    date: i64,
+) -> Result<Option<StocktakingData>, String> {
+    println!("timestamp: {}", date);
+    let date = Local.timestamp_millis_opt(date).unwrap();
+
+    let start = date.date_naive().and_hms_milli_opt(0, 0, 0, 0).unwrap();
+
+    let start = Local
+        .from_local_datetime(&start)
+        .unwrap()
+        .timestamp_millis();
+
+    let end = date
+        .date_naive()
+        .and_hms_milli_opt(23, 59, 59, 999)
+        .unwrap();
+
+    let end = Local.from_local_datetime(&end).unwrap().timestamp_millis();
+
+    println!("start: {}, end: {}", start, end);
+
+    let stocktakings = app
+        .stocktaking_usecase()
+        .search(SearchStocktakingQuery {
+            period_start: Some(start),
+            period_end: Some(end),
+        })
+        .map_err(|e| e.to_string())?;
+
+    let stocktaking = stocktakings.first().cloned().and_then(|stocktaking| {
+        Some(StocktakingData {
+            id: stocktaking.id,
+            stocktaking_date: stocktaking.stocktaken_date,
+            records: stocktaking
+                .records
+                .into_iter()
+                .map(|record| StocktakingRecordData {
+                    supply_id: record.supply_id,
+                    supply_name: record.supply_name,
+                    unit_name: record.unit_name,
+                    unit_price: record.unit_price,
+                    quantity: record.quantity,
+                })
+                .collect::<Vec<StocktakingRecordData>>(),
+        })
+    });
+
+    Ok(stocktaking)
 }

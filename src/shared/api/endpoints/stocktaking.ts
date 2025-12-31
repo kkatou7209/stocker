@@ -37,6 +37,10 @@ export interface StocktakingEndpoints {
 	 */
 	getStocktakingById: (id: string) => Promise<StocktakingData | null>;
 	/**
+	 * get a stocktaking date of specified date
+	 */
+	getStocktakingAt: (date: number) => Promise<StocktakingData | null>;
+	/**
 	 * update a stocktaking data
 	 */
 	updateStocktaking: (command: UpdateStocktakingCommand) => Promise<void>;

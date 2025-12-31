@@ -18,7 +18,17 @@ const StocktakingPage: Component = () => {
 
 	app.setPageTitle('棚卸');
 
-	const [stocktakingDate, setStocktakingDate] = createSignal(
+	const isNewStocktaking = (): boolean => {
+		const id = stocktakingId();
+
+		if (!id) return true;
+
+		return id.trim().length === 0;
+	}
+
+	const [stocktakingId, setStocktakingId] = createSignal<string | null>(null);
+
+	const [stocktakingDate, setStocktakingDate] = createSignal<Date | null>(
 		luxon.DateTime.now().toJSDate(),
 	);
 
@@ -26,17 +36,9 @@ const StocktakingPage: Component = () => {
 		StocktakingRecord[]
 	>([]);
 
-	const add = async () => {
+	const reload = async () => {
 
-		await stocktakingRepository.add({
-			stocktakingDate: stocktakingDate(),
-			records: [...stocktakingRecords()],
-		});
-
-		app.toastInfo('登録しました。');
-	}
-
-	onMount(async () => {
+		setStocktakingId(null);
 
 		const supplies: Supply[] = await supplyRepository.list();
 
@@ -47,11 +49,81 @@ const StocktakingPage: Component = () => {
 				unitName: supply.unitName,
 				unitPrice: 0,
 				quantity: 0,
-				totalPrice: 0,
 			} as StocktakingRecord;
 		});
 
 		setStocktakingRecords(records);
+
+		const date = stocktakingDate();
+
+		if (!date) return;
+
+		const stocktaking = await stocktakingRepository.getAt(date);
+
+		if (!stocktaking) return;
+
+		setStocktakingId(stocktaking.id);
+
+		for (const [i, record] of records.entries()) {
+
+			const registered = stocktaking.records.find(r => r.supplyId === record.supplyId);
+
+			if (!registered) {
+				records.splice(i, 0, record);
+				continue;
+			}
+
+			record.supplyName = registered.supplyName;
+			record.unitName = registered.unitName;
+			record.unitPrice = registered.unitPrice;
+			record.quantity = registered.quantity;
+		}
+
+		setStocktakingRecords([...records]);
+	}
+
+	const add = async () => {
+
+		const date = stocktakingDate();
+
+		if (!date) return;
+
+		const stocktaking = await stocktakingRepository.add({
+			stocktakingDate: date,
+			records: [...stocktakingRecords()],
+		});
+
+		setStocktakingId(stocktaking.id);
+
+		app.toastInfo('登録しました。');
+	}
+
+	const edit = async () => {
+
+		const date = stocktakingDate();
+		const id = stocktakingId();
+
+		if (!date || !id || id.trim().length === 0) return;
+
+		await stocktakingRepository.edit({
+			id,
+			stocktakingDate: date,
+			records: [...stocktakingRecords()],
+		});
+
+		app.toastInfo('更新しました。');
+	}
+
+	const onDateChange = async (date: Date | null) => {
+
+		setStocktakingDate(date);
+
+		await reload();
+	}
+
+	onMount(async () => {
+
+		await reload();
 	});
 
 	return (
@@ -60,9 +132,9 @@ const StocktakingPage: Component = () => {
 				<DateInput
 					label="棚卸日"
 					value={stocktakingDate()}
-					onChange={setStocktakingDate}
+					onChange={onDateChange}
 				/>
-				<Button onClick={add}>
+				<Button onClick={() => isNewStocktaking() ? add() : edit()}>
 					<PackageOpenIcon class="size-4" />
 					<span>登録</span>
 				</Button>

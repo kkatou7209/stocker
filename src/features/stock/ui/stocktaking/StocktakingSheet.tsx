@@ -3,6 +3,7 @@ import {
 	createEffect,
 	createSignal,
 	For,
+	on,
 	onMount,
 	Show,
 } from 'solid-js';
@@ -24,8 +25,6 @@ const StocktakingSheet: Component<{
 	const onChange = (value: StocktakingRecord) => {
 
         const index = records().findIndex(r => r.supplyId === value.supplyId);
-
-		console.log(index, value)
 
         if (index >= 0) {
 			const rec = records();
@@ -102,25 +101,29 @@ const StocktakingRecordInput: Component<{
 
 	const [totalPrice, setTotalPrice] = createSignal(0);
 
-	createEffect(() => {
+	createEffect(
+		on([unitPrice, quantity], () => {
 
-		setTotalPrice(unitPrice() * quantity());
+			setTotalPrice(unitPrice() * quantity());
 
-		const record: StocktakingRecord = {
-			supplyId: props.value.supplyId,
-			supplyName: props.value.supplyName,
-			unitName: props.value.unitName,
-			unitPrice: unitPrice(),
-			quantity: quantity(),
-		};
+			const record: StocktakingRecord = {
+				supplyId: props.value.supplyId,
+				supplyName: props.value.supplyName,
+				unitName: props.value.unitName,
+				unitPrice: unitPrice(),
+				quantity: quantity(),
+			};
 
-		props.onChange?.(record);
-	});
+			props.onChange?.(record);
+		})
+	)
 
-	onMount(() => {
-		setQuantity(props.value.quantity);
-		setUnitPrice(props.value.unitPrice);
-	});
+	createEffect(
+		on(() => [props.value.unitPrice, props.value.quantity], () => {
+			setUnitPrice(props.value.unitPrice);
+			setQuantity(props.value.quantity);
+		}),
+	)
 
 	return (
 		<tr>

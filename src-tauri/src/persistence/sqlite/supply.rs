@@ -47,7 +47,6 @@ impl ForSupplyPersistence for SqliteSupplyRepository {
     }
 
     fn has(&self, supply_ids: &[SupplyId]) -> Result<bool> {
-        println!("{:?}", supply_ids);
         let conn = Connection::open(&self.db_path)
             .map_err(|e| Error::InfrastructureError(format!("failed to open connection: {}", e)))?;
 
@@ -68,8 +67,6 @@ impl ForSupplyPersistence for SqliteSupplyRepository {
                 |r| r.get::<_, i64>(0),
             )
             .map_err(|e| Error::InfrastructureError(format!("failed to query: {}", e)))?;
-
-        println!("count: {}", count);
 
         Ok(count == supply_ids.len() as i64)
     }

@@ -116,15 +116,11 @@ impl StocktakingUsecase for StocktakingService {
     fn record(&self, command: RecordStocktakingCommand) -> Result<StocktakingDTO> {
         let id = self.stocktaking_respository.next_id()?;
 
-        let supply_ids: Vec<Result<SupplyId>> = command
+        let supply_ids = command
             .records
             .iter()
             .map(|record| SupplyId::new(&record.supply_id))
-            .collect();
-
-        let supply_ids: Result<Vec<SupplyId>> = supply_ids.into_iter().collect();
-
-        let supply_ids = supply_ids?;
+            .collect::<Result<Vec<SupplyId>>>()?;
 
         if !self.supply_respository.has(&supply_ids)? {
             return Err(Error::DomainError(format!("supply does not exist.")));

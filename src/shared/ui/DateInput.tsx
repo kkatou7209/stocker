@@ -28,6 +28,7 @@ const DateInput: Component<{
 		}
 
 		props.onChange?.(date.toJSDate());
+
 		setDateString(date.toFormat('yyyy年M月d日'));
 	};
 

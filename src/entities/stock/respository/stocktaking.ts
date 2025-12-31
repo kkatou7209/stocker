@@ -27,6 +27,19 @@ class Repository {
 		};
 	};
 
+	public getAt = async (date: Date): Promise<Stocktaking | null> => {
+		const stocktaking = await this.api.stocktaking.getStocktakingAt(
+			date.getTime(),
+		);
+
+		if (!stocktaking) return null;
+
+		return {
+			...stocktaking,
+			stocktakingDate: new Date(stocktaking.stocktakingDate),
+		};
+	};
+
 	public add = async (stocktaking: {
 		stocktakingDate: Date;
 		records: StocktakingRecord[];

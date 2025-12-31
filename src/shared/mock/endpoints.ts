@@ -266,4 +266,36 @@ export const mockStocktakingEndpoints: StocktakingEndpoints = {
 
 		return stocktakings;
 	},
+	getStocktakingAt: async (date: number): Promise<StocktakingData | null> => {
+		const d = new Date(date);
+
+		const start = Date.UTC(
+			d.getFullYear(),
+			d.getMonth(),
+			d.getDate(),
+			0,
+			0,
+			0,
+			0,
+		);
+
+		const end = Date.UTC(
+			d.getFullYear(),
+			d.getMonth(),
+			d.getDate(),
+			23,
+			59,
+			59,
+			999,
+		);
+
+		return (
+			fakeStocktakings.find((stocktaking) => {
+				return (
+					start <= stocktaking.stocktakingDate &&
+					stocktaking.stocktakingDate <= end
+				);
+			}) ?? null
+		);
+	},
 };
