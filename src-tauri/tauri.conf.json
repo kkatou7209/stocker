@@ -22,6 +22,7 @@
     }
   },
   "bundle": {
+    "createUpdaterArtifacts": true,
     "active": true,
     "targets": ["msi", "nsis"],
     "icon": [
@@ -34,6 +35,16 @@
     "windows": {
       "wix": {
         "language": "ja-JP"
+      }
+    }
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "https://github.com/kkatou7209/stocker/releases/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "quiet"
       }
     }
   }
