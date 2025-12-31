@@ -52,12 +52,6 @@ pub struct GetSupplyQuery {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub struct SearchSuppliesQuery {
-    pub supply_name: Option<String>,
-    pub supplier_name: Option<String>,
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct CreateSupplyCommand {
     pub supply_name: String,
     pub unit_name: String,

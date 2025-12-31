@@ -16,8 +16,6 @@ mod journal_test;
 #[cfg(test)]
 mod stocktaking_test;
 
-use std::num::TryFromIntError;
-
 pub use jorunal::*;
 pub use migration::*;
 pub use stocktaking::*;

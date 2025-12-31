@@ -1,5 +1,3 @@
-use std::ops::{Add, Mul};
-
 use crate::core::{Error, Result};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
@@ -280,23 +278,6 @@ impl PurchaseQuantity {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct PurchasePrice {
-    value: u32,
-}
-
-impl PurchasePrice {
-    pub fn new(value: impl Into<u32>) -> Result<Self> {
-        let value = value.into();
-
-        return Ok(Self { value });
-    }
-
-    pub fn as_u32(&self) -> u32 {
-        self.value
-    }
-}
-
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct StocktakingId {
     value: String,
@@ -371,27 +352,6 @@ impl StocktakingUnitPrice {
     }
 
     pub fn as_u32(&self) -> u32 {
-        self.value
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct StocktakingPrice {
-    value: u32,
-}
-
-impl StocktakingPrice {
-    pub fn new(value: impl Into<u32>) -> Result<Self> {
-        let value = value.into();
-
-        if value <= 0 {
-            return Err(Error::DomainError(format!("price must be greater than 0")));
-        }
-
-        return Ok(Self { value });
-    }
-
-    pub fn as_f64(&self) -> u32 {
         self.value
     }
 }

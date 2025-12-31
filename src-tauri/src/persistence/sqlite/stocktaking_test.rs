@@ -4,12 +4,9 @@ use std::path::Path;
 use scopeguard::defer;
 
 use crate::core::domain::entities::stock::Stocktaking;
-use crate::core::domain::values::stock::{
-    StocktakenDateTime, StocktakingId, StocktakingQuantity, StocktakingRecord,
-    StocktakingUnitPrice, SupplyId, SupplyName, UnitName,
-};
-use crate::core::required_ports::{self, FindStocktakingsQuery, ForStocktakingPersistence};
-use crate::persistence::sqlite::{migrate, SqliteStocktakingRepository};
+use crate::core::domain::values::stock::*;
+use crate::core::required_ports::*;
+use crate::persistence::sqlite::*;
 
 #[test]
 fn stocktaking_repository_test() {

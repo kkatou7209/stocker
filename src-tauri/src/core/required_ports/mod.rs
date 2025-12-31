@@ -1,6 +1,8 @@
 mod dto;
-pub mod mock;
 mod persistence;
+
+#[cfg(test)]
+pub mod mock;
 
 pub use dto::*;
 pub use persistence::*;

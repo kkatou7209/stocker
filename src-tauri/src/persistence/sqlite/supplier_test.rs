@@ -1,11 +1,11 @@
-use std::fs::{self, File};
+use std::fs::{self};
 use std::path::Path;
 
 use scopeguard::defer;
 
 use crate::core::domain::entities::stock::Supplier;
-use crate::core::domain::values::stock::{SupplierId, SupplierName};
-use crate::core::required_ports::{self, FindSupplierQuery, ForSupplierPersistence};
+use crate::core::domain::values::stock::*;
+use crate::core::required_ports::*;
 use crate::persistence::sqlite::{migrate, SqliteSupplierRepository};
 
 #[test]

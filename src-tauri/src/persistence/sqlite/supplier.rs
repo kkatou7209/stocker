@@ -7,7 +7,6 @@ use rusqlite::OptionalExtension;
 
 use crate::core::domain::entities::stock::*;
 use crate::core::domain::values::stock::*;
-use crate::core::required_ports;
 use crate::core::required_ports::*;
 use crate::core::Error;
 use crate::core::Result;

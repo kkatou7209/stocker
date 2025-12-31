@@ -1,8 +1,6 @@
 use std::sync::Arc;
-use std::sync::LazyLock;
 use std::sync::Mutex;
 
-use crate::core::domain::entities::stock;
 use crate::core::domain::entities::stock::*;
 use crate::core::domain::values::stock::*;
 use crate::core::required_ports::*;
@@ -74,35 +72,6 @@ impl ForSupplyPersistence for MockSupplyRepository {
             .filter(|supply| supply.supplier_id().eq(&supplier_id))
             .cloned()
             .collect();
-
-        Ok(supplies)
-    }
-
-    fn find(&self, query: FindSuppliesQuery) -> Result<Vec<Supply>> {
-        let storage = self.storage.lock().unwrap();
-        let mut supplies: Vec<&Supply> = storage.supplies.iter().collect();
-
-        let supply_name = query.supply_name;
-
-        if let Some(name) = supply_name {
-            supplies.retain(|supply| supply.name().as_str().contains(name.as_str()));
-        }
-
-        let supplier_name = query.supplier_name;
-
-        if let Some(name) = supplier_name {
-            let mut suppliers: Vec<&Supplier> = storage.suppliers.iter().collect();
-
-            suppliers.retain(|supplier| supplier.name().as_str().contains(name.as_str()));
-
-            supplies.retain(|supply| {
-                suppliers
-                    .iter()
-                    .any(|supplier| supplier.id().eq(supply.supplier_id()))
-            });
-        }
-
-        let supplies: Vec<Supply> = supplies.into_iter().cloned().collect();
 
         Ok(supplies)
     }

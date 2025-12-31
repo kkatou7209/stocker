@@ -79,45 +79,6 @@ impl SupplyUsecase for SupplyService {
         Ok(supplies)
     }
 
-    fn search(&self, query: SearchSuppliesQuery) -> Result<Vec<SupplyDTO>> {
-        let query = FindSuppliesQuery {
-            supply_name: query
-                .supply_name
-                .and_then(|name| {
-                    if name.trim().is_empty() {
-                        None
-                    } else {
-                        Some(SupplyName::new(name.trim()))
-                    }
-                })
-                .transpose()?,
-            supplier_name: query
-                .supplier_name
-                .and_then(|name| {
-                    if name.trim().is_empty() {
-                        None
-                    } else {
-                        Some(SupplierName::new(name.trim()))
-                    }
-                })
-                .transpose()?,
-        };
-
-        let supplies = self.supply_repository.find(query)?;
-
-        let supplies: Vec<SupplyDTO> = supplies
-            .iter()
-            .map(|supply| SupplyDTO {
-                id: supply.id().to_string(),
-                name: supply.name().to_string(),
-                unit_name: supply.unit_name().to_string(),
-                supplier_id: supply.supplier_id().to_string(),
-            })
-            .collect();
-
-        Ok(supplies)
-    }
-
     fn register(&self, command: CreateSupplyCommand) -> Result<SupplyDTO> {
         let id = self.supply_repository.next_id()?;
 

@@ -206,61 +206,6 @@ impl ForSupplyPersistence for SqliteSupplyRepository {
         Ok(supplies)
     }
 
-    fn find(&self, query: FindSuppliesQuery) -> Result<Vec<Supply>> {
-        let conn = Connection::open(&self.db_path)
-            .map_err(|e| Error::InfrastructureError(format!("failed to open connection: {}", e)))?;
-
-        let mut statement = conn
-            .prepare(
-                r"
-                SELECT
-                    supplies.id,
-                    supplies.name,
-                    supplies.unit_name,
-                    supplies.supplier_id
-                FROM supplies
-                INNER JOIN suppliers
-                    ON suppliers.id = supplies.supplier_id
-                WHERE
-                    (:supply_name IS NULL OR supplies.name LIKE :supply_name)
-                    AND
-                    (:supplier_name IS NULL OR suppliers.name LIKE :supplier_name)
-                ",
-            )
-            .map_err(|e| {
-                Error::InfrastructureError(format!("failed to prepare statement: {}", e))
-            })?;
-
-        let supply_results = statement
-            .query_map(
-                named_params! {
-                    ":supply_name": query.supply_name.and_then(|name| Some(format!("%{}%", name.as_str()))),
-                    ":supplier_name": query.supplier_name.and_then(|name| Some(format!("%{}%", name.as_str()))),
-                },
-                |row| {
-                    let supply = Supply::new(
-                        SupplyId::new(row.get::<_, i64>(0)?.to_string())?,
-                        SupplyName::new(row.get::<_, String>(1)?)?,
-                        UnitName::new(row.get::<_, String>(2)?)?,
-                        SupplierId::new(row.get::<_, i64>(1)?.to_string())?,
-                    );
-
-                    Ok(supply)
-                },
-            )
-            .map_err(|e| Error::InfrastructureError(format!("failed to query: {}", e)))?;
-
-        let supplies = supply_results
-            .map(|supply| {
-                supply.map_err(|e| {
-                    Error::InfrastructureError(format!("failed to convert rows: {}", e))
-                })
-            })
-            .collect::<Result<Vec<Supply>>>()?;
-
-        Ok(supplies)
-    }
-
     fn add(&self, supply: crate::core::domain::entities::stock::Supply) -> Result<()> {
         let mut conn = Connection::open(&self.db_path)
             .map_err(|e| Error::InfrastructureError(format!("failed to open connection: {}", e)))?;

@@ -72,25 +72,6 @@ fn supply_service_test() {
         })
     );
 
-    let supplies = service
-        .search(SearchSuppliesQuery {
-            supply_name: Some("A".into()),
-            supplier_name: Some("A".into()),
-        })
-        .unwrap();
-
-    assert_eq!(supplies.len(), 1);
-
-    assert_eq!(
-        supplies,
-        vec![SupplyDTO {
-            id: "1".into(),
-            name: "SupplyA".into(),
-            unit_name: "g".into(),
-            supplier_id: "1".into(),
-        }]
-    );
-
     let result = service.update(UpdateSupplyCommand {
         supply_id: "1".into(),
         supply_name: "SupplyB".into(),
@@ -139,7 +120,9 @@ fn supply_service_test() {
 fn supplier_service_test() {
     let storage = Arc::new(Mutex::new(Storage::default()));
 
-    let service = SupplierService::new(Arc::new(MockSupplierRepository::new(Arc::clone(&storage))));
+    let supplier_repository = Arc::new(MockSupplierRepository::new(Arc::clone(&storage)));
+
+    let service = SupplierService::new(supplier_repository);
 
     service
         .register(RegisterSupplierCommand {

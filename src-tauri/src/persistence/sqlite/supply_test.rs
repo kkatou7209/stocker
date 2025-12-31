@@ -5,7 +5,7 @@ use scopeguard::defer;
 
 use crate::core::domain::entities::stock::Supply;
 use crate::core::domain::values::stock::{SupplierId, SupplyId, SupplyName, UnitName};
-use crate::core::required_ports::{self, ForSupplyPersistence};
+use crate::core::required_ports::ForSupplyPersistence;
 use crate::persistence::sqlite::{migrate, SqliteSupplyRepository};
 
 #[test]

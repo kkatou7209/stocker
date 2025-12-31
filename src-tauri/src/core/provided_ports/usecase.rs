@@ -5,7 +5,6 @@ pub trait SupplyUsecase {
     fn list(&self) -> Result<Vec<SupplyDTO>>;
     fn get(&self, query: GetSupplyQuery) -> Result<Option<SupplyDTO>>;
     fn get_of_supplier(&self, supplier_id: String) -> Result<Vec<SupplyDTO>>;
-    fn search(&self, query: SearchSuppliesQuery) -> Result<Vec<SupplyDTO>>;
     fn register(&self, command: CreateSupplyCommand) -> Result<SupplyDTO>;
     fn update(&self, commad: UpdateSupplyCommand) -> Result<()>;
 }
