@@ -3,9 +3,7 @@ use crate::core::domain::values::stock::*;
 use crate::core::provided_ports;
 use crate::core::provided_ports::*;
 use crate::core::required_ports::{mock::*, *};
-use crate::core::services::stock::{
-    JournalService, StocktakingService, SupplierService, SupplyService,
-};
+use crate::core::services::stock::{journal::*, stocktaking::*, supplier::*, supply::*};
 use std::sync::{Arc, Mutex};
 
 #[test]

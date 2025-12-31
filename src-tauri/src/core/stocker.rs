@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use crate::core::provided_ports::*;
 use crate::core::required_ports::*;
-use crate::core::services::stock::*;
+use crate::core::services::stock::{journal::*, stocktaking::*, supplier::*, supply::*};
 
 pub struct Stocker {
     supply_respository: Arc<dyn ForSupplyPersistence + Send + Sync + 'static>,
