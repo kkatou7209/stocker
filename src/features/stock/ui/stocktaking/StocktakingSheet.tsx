@@ -4,7 +4,6 @@ import {
 	createSignal,
 	For,
 	on,
-	onMount,
 	Show,
 } from 'solid-js';
 import type { StocktakingRecord } from '@/entities/stock/models/stocktaking';

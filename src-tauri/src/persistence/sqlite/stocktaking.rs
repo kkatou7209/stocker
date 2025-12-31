@@ -1,5 +1,4 @@
 use std::collections::HashSet;
-use std::hash::Hash;
 use std::path::Path;
 
 use rusqlite::named_params;

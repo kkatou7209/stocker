@@ -32,11 +32,6 @@ const DateInput: Component<{
 		setDateString(date.toFormat('yyyy年M月d日'));
 	};
 
-	const clear = () => {
-		setDateString('');
-		props.onChange?.(null);
-	}
-
     createEffect(() => {
         if (!props.value) return;
 
