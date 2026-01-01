@@ -12,6 +12,9 @@ jobs:
   publish:
     runs-on: windows-latest
 
+    env:
+      TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -31,4 +34,3 @@ jobs:
           releaseName: "Stocker v__VERSION__"
           releaseDraft: true
           prerelease: false
-          args: ${{ matrix.args }}
