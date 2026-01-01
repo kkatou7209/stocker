@@ -13,7 +13,7 @@ jobs:
     runs-on: windows-latest
 
     env:
-      TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+      TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
 
     steps:
       - uses: actions/checkout@v4
