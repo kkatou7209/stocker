@@ -1,6 +1,7 @@
 use std::fs;
 use std::path::Path;
 
+use rusqlite::Connection;
 use scopeguard::defer;
 
 use crate::core::domain::entities::stock::Supply;
@@ -21,6 +22,14 @@ fn supply_repository_test() {
     }
 
     migrate(tmp_path.to_string_lossy()).unwrap();
+
+    let conn = Connection::open(tmp_path).unwrap();
+
+    conn.execute(
+        "INSERT INTO suppliers (id, name) VALUES (1, 'SupplierA'), (2, 'SupplierB')",
+        [],
+    )
+    .unwrap();
 
     let repository = SqliteSupplyRepository::new(tmp_path.to_string_lossy());
 
@@ -58,11 +67,17 @@ fn supply_repository_test() {
 
     let supply = repository.get(SupplyId::new("1").unwrap()).unwrap();
 
-    assert!(supply.is_some_and(|supply| {
+    assert!(supply.as_ref().is_some_and(|supply| {
         assert_eq!(supply.id(), &SupplyId::new("1").unwrap());
         assert_eq!(supply.name(), &SupplyName::new("SupplyB").unwrap());
         assert_eq!(supply.unit_name(), &UnitName::new("kg").unwrap());
         assert_eq!(supply.supplier_id(), &SupplierId::new("2").unwrap());
         true
-    }))
+    }));
+
+    repository.delete(supply.unwrap().id().clone()).unwrap();
+
+    let supplies = repository.list().unwrap();
+
+    assert_eq!(supplies, vec![]);
 }

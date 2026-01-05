@@ -1,7 +1,5 @@
 use std::path::Path;
 
-use chrono::DateTime;
-use chrono::Local;
 use chrono::Utc;
 use rusqlite::named_params;
 use rusqlite::params_from_iter;
@@ -58,7 +56,7 @@ impl ForSupplierPersistence for SqliteSupplierRepository {
 
         let mut statement = conn
             .prepare(&format!(
-                "SELECT COUNT(id) FROM suppliers WHERE id IN ({})",
+                "SELECT COUNT(id) FROM suppliers WHERE id IN ({}) AND deleted_at IS NULL",
                 params
             ))
             .map_err(|e| {
@@ -87,7 +85,7 @@ impl ForSupplierPersistence for SqliteSupplierRepository {
                     name
                 FROM suppliers
                 WHERE
-                    deleted_at = NULL
+                    deleted_at IS NULL
                 ",
             )
             .map_err(|e| {
@@ -130,7 +128,7 @@ impl ForSupplierPersistence for SqliteSupplierRepository {
                 WHERE
                     id = :id
                     AND
-                    deleted_at = NULL
+                    deleted_at IS NULL
                 ",
             )
             .map_err(|e| {
@@ -172,6 +170,8 @@ impl ForSupplierPersistence for SqliteSupplierRepository {
                     FROM supplies
                     WHERE
                         (:supply_name IS NULL OR name LIKE :supply_name)
+                        AND
+                        deleted_at IS NULL
                 )
                 SELECT
                     id,
@@ -186,7 +186,7 @@ impl ForSupplierPersistence for SqliteSupplierRepository {
                         id IN (SELECT supplier_id FROM supplier_ids)
                     )
                     AND
-                    deleted_at = NULL
+                    deleted_at IS NULL
                 ",
             )
             .map_err(|e| {

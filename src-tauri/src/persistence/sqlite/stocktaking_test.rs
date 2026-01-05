@@ -1,6 +1,7 @@
 use std::fs;
 use std::path::Path;
 
+use rusqlite::Connection;
 use scopeguard::defer;
 
 use crate::core::domain::entities::stock::Stocktaking;
@@ -21,6 +22,20 @@ fn stocktaking_repository_test() {
     }
 
     migrate(tmp_path.to_string_lossy()).unwrap();
+
+    let conn = Connection::open(tmp_path).unwrap();
+
+    conn.execute(
+        "INSERT INTO suppliers (id, name) VALUES (1, 'SupplierA'), (2, 'SupplierB');",
+        [],
+    )
+    .unwrap();
+
+    conn.execute(
+        "INSERT INTO supplies (id, name, unit_name, supplier_id) VALUES (1, 'SupplierA', 'g', 1), (2, 'SupplierB', 'g', 2);",
+        [],
+    )
+    .unwrap();
 
     let repository = SqliteStocktakingRepository::new(tmp_path.to_string_lossy());
 
@@ -123,7 +138,7 @@ fn stocktaking_repository_test() {
         })
         .unwrap();
 
-    assert!(stocktakings.first().is_some_and(|stocktaking| {
+    assert!(stocktakings.first().as_ref().is_some_and(|stocktaking| {
         assert_eq!(stocktaking.id(), &StocktakingId::new("1").unwrap());
         assert_eq!(
             stocktaking.stocktaken_at(),
@@ -141,4 +156,12 @@ fn stocktaking_repository_test() {
         );
         true
     }));
+
+    let stocktaking = stocktakings.first().unwrap();
+
+    repository.delete(stocktaking.id().clone()).unwrap();
+
+    let stocktakings = repository.list().unwrap();
+
+    assert_eq!(stocktakings, vec![]);
 }

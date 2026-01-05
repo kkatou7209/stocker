@@ -1,6 +1,7 @@
 use std::fs;
 use std::path::Path;
 
+use rusqlite::Connection;
 use scopeguard::defer;
 
 use crate::core::domain::entities::stock::Journal;
@@ -24,6 +25,20 @@ fn journal_repository_test() {
     }
 
     migrate(tmp_path.to_string_lossy()).unwrap();
+
+    let conn = Connection::open(tmp_path).unwrap();
+
+    conn.execute(
+        "INSERT INTO suppliers (id, name) VALUES (1, 'SupplierA'), (2, 'SupplierB');",
+        [],
+    )
+    .unwrap();
+
+    conn.execute(
+        "INSERT INTO supplies (id, name, unit_name, supplier_id) VALUES (1, 'SupplierA', 'g', 1), (2, 'SupplierB', 'g', 2);",
+        [],
+    )
+    .unwrap();
 
     let repository = SqliteJournalRepository::new(tmp_path.to_string_lossy());
 
@@ -134,7 +149,7 @@ fn journal_repository_test() {
         })
         .unwrap();
 
-    assert!(journals.first().is_some_and(|journal| {
+    assert!(journals.first().as_ref().is_some_and(|journal| {
         assert_eq!(journal.id(), &JournalId::new("1").unwrap());
         assert_eq!(journal.entry_datetime(), &EntryDateTime::new(200000),);
         assert_eq!(
@@ -151,4 +166,12 @@ fn journal_repository_test() {
         );
         true
     }));
+
+    let journal = journals.first().unwrap();
+
+    repository.delete(journal.id().clone()).unwrap();
+
+    let journals = repository.list().unwrap();
+
+    assert_eq!(journals, vec![]);
 }

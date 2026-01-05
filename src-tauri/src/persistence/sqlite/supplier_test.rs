@@ -74,9 +74,15 @@ fn supplier_repository_test() {
 
     let supplier = repository.get(SupplierId::new("1").unwrap()).unwrap();
 
-    assert!(supplier.is_some_and(|supplier| {
+    assert!(supplier.as_ref().is_some_and(|supplier| {
         assert_eq!(supplier.id(), &SupplierId::new("1").unwrap());
         assert_eq!(supplier.name(), &SupplierName::new("SupplierB").unwrap());
         true
     }));
+
+    repository.delete(supplier.unwrap().id().clone()).unwrap();
+
+    let suppliers = repository.list().unwrap();
+
+    assert_eq!(suppliers, vec![]);
 }

@@ -66,7 +66,7 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                 INNER JOIN stocktaking_records
                     ON stocktaking_records.stocktaking_id = stocktakings.id
                 WHERE
-                    stocktakings.deleted_at = NULL
+                    stocktakings.deleted_at IS NULL
                 ",
             )
             .map_err(|e| {
@@ -166,7 +166,7 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                     AND
                     (:end IS NULL OR stocktakings.recorded_at <= :end)
                     AND
-                    stocktakings.deleted_at = NULL
+                    stocktakings.deleted_at IS NULL
                 ",
             )
             .map_err(|e| {
@@ -278,7 +278,7 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                 WHERE
                     stocktakings.id = :id
                     AND
-                    stocktakings.deleted_at = NULL
+                    stocktakings.deleted_at IS NULL
                 ",
             )
             .map_err(|e| {
@@ -529,7 +529,7 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                 ",
                 named_params! {
                     ":id": id.as_str(),
-                    ":recorded_at": Utc::now().timestamp_millis(),
+                    ":deleted_at": Utc::now().timestamp_millis(),
                 },
             )
             .map_err(|e| Error::InfrastructureError(format!("failed to execute: {}", e)))?;
