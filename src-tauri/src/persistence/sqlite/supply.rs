@@ -54,7 +54,14 @@ impl ForSupplyPersistence for SqliteSupplyRepository {
 
         let mut statement = conn
             .prepare(&format!(
-                "SELECT COUNT(id) FROM supplies WHERE id IN ({})",
+                r"
+                SELECT COUNT(id)
+                FROM supplies
+                WHERE 
+                    id IN ({})
+                    AND
+                    deleted_at = NULL
+                ",
                 params
             ))
             .map_err(|e| {
@@ -84,6 +91,8 @@ impl ForSupplyPersistence for SqliteSupplyRepository {
                     unit_name,
                     supplier_id
                 FROM supplies
+                WHERE
+                    deleted_at = NULL
                 ",
             )
             .map_err(|e| {
@@ -127,7 +136,10 @@ impl ForSupplyPersistence for SqliteSupplyRepository {
                     unit_name,
                     supplier_id
                 FROM supplies
-                WHERE id = :id
+                WHERE
+                    id = :id
+                    AND
+                    deleted_at = NULL
                 ",
             )
             .map_err(|e| {
@@ -169,7 +181,10 @@ impl ForSupplyPersistence for SqliteSupplyRepository {
                     unit_name,
                     supplier_id
                 FROM supplies
-                WHERE supplier_id = :supplier_id
+                WHERE
+                    supplier_id = :supplier_id
+                    AND
+                    deleted_at = NULL
                 ",
             )
             .map_err(|e| {

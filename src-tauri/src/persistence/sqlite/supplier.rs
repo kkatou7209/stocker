@@ -83,6 +83,8 @@ impl ForSupplierPersistence for SqliteSupplierRepository {
                     id,
                     name
                 FROM suppliers
+                WHERE
+                    deleted_at = NULL
                 ",
             )
             .map_err(|e| {
@@ -122,7 +124,10 @@ impl ForSupplierPersistence for SqliteSupplierRepository {
                     id,
                     name
                 FROM suppliers
-                WHERE id = :id
+                WHERE
+                    id = :id
+                    AND
+                    deleted_at = NULL
                 ",
             )
             .map_err(|e| {
@@ -177,6 +182,8 @@ impl ForSupplierPersistence for SqliteSupplierRepository {
                         OR
                         id IN (SELECT supplier_id FROM supplier_ids)
                     )
+                    AND
+                    deleted_at = NULL
                 ",
             )
             .map_err(|e| {

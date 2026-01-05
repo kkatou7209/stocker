@@ -64,6 +64,8 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                 FROM stocktakings
                 INNER JOIN stocktaking_records
                     ON stocktaking_records.stocktaking_id = stocktakings.id
+                WHERE
+                    stocktakings.deleted_at = NULL
                 ",
             )
             .map_err(|e| {
@@ -162,6 +164,8 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                     (:start IS NULL OR :start <= stocktakings.recorded_at)
                     AND
                     (:end IS NULL OR stocktakings.recorded_at <= :end)
+                    AND
+                    stocktakings.deleted_at = NULL
                 ",
             )
             .map_err(|e| {
@@ -272,6 +276,8 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                     ON stocktaking_records.stocktaking_id = stocktakings.id
                 WHERE
                     stocktakings.id = :id
+                    AND
+                    stocktakings.deleted_at = NULL
                 ",
             )
             .map_err(|e| {

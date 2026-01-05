@@ -65,6 +65,8 @@ impl ForJournalPersistence for SqliteJournalRepository {
                 FROM journals
                 INNER JOIN journal_records
                     ON journal_records.journal_id = journals.id
+                WHERE
+                    journals.deleted_at = NULL
                 ORDER BY journals.recorded_at ASC
                 ",
             )
@@ -165,6 +167,8 @@ impl ForJournalPersistence for SqliteJournalRepository {
                     ON journal_records.journal_id = journals.id
                 WHERE
                     journals.id = :id
+                    AND
+                    deleted_at = NULL
                 ",
             )
             .map_err(|e| {
@@ -257,6 +261,8 @@ impl ForJournalPersistence for SqliteJournalRepository {
                     (:supply_name IS NULL OR journal_records.supply_name LIKE :supply_name)
                     AND
                     (:supplier_name IS NULL OR journal_records.supplier_name LIKE :supplier_name)
+                    AND
+                    deleted_at = NULL
                 ORDER BY journals.recorded_at ASC
                 ",
             )
