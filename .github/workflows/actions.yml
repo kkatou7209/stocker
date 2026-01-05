@@ -34,6 +34,12 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Install Rust
+        if: matrix.platform == 'macos-latest'
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: "aarch64-apple-darwin,x86_64-apple-darwin"
+
       - name: Install frontend deps
         run: bun i
 
@@ -45,3 +51,4 @@ jobs:
           releaseName: "Stocker v__VERSION__"
           releaseDraft: true
           prerelease: false
+          args: ${{ matrix.args }}
