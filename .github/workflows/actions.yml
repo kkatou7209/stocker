@@ -32,6 +32,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Debug Secrets
+        run: echo $TAURI_SIGNING_PRIVATE_KEY && echo $TAURI_SIGNING_PRIVATE_KEY_PASSWORD
+
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -55,6 +58,3 @@ jobs:
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
-
-      - name: Debug Secrets
-        run: echo $TAURI_SIGNING_PRIVATE_KEY && echo $TAURI_SIGNING_PRIVATE_KEY_PASSWORD
