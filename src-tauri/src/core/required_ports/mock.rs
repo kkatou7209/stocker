@@ -97,6 +97,20 @@ impl ForSupplyPersistence for MockSupplyRepository {
 
         Ok(())
     }
+
+    fn delete(&self, id: SupplyId) -> Result<()> {
+        let mut storage = self.storage.lock().unwrap();
+
+        if let Some(index) = storage
+            .supplies
+            .iter()
+            .position(|supply| supply.id().eq(&id))
+        {
+            storage.supplies.remove(index);
+        }
+
+        Ok(())
+    }
 }
 
 #[derive(Debug, Clone, Default)]
@@ -205,6 +219,16 @@ impl ForSupplierPersistence for MockSupplierRepository {
             .position(|s| s.id().eq(supplier.id()))
         {
             storage.suppliers[index] = supplier.clone();
+        }
+
+        Ok(())
+    }
+
+    fn delete(&self, id: SupplierId) -> Result<()> {
+        let mut storage = self.storage.lock().unwrap();
+
+        if let Some(index) = storage.suppliers.iter().position(|s| s.id().eq(&id)) {
+            storage.suppliers.remove(index);
         }
 
         Ok(())
@@ -332,6 +356,16 @@ impl ForJournalPersistence for MockJournalRepository {
 
         Ok(())
     }
+
+    fn delete(&self, id: JournalId) -> Result<()> {
+        let mut storage = self.storage.lock().unwrap();
+
+        if let Some(index) = storage.journals.iter().position(|j| j.id().eq(&id)) {
+            storage.journals.remove(index);
+        }
+
+        Ok(())
+    }
 }
 
 #[derive(Debug, Clone, Default)]
@@ -425,6 +459,16 @@ impl ForStocktakingPersistence for MockStocktakingRepository {
             .position(|s| s.id().eq(stocktaking.id()))
         {
             storage.stocktakings[index] = stocktaking.clone();
+        }
+
+        Ok(())
+    }
+
+    fn delete(&self, id: StocktakingId) -> Result<()> {
+        let mut storage = self.storage.lock().unwrap();
+
+        if let Some(index) = storage.stocktakings.iter().position(|s| s.id().eq(&id)) {
+            storage.stocktakings.remove(index);
         }
 
         Ok(())

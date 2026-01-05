@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 use std::path::Path;
 
+use chrono::Utc;
 use rusqlite::named_params;
 use rusqlite::Connection;
 use rusqlite::OptionalExtension;
@@ -494,6 +495,44 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                         Error::InfrastructureError(format!("failed to execute statement: {}", e))
                     })?;
             }
+
+            Ok(())
+        })();
+
+        if result.is_err() {
+            tran.rollback()
+                .map_err(|e| Error::InfrastructureError(format!("failed to rollback: {}", e)))?;
+
+            return result;
+        }
+
+        tran.commit()
+            .map_err(|e| Error::InfrastructureError(format!("failed to commit: {}", e)))?;
+
+        Ok(())
+    }
+
+    fn delete(&self, id: StocktakingId) -> Result<()> {
+        let mut conn = Connection::open(&self.db_path)
+            .map_err(|e| Error::InfrastructureError(format!("failed to open connection: {}", e)))?;
+
+        let tran = conn.transaction().map_err(|e| {
+            Error::InfrastructureError(format!("failed to start transaction: {}", e))
+        })?;
+
+        let result: Result<()> = (|| {
+            tran.execute(
+                r"
+                UPDATE stocktakings
+                SET deleted_at = :deleted_at
+                WHERE id = :id
+                ",
+                named_params! {
+                    ":id": id.as_str(),
+                    ":recorded_at": Utc::now().timestamp_millis(),
+                },
+            )
+            .map_err(|e| Error::InfrastructureError(format!("failed to execute: {}", e)))?;
 
             Ok(())
         })();

@@ -1,5 +1,8 @@
 use std::path::Path;
 
+use chrono::DateTime;
+use chrono::Local;
+use chrono::Utc;
 use rusqlite::named_params;
 use rusqlite::params_from_iter;
 use rusqlite::Connection;
@@ -277,6 +280,43 @@ impl ForSupplierPersistence for SqliteSupplierRepository {
                 named_params! {
                     ":id": supplier.id().as_str(),
                     ":name": supplier.name().as_str(),
+                },
+            )
+            .map_err(|e| {
+                Error::InfrastructureError(format!("failed to execute transaction: {}", e))
+            });
+
+        if result.is_err() {
+            tran.rollback()
+                .map_err(|e| Error::InfrastructureError(format!("failed to rollback: {}", e)))?;
+
+            return Err(result.err().unwrap());
+        }
+
+        tran.commit()
+            .map_err(|e| Error::InfrastructureError(format!("failed to commit: {}", e)))?;
+
+        Ok(())
+    }
+
+    fn delete(&self, id: SupplierId) -> Result<()> {
+        let mut conn = Connection::open(&self.db_path)
+            .map_err(|e| Error::InfrastructureError(format!("fail to open connection: {}", e)))?;
+
+        let tran = conn.transaction().map_err(|e| {
+            Error::InfrastructureError(format!("failed to start transacrion: {}", e))
+        })?;
+
+        let result = tran
+            .execute(
+                r"
+                UPDATE suppliers
+                SET deleted_at = :deleted_at
+                WHERE id = :id
+                ",
+                named_params! {
+                    ":id": id.as_str(),
+                    ":deleted_at": Utc::now().timestamp_millis(),
                 },
             )
             .map_err(|e| {

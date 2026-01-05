@@ -11,6 +11,7 @@ pub trait ForSupplyPersistence {
     fn get_of_supplier(&self, supplier_id: SupplierId) -> Result<Vec<Supply>>;
     fn add(&self, supply: Supply) -> Result<()>;
     fn save(&self, supply: Supply) -> Result<()>;
+    fn delete(&self, id: SupplyId) -> Result<()>;
 }
 
 pub trait ForSupplierPersistence {
@@ -21,6 +22,7 @@ pub trait ForSupplierPersistence {
     fn find(&self, query: FindSupplierQuery) -> Result<Vec<Supplier>>;
     fn add(&self, supplier: Supplier) -> Result<()>;
     fn save(&self, supplier: Supplier) -> Result<()>;
+    fn delete(&self, id: SupplierId) -> Result<()>;
 }
 
 pub trait ForJournalPersistence {
@@ -30,6 +32,7 @@ pub trait ForJournalPersistence {
     fn find(&self, query: FindJournalsQuery) -> Result<Vec<Journal>>;
     fn add(&self, journal: Journal) -> Result<()>;
     fn save(&self, journal: Journal) -> Result<()>;
+    fn delete(&self, id: JournalId) -> Result<()>;
 }
 
 pub trait ForStocktakingPersistence {
@@ -39,4 +42,5 @@ pub trait ForStocktakingPersistence {
     fn get(&self, id: StocktakingId) -> Result<Option<Stocktaking>>;
     fn add(&self, stocktaking: Stocktaking) -> Result<()>;
     fn save(&self, stocktaking: Stocktaking) -> Result<()>;
+    fn delete(&self, id: StocktakingId) -> Result<()>;
 }

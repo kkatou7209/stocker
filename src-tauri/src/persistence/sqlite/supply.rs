@@ -1,5 +1,6 @@
 use std::path::Path;
 
+use chrono::Utc;
 use rusqlite::named_params;
 use rusqlite::params_from_iter;
 use rusqlite::Connection;
@@ -287,6 +288,42 @@ impl ForSupplyPersistence for SqliteSupplyRepository {
                     ":name": supply.name().as_str(),
                     ":unit_name": supply.unit_name().as_str(),
                     ":supplier_id": supply.supplier_id().as_str(),
+                },
+            )
+            .map_err(|e| Error::InfrastructureError(format!("failed to update supply: {}", e)));
+
+        if let Err(e) = result {
+            tran.rollback()
+                .map_err(|e| Error::InfrastructureError(format!("failed to rollback: {}", e)))?;
+
+            return Err(e);
+        }
+
+        tran.commit()
+            .map_err(|e| Error::InfrastructureError(format!("failed to commit: {}", e)))?;
+
+        Ok(())
+    }
+
+    fn delete(&self, id: SupplyId) -> Result<()> {
+        let mut conn = Connection::open(&self.db_path)
+            .map_err(|e| Error::InfrastructureError(format!("failed to open connection: {}", e)))?;
+
+        let tran = conn.transaction().map_err(|e| {
+            Error::InfrastructureError(format!("failed to start transaction: {}", e))
+        })?;
+
+        let result = tran
+            .execute(
+                r"
+                UPDATE supplies
+                SET deleted_at = :deleted_at
+                WHERE
+                    id = :id
+                ",
+                named_params! {
+                    ":id": id.as_str(),
+                    ":deleted_at": Utc::now().timestamp_millis(),
                 },
             )
             .map_err(|e| Error::InfrastructureError(format!("failed to update supply: {}", e)));

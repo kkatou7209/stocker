@@ -1,5 +1,6 @@
 use std::path::Path;
 
+use chrono::Utc;
 use rusqlite::named_params;
 use rusqlite::Connection;
 use rusqlite::OptionalExtension;
@@ -544,6 +545,54 @@ impl ForJournalPersistence for SqliteJournalRepository {
                         Error::InfrastructureError(format!("failed to execute statement: {}", e))
                     })?;
             }
+
+            Ok(())
+        })();
+
+        if let Err(e) = result {
+            tran.rollback()
+                .map_err(|e| Error::InfrastructureError(format!("failed to rollback: {}", e)))?;
+
+            return Err(e);
+        }
+
+        tran.commit()
+            .map_err(|e| Error::InfrastructureError(format!("failed to commit: {}", e)))?;
+
+        Ok(())
+    }
+
+    fn delete(&self, id: JournalId) -> Result<()> {
+        let mut conn = Connection::open(&self.db_path)
+            .map_err(|e| Error::InfrastructureError(format!("failed to open connection: {}", e)))?;
+
+        let tran = conn.transaction().map_err(|e| {
+            Error::InfrastructureError(format!("failed to start transaction: {}", e))
+        })?;
+
+        let result: Result<()> = (|| {
+            let mut statement = tran
+                .prepare(
+                    r"
+                    UPDATE journals
+                    SET
+                        deleted_at = :deleted_at
+                    WHERE
+                        id = :id
+                    ",
+                )
+                .map_err(|e| {
+                    Error::InfrastructureError(format!("failed to prepare statement: {}", e))
+                })?;
+
+            statement
+                .execute(named_params! {
+                    ":id": id.as_str(),
+                    ":deleted_at": Utc::now().timestamp_millis(),
+                })
+                .map_err(|e| {
+                    Error::InfrastructureError(format!("failed to execute statement: {}", e))
+                })?;
 
             Ok(())
         })();
