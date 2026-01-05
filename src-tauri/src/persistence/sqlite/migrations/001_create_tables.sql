@@ -1,10 +1,12 @@
+-- create tables
+
 -- table of sequence for suplier id generation
-CREATE TABLE IF NOT EXISTS suppliers_id_sequence (
+CREATE TABLE suppliers_id_sequence (
     name TEXT PRIMARY KEY,
     value INTEGER DEFAULT 0
 );
 
-INSERT OR IGNORE INTO suppliers_id_sequence (
+INSERT INTO suppliers_id_sequence (
     name,
     value
 ) VALUES (
@@ -13,12 +15,12 @@ INSERT OR IGNORE INTO suppliers_id_sequence (
 );
 
 -- table of sequence for supply id generation
-CREATE TABLE IF NOT EXISTS supplies_id_sequence (
+CREATE TABLE supplies_id_sequence (
     name TEXT PRIMARY KEY,
     value INTEGER DEFAULT 0
 );
 
-INSERT OR IGNORE INTO supplies_id_sequence (
+INSERT INTO supplies_id_sequence (
     name,
     value
 ) VALUES (
@@ -27,12 +29,12 @@ INSERT OR IGNORE INTO supplies_id_sequence (
 );
 
 -- table of sequence for journal id generation
-CREATE TABLE IF NOT EXISTS journals_id_sequence (
+CREATE TABLE journals_id_sequence (
     name TEXT PRIMARY KEY,
     value INTEGER DEFAULT 0
 );
 
-INSERT OR IGNORE INTO journals_id_sequence (
+INSERT INTO journals_id_sequence (
     name,
     value
 ) VALUES (
@@ -41,12 +43,12 @@ INSERT OR IGNORE INTO journals_id_sequence (
 );
 
 -- table of sequence for stocktaking id generation
-CREATE TABLE IF NOT EXISTS stocktakings_id_sequence (
+CREATE TABLE stocktakings_id_sequence (
     name TEXT PRIMARY KEY,
     value INTEGER DEFAULT 0
 );
 
-INSERT OR IGNORE INTO stocktakings_id_sequence (
+INSERT INTO stocktakings_id_sequence (
     name,
     value
 ) VALUES (
@@ -55,13 +57,13 @@ INSERT OR IGNORE INTO stocktakings_id_sequence (
 );
 
 -- table of suppliers
-CREATE TABLE IF NOT EXISTS suppliers (
+CREATE TABLE suppliers (
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL
 );
 
 -- table of supplies
-CREATE TABLE IF NOT EXISTS supplies (
+CREATE TABLE supplies (
     id INTEGER PRIMARY KEY,
     name TEXT NOT NULL,
     unit_name TEXT NOT NULL,
@@ -70,13 +72,13 @@ CREATE TABLE IF NOT EXISTS supplies (
 );
 
 -- table of journals
-CREATE TABLE IF NOT EXISTS journals (
+CREATE TABLE journals (
     id INTEGER PRIMARY KEY,
     recorded_at INTEGER NOT NULL -- timestamp jorunal recorded at
 );
 
 -- table of journal records
-CREATE TABLE IF NOT EXISTS journal_records (
+CREATE TABLE journal_records (
     supply_id INTEGER NOT NULL,
     supply_name TEXT NOT NULL,
     supplier_id INTEGER NOT NULL,
@@ -91,13 +93,13 @@ CREATE TABLE IF NOT EXISTS journal_records (
 );
 
 -- table of stocktakings
-CREATE TABLE IF NOT EXISTS stocktakings (
+CREATE TABLE stocktakings (
     id INTEGER PRIMARY KEY,
     recorded_at INTEGER NOT NULL -- timestamp jorunal recorded at
 );
 
 -- table of stocktaking records
-CREATE TABLE IF NOT EXISTS stocktaking_records (
+CREATE TABLE stocktaking_records (
     unit_name TEXT NOT NULL,
     unit_price INTEGER NOT NULL,
     quantity INTEGER NOT NULL,
@@ -107,3 +109,5 @@ CREATE TABLE IF NOT EXISTS stocktaking_records (
     FOREIGN KEY(supply_id) REFERENCES supplies(id),
     FOREIGN KEY(stocktaking_id) REFERENCES stocktakings(id)
 );
+
+PRAGMA user_version = 1;

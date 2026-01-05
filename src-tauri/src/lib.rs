@@ -10,7 +10,7 @@ use crate::command::*;
 use crate::core::stocker::{Ports, Stocker};
 use crate::persistence::sqlite::*;
 
-const DB_NAME: &str = "stocker_1.0.0.db";
+const DB_NAME: &str = "stocker.db";
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {

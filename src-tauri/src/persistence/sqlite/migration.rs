@@ -4,6 +4,7 @@ use rusqlite::Connection;
 
 use crate::core::{Error, Result};
 
+/// migrate database
 pub fn migrate(db_path: impl AsRef<str>) -> Result<()> {
     let path = Path::new(db_path.as_ref());
 
@@ -35,12 +36,22 @@ pub fn migrate(db_path: impl AsRef<str>) -> Result<()> {
     let conn = Connection::open(path)
         .map_err(|e| Error::InfrastructureError(format!("fail to open connection: {}", e)))?;
 
-    let migrations = [include_str!("migrations/001_create_tables.sql")];
+    let version = conn
+        .query_row("PRAGMA user_version", [], |row| row.get::<_, i64>(0))
+        .map_err(|e| Error::InfrastructureError(format!("fail to get migration version: {}", e)))?;
 
-    for sql in migrations {
-        conn.execute_batch(sql)
-            .map_err(|e| Error::InfrastructureError(format!("migration failed: {}", e)))?;
-    }
+    (|| -> rusqlite::Result<(), rusqlite::Error> {
+        if version < 1 {
+            conn.execute_batch(include_str!("migrations/001_create_tables.sql"))?;
+        }
+
+        if version < 2 {
+            conn.execute_batch(include_str!("migrations/002_add_deleted_at_column.sql"))?;
+        }
+
+        Ok(())
+    })()
+    .map_err(|e| Error::InfrastructureError(format!("migration failed: {}", e)))?;
 
     Ok(())
 }
