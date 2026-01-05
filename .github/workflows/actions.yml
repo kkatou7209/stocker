@@ -55,8 +55,3 @@ jobs:
           releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
-
-      - name: Debug bundles
-        if: always()
-        run: |
-          find src-tauri/target -type f \( -name "*.app" -o -name "*.dmg" -o -name "*.msi" -o -name "*.exe" \)

@@ -41,7 +41,7 @@
   "plugins": {
     "updater": {
       "active": true,
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDFBNTdGOTQ3N0IyMUM0RTQKUldUa3hDRjdSL2xYR2dnYmxsMHJoRVFIMFVyMXlNWDlOVjg4cmkwaUlMS2QzdTFhWmp1RU84VmkK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDVBNDlDNkVGQTM4MUY1NjMKUldSajlZR2o3OFpKV21iYnZwVU1LMTJjVUJNbGhxTEZlWHEzOXB1b3MwcWp0cml6bUNjSk0zMDcK",
       "endpoints": [
         "https://github.com/kkatou7209/stocker/releases/download/latest.json"
       ],
