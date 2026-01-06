@@ -64,7 +64,7 @@ impl ForSupplyPersistence for MockSupplyRepository {
         Ok(None)
     }
 
-    fn get_of_supplier(&self, supplier_id: SupplierId) -> Result<Vec<Supply>> {
+    fn list_of_supplier(&self, supplier_id: SupplierId) -> Result<Vec<Supply>> {
         let supplies = &self.storage.lock().unwrap().supplies;
 
         let supplies: Vec<Supply> = supplies
@@ -295,32 +295,18 @@ impl ForJournalPersistence for MockJournalRepository {
         }
 
         if let Some(name) = query.supply_name {
-            let supply_ids: Vec<&SupplyId> = storage
-                .supplies
-                .iter()
-                .filter(|s| s.name().as_str().contains(name.as_str()))
-                .map(|s| s.id())
-                .collect();
-
             journals.retain(|j| {
                 j.records()
                     .iter()
-                    .any(|r| supply_ids.iter().any(|id| r.supply_id().eq(id)))
+                    .any(|r| r.supply_name().as_str().contains(name.as_str()))
             });
         }
 
         if let Some(name) = query.supplier_name {
-            let supplier_ids: Vec<&SupplierId> = storage
-                .suppliers
-                .iter()
-                .filter(|s| s.name().as_str().contains(name.as_str()))
-                .map(|s| s.id())
-                .collect();
-
             journals.retain(|j| {
                 j.records()
                     .iter()
-                    .any(|r| supplier_ids.iter().any(|id| r.supplier_id().eq(id)))
+                    .any(|r| r.supplier_name().as_str().contains(name.as_str()))
             });
         }
 

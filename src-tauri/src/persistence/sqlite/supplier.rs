@@ -25,6 +25,7 @@ impl SqliteSupplierRepository {
     }
 }
 
+/// Implementation of `ForSupplierPersistence` for `SqliteSupplierRepository`
 impl ForSupplierPersistence for SqliteSupplierRepository {
     fn next_id(&self) -> Result<SupplierId> {
         let conn = Connection::open(&self.db_path)

@@ -1,3 +1,4 @@
+//! This module provides the SQLite-based implementation of the `ForSupplyPersistence` trait.
 use std::path::Path;
 
 use chrono::Utc;
@@ -12,6 +13,7 @@ use crate::core::required_ports::*;
 use crate::core::Error;
 use crate::core::Result;
 
+/// SQLite implementation of `ForSupplyPersistence`
 pub struct SqliteSupplyRepository {
     db_path: String,
 }
@@ -24,6 +26,7 @@ impl SqliteSupplyRepository {
     }
 }
 
+/// Implementation of `ForSupplyPersistence` for `SqliteSupplyRepository`
 impl ForSupplyPersistence for SqliteSupplyRepository {
     fn next_id(&self) -> Result<SupplyId> {
         let conn = Connection::open(&self.db_path)
@@ -169,7 +172,7 @@ impl ForSupplyPersistence for SqliteSupplyRepository {
         Ok(supply)
     }
 
-    fn get_of_supplier(&self, supplier_id: SupplierId) -> Result<Vec<Supply>> {
+    fn list_of_supplier(&self, supplier_id: SupplierId) -> Result<Vec<Supply>> {
         let conn = Connection::open(&self.db_path)
             .map_err(|e| Error::InfrastructureError(format!("failed to open connection: {}", e)))?;
 

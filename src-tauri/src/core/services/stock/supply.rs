@@ -1,3 +1,4 @@
+//! This module provides the implementation for `SupplyUsecase`.
 use std::sync::Arc;
 
 use crate::core::domain::entities::stock::*;
@@ -6,7 +7,7 @@ use crate::core::provided_ports::*;
 use crate::core::required_ports::*;
 use crate::core::*;
 
-/// supply usecase
+/// Supply usecase
 pub struct SupplyService {
     supply_repository: Arc<dyn ForSupplyPersistence>,
     supplier_repository: Arc<dyn ForSupplierPersistence>,
@@ -24,9 +25,10 @@ impl SupplyService {
     }
 }
 
+/// Supply usecase implementation
 impl SupplyUsecase for SupplyService {
-    fn get(&self, query: provided_ports::GetSupplyQuery) -> Result<Option<SupplyDTO>> {
-        let supply_id = SupplyId::new(query.supply_id.as_str())?;
+    fn get(&self, supply_id: impl AsRef<str>) -> Result<Option<SupplyDTO>> {
+        let supply_id = SupplyId::new(supply_id.as_ref())?;
 
         let supply = self.supply_repository.get(supply_id)?;
 
@@ -47,7 +49,7 @@ impl SupplyUsecase for SupplyService {
     fn get_of_supplier(&self, supplier_id: String) -> Result<Vec<SupplyDTO>> {
         let supplier_id = SupplierId::new(supplier_id)?;
 
-        let supplies = self.supply_repository.get_of_supplier(supplier_id)?;
+        let supplies = self.supply_repository.list_of_supplier(supplier_id)?;
 
         let supplies: Vec<SupplyDTO> = supplies
             .iter()
@@ -125,6 +127,14 @@ impl SupplyUsecase for SupplyService {
         supply.change_supplier(supplier.id().clone());
 
         self.supply_repository.save(supply)?;
+
+        Ok(())
+    }
+
+    fn delete(&self, supply_id: impl AsRef<str>) -> Result<()> {
+        let supply_id = SupplyId::new(supply_id.as_ref())?;
+
+        self.supply_repository.delete(supply_id)?;
 
         Ok(())
     }

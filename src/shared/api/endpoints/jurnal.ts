@@ -22,7 +22,7 @@ export type JournalData = z.infer<typeof JournalData>;
 
 export type RecordJournalCommand = Omit<JournalData, 'id'>;
 
-export type UpdateJournalCommand = JournalData;
+export type UpdateJournalCommand = Omit<JournalData, 'entryDate'>;
 
 export type JournalQuery = {
 	periodStart?: number | null;

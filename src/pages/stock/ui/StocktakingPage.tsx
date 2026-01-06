@@ -107,7 +107,6 @@ const StocktakingPage: Component = () => {
 
 		await stocktakingRepository.edit({
 			id,
-			stocktakingDate: date,
 			records: [...stocktakingRecords()],
 		});
 

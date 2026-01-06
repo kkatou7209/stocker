@@ -1,3 +1,4 @@
+//! This module provides the implementation of the `SupplierUsecase`.
 use std::sync::Arc;
 
 use crate::core::domain::entities::stock::*;
@@ -6,7 +7,7 @@ use crate::core::provided_ports::*;
 use crate::core::required_ports::*;
 use crate::core::*;
 
-/// supplier usecase
+/// Supplier usecase
 pub struct SupplierService {
     supplier_repository: Arc<dyn ForSupplierPersistence>,
 }
@@ -19,9 +20,10 @@ impl SupplierService {
     }
 }
 
+/// Supplier usecase implementation
 impl SupplierUsecase for SupplierService {
-    fn get(&self, query: provided_ports::GetSupplierQuery) -> Result<Option<SupplierDTO>> {
-        let supplier_id = SupplierId::new(query.supplier_id)?;
+    fn get(&self, supplier_id: impl AsRef<str>) -> Result<Option<SupplierDTO>> {
+        let supplier_id = SupplierId::new(supplier_id.as_ref())?;
 
         let supplier = self.supplier_repository.get(supplier_id)?;
 
@@ -116,6 +118,14 @@ impl SupplierUsecase for SupplierService {
         supplier.rename(SupplierName::new(command.supplier_name)?);
 
         self.supplier_repository.save(supplier)?;
+
+        Ok(())
+    }
+
+    fn delete(&self, supplier_id: impl AsRef<str>) -> Result<()> {
+        let supplier_id = SupplierId::new(supplier_id.as_ref())?;
+
+        self.supplier_repository.delete(supplier_id)?;
 
         Ok(())
     }

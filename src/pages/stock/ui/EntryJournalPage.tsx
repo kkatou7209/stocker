@@ -96,11 +96,8 @@ const EntryJournalPage: Component = () => {
 
 		if (!id) return;
 
-		const date = entryDate();
-
 		await journalRepository.edit({
 			id,
-			entryDate: date,
 			records: [...records()],
 		});
 

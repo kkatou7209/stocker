@@ -1,13 +1,13 @@
+//! This module provides the implementation of the `StocktakingUsecase`.
 use std::sync::Arc;
 
 use crate::core::domain::entities::stock::*;
 use crate::core::domain::values::stock::*;
-use crate::core::provided_ports;
 use crate::core::provided_ports::*;
 use crate::core::required_ports::*;
 use crate::core::*;
 
-/// stocktaking usecase
+/// Stocktaking usecase
 pub struct StocktakingService {
     supply_respository: Arc<dyn ForSupplyPersistence>,
     stocktaking_respository: Arc<dyn ForStocktakingPersistence>,
@@ -25,9 +25,10 @@ impl StocktakingService {
     }
 }
 
+/// Stocktaking usecase implementation
 impl StocktakingUsecase for StocktakingService {
-    fn get(&self, query: provided_ports::GetStocktakingQuery) -> Result<Option<StocktakingDTO>> {
-        let stocktaking_id = StocktakingId::new(query.stocktaking_id)?;
+    fn get(&self, stocktaking_id: impl AsRef<str>) -> Result<Option<StocktakingDTO>> {
+        let stocktaking_id = StocktakingId::new(stocktaking_id.as_ref())?;
 
         let stocktaking = self.stocktaking_respository.get(stocktaking_id)?;
 
@@ -188,6 +189,14 @@ impl StocktakingUsecase for StocktakingService {
         stocktaking.swap_records(records);
 
         self.stocktaking_respository.save(stocktaking)?;
+
+        Ok(())
+    }
+
+    fn delete(&self, stocktaking_id: impl AsRef<str>) -> Result<()> {
+        let stocktaking_id = StocktakingId::new(stocktaking_id.as_ref())?;
+
+        self.stocktaking_respository.delete(stocktaking_id)?;
 
         Ok(())
     }

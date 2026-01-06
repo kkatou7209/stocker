@@ -1,14 +1,14 @@
+//! This module provides the implementation for `JournalUsecase`.
 use std::collections::HashSet;
 use std::sync::Arc;
 
 use crate::core::domain::entities::stock::*;
 use crate::core::domain::values::stock::*;
-use crate::core::provided_ports;
 use crate::core::provided_ports::*;
 use crate::core::required_ports::*;
 use crate::core::*;
 
-/// journal usecase
+/// Journal usecase
 pub struct JournalService {
     supply_respository: Arc<dyn ForSupplyPersistence>,
     supplier_repository: Arc<dyn ForSupplierPersistence>,
@@ -29,9 +29,10 @@ impl JournalService {
     }
 }
 
+/// Journal usecase implementation
 impl JournalUsecase for JournalService {
-    fn get(&self, query: provided_ports::GetJournalQuery) -> Result<Option<JournalDTO>> {
-        let journal_id = JournalId::new(query.journal_id)?;
+    fn get(&self, journal_id: impl AsRef<str>) -> Result<Option<JournalDTO>> {
+        let journal_id = JournalId::new(journal_id.as_ref())?;
 
         let journal = self.journal_respository.get(journal_id)?;
 
@@ -236,6 +237,14 @@ impl JournalUsecase for JournalService {
         journal.swap_records(records);
 
         self.journal_respository.save(journal)?;
+
+        Ok(())
+    }
+
+    fn delete(&self, journal_id: impl AsRef<str>) -> Result<()> {
+        let journal_id = JournalId::new(journal_id.as_ref())?;
+
+        self.journal_respository.delete(journal_id)?;
 
         Ok(())
     }

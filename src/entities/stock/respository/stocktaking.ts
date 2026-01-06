@@ -57,12 +57,10 @@ class Repository {
 
 	public edit = async (stocktaking: {
 		id: string;
-		stocktakingDate: Date;
 		records: StocktakingRecord[];
 	}): Promise<void> => {
 		await this.api.stocktaking.updateStocktaking({
 			...stocktaking,
-			stocktakingDate: stocktaking.stocktakingDate.getTime(),
 		});
 	};
 

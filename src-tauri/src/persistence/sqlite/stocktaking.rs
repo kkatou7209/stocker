@@ -1,3 +1,4 @@
+//! This module provides the SQLite-based implementation of the `ForStocktakingPersistence` trait.
 use std::collections::HashSet;
 use std::path::Path;
 
@@ -12,6 +13,7 @@ use crate::core::required_ports::*;
 use crate::core::Error;
 use crate::core::Result;
 
+/// SQLite implementation of `ForStocktakingPersistence`
 pub struct SqliteStocktakingRepository {
     db_path: String,
 }
@@ -24,6 +26,7 @@ impl SqliteStocktakingRepository {
     }
 }
 
+/// Implementation of `ForStocktakingPersistence` for `SqliteStocktakingRepository`
 impl ForStocktakingPersistence for SqliteStocktakingRepository {
     fn next_id(&self) -> Result<StocktakingId> {
         let conn = Connection::open(&self.db_path)

@@ -1,6 +1,5 @@
 use crate::core::domain::entities::stock::*;
 use crate::core::domain::values::stock::*;
-use crate::core::provided_ports;
 use crate::core::provided_ports::*;
 use crate::core::required_ports::{mock::*, *};
 use crate::core::services::stock::{journal::*, stocktaking::*, supplier::*, supply::*};
@@ -54,11 +53,7 @@ fn supply_service_test() {
         }]
     );
 
-    let supply = service
-        .get(provided_ports::GetSupplyQuery {
-            supply_id: "1".into(),
-        })
-        .unwrap();
+    let supply = service.get("1").unwrap();
 
     assert_eq!(
         supply,
@@ -79,11 +74,7 @@ fn supply_service_test() {
 
     assert!(result.is_ok());
 
-    let supply = service
-        .get(provided_ports::GetSupplyQuery {
-            supply_id: "1".into(),
-        })
-        .unwrap();
+    let supply = service.get("1").unwrap();
 
     assert_eq!(
         supply,
@@ -112,6 +103,12 @@ fn supply_service_test() {
     });
 
     assert!(result.is_err());
+
+    service.delete("1").unwrap();
+
+    let supplies = service.list().unwrap();
+
+    assert!(supplies.is_empty());
 }
 
 #[test]
@@ -138,11 +135,7 @@ fn supplier_service_test() {
         }]
     );
 
-    let supplier = service
-        .get(provided_ports::GetSupplierQuery {
-            supplier_id: "1".into(),
-        })
-        .unwrap();
+    let supplier = service.get("1").unwrap();
 
     assert_eq!(
         supplier,
@@ -159,11 +152,7 @@ fn supplier_service_test() {
         })
         .unwrap();
 
-    let supplier = service
-        .get(provided_ports::GetSupplierQuery {
-            supplier_id: "1".into(),
-        })
-        .unwrap();
+    let supplier = service.get("1").unwrap();
 
     assert_eq!(
         supplier,
@@ -172,6 +161,12 @@ fn supplier_service_test() {
             name: "SupplierB".into(),
         })
     );
+
+    service.delete("1").unwrap();
+
+    let suppliers = service.list().unwrap();
+
+    assert!(suppliers.is_empty());
 }
 
 #[test]
@@ -269,11 +264,7 @@ fn journal_service_test() {
         }]
     );
 
-    let journal = service
-        .get(provided_ports::GetJournalQuery {
-            journal_id: "1".into(),
-        })
-        .unwrap();
+    let journal = service.get("1").unwrap();
 
     assert_eq!(
         journal,
@@ -306,7 +297,6 @@ fn journal_service_test() {
     service
         .edit(EditJournalCommand {
             journal_id: "1".into(),
-            entry_date: 200000,
             records: vec![JournalRecordDTO {
                 supply_id: "2".into(),
                 supplier_id: "1".into(),
@@ -319,11 +309,7 @@ fn journal_service_test() {
         })
         .unwrap();
 
-    let journal = service
-        .get(provided_ports::GetJournalQuery {
-            journal_id: "1".into(),
-        })
-        .unwrap();
+    let journal = service.get("1").unwrap();
 
     assert_eq!(
         journal,
@@ -341,6 +327,38 @@ fn journal_service_test() {
             },],
         })
     );
+
+    let search_results = service
+        .search(SearchJournalsQuery {
+            period_start: Some(100000),
+            period_end: Some(200000),
+            supply_name: Some("B".into()),
+            supplier_name: Some("C".into()),
+        })
+        .unwrap();
+
+    assert_eq!(
+        search_results,
+        vec![JournalDTO {
+            id: "1".into(),
+            entry_date: 100000,
+            records: vec![JournalRecordDTO {
+                supply_id: "2".into(),
+                supplier_id: "1".into(),
+                supply_name: "SupplyB".into(),
+                supplier_name: "SupplierC".into(),
+                unit_name: "g".into(),
+                unit_price: 200,
+                quantity: 10,
+            },],
+        }]
+    );
+
+    service.delete("1").unwrap();
+
+    let journals = service.list().unwrap();
+
+    assert!(journals.is_empty());
 }
 
 #[test]
@@ -429,11 +447,7 @@ fn stocktaking_service_test() {
         }],
     );
 
-    let stocktaking = service
-        .get(provided_ports::GetStocktakingQuery {
-            stocktaking_id: "1".into(),
-        })
-        .unwrap();
+    let stocktaking = service.get("1").unwrap();
 
     assert_eq!(
         stocktaking,
@@ -462,7 +476,6 @@ fn stocktaking_service_test() {
     service
         .edit(EditStocktakingCommand {
             stocktaking_id: "1".into(),
-            stocktaken_date: 200000,
             records: vec![StocktakingRecordDTO {
                 supply_id: "1".into(),
                 supply_name: "SupplyA".into(),
@@ -473,11 +486,7 @@ fn stocktaking_service_test() {
         })
         .unwrap();
 
-    let stocktaking = service
-        .get(provided_ports::GetStocktakingQuery {
-            stocktaking_id: "1".into(),
-        })
-        .unwrap();
+    let stocktaking = service.get("1").unwrap();
 
     assert_eq!(
         stocktaking,
@@ -493,4 +502,32 @@ fn stocktaking_service_test() {
             },],
         })
     );
+
+    let search_results = service
+        .search(SearchStocktakingQuery {
+            period_start: Some(100000),
+            period_end: Some(250000),
+        })
+        .unwrap();
+
+    assert_eq!(
+        search_results,
+        vec![StocktakingDTO {
+            id: "1".into(),
+            stocktaken_date: 100000,
+            records: vec![StocktakingRecordDTO {
+                supply_id: "1".into(),
+                supply_name: "SupplyA".into(),
+                unit_name: "kg".into(),
+                unit_price: 150,
+                quantity: 5,
+            },],
+        }]
+    );
+
+    service.delete("1").unwrap();
+
+    let stocktakings = service.list().unwrap();
+
+    assert!(stocktakings.is_empty());
 }

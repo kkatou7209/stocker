@@ -43,12 +43,10 @@ class Repository {
 
 	public edit = async (journal: {
 		id: string;
-		entryDate: Date;
 		records: JournalRecord[];
 	}): Promise<void> => {
 		await this.api.journal.updateJournal({
 			id: journal.id,
-			entryDate: journal.entryDate.getTime(),
 			records: [...journal.records],
 		});
 	};

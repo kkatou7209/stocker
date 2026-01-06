@@ -1,3 +1,4 @@
+//! This module provides the SQLite-based implementation of the `ForJournalPersistence` trait.
 use std::path::Path;
 
 use chrono::Utc;
@@ -11,6 +12,7 @@ use crate::core::required_ports::*;
 use crate::core::Error;
 use crate::core::Result;
 
+/// SQLite implementation of `ForJournalPersistence`
 pub struct SqliteJournalRepository {
     db_path: String,
 }
@@ -23,6 +25,7 @@ impl SqliteJournalRepository {
     }
 }
 
+/// Implementation of `ForJournalPersistence` for `SqliteJournalRepository`
 impl ForJournalPersistence for SqliteJournalRepository {
     fn next_id(&self) -> Result<JournalId> {
         let conn = Connection::open(&self.db_path)

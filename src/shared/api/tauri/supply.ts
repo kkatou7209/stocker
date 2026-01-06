@@ -17,7 +17,7 @@ export const tauriSupplyEndpoint: SupplyEndpoint = {
 	},
 	getSupplyById: async (id: string): Promise<SupplyData | null> => {
 		const supply = await invoke<SupplyData | null>('get_supply_by_id', {
-			supplyId: id,
+			id,
 		});
 
 		const validated = SupplyData.nullable().parse(supply);

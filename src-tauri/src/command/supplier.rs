@@ -73,12 +73,7 @@ pub fn get_supplier_by_id(
     app: tauri::State<Stocker>,
     id: String,
 ) -> Result<Option<SupplierData>, String> {
-    let supplier = app
-        .supplier_usecase()
-        .get(GetSupplierQuery {
-            supplier_id: id.to_string(),
-        })
-        .map_err(|e| e.to_string())?;
+    let supplier = app.supplier_usecase().get(&id).map_err(|e| e.to_string())?;
 
     let supplier = if let Some(supplier) = supplier {
         let supplies = app

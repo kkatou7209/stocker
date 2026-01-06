@@ -29,8 +29,10 @@ pub fn run() {
 
             let db_path = db_path.join(DB_NAME);
 
+            // Migrate database
             migrate(db_path.to_string_lossy())?;
 
+            // Plug Stocker with SQLite implementations
             let stocker = Stocker::plug(Ports {
                 for_supply_persistence: SqliteSupplyRepository::new(db_path.to_string_lossy()),
                 for_supplier_persistence: SqliteSupplierRepository::new(db_path.to_string_lossy()),
@@ -40,6 +42,7 @@ pub fn run() {
                 ),
             });
 
+            // Register application core to state manager
             app.manage(stocker);
 
             Ok(())

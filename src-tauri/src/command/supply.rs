@@ -48,12 +48,9 @@ pub fn list_all_supplies(app: tauri::State<Stocker>) -> Result<Vec<SupplyData>, 
 #[tauri::command]
 pub fn get_supply_by_id(
     app: tauri::State<Stocker>,
-    supply_id: String,
+    id: String,
 ) -> Result<Option<SupplyData>, String> {
-    let supply = app
-        .supply_usecase()
-        .get(GetSupplyQuery { supply_id })
-        .map_err(|e| e.to_string())?;
+    let supply = app.supply_usecase().get(&id).map_err(|e| e.to_string())?;
 
     let supply = supply.and_then(|supply| {
         Some(SupplyData {
@@ -90,9 +87,7 @@ pub fn update_supply(
 ) -> Result<(), String> {
     let supply = app
         .supply_usecase()
-        .get(GetSupplyQuery {
-            supply_id: command.supply_id.to_string(),
-        })
+        .get(&command.supply_id)
         .map_err(|e| e.to_string())?;
 
     if supply.is_none() {

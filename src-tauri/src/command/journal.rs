@@ -1,9 +1,7 @@
 use chrono::{Local, TimeZone};
 use serde::{Deserialize, Serialize};
 
-use crate::core::provided_ports::{
-    self, GetJournalQuery, JournalRecordDTO, JournalUsecase, SearchJournalsQuery,
-};
+use crate::core::provided_ports::{self, JournalRecordDTO, JournalUsecase, SearchJournalsQuery};
 use crate::core::stocker::Stocker;
 
 #[derive(Debug, Clone, Serialize)]
@@ -37,7 +35,6 @@ pub struct RecordJournalCommand {
 #[serde(rename_all = "camelCase")]
 pub struct UpdateJournalCommand {
     id: String,
-    entry_date: i64,
     records: Vec<JournalRecordData>,
 }
 
@@ -83,10 +80,7 @@ pub fn get_journal_by_id(
     app: tauri::State<Stocker>,
     id: String,
 ) -> Result<Option<JournalData>, String> {
-    let journal = app
-        .journal_usecase()
-        .get(GetJournalQuery { journal_id: id })
-        .map_err(|e| e.to_string())?;
+    let journal = app.journal_usecase().get(&id).map_err(|e| e.to_string())?;
 
     let journal = journal.and_then(|journal| {
         Some(JournalData {
@@ -219,7 +213,6 @@ pub fn update_journal(
     app.journal_usecase()
         .edit(provided_ports::EditJournalCommand {
             journal_id: command.id,
-            entry_date: command.entry_date,
             records: command
                 .records
                 .into_iter()

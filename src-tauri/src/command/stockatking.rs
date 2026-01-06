@@ -2,7 +2,7 @@ use chrono::{Local, TimeZone};
 use serde::{Deserialize, Serialize};
 
 use crate::core::provided_ports::{
-    self, GetStocktakingQuery, SearchStocktakingQuery, StocktakingRecordDTO, StocktakingUsecase,
+    self, SearchStocktakingQuery, StocktakingRecordDTO, StocktakingUsecase,
 };
 use crate::core::stocker::Stocker;
 
@@ -35,7 +35,6 @@ pub struct RecordStocktakingCommand {
 #[serde(rename_all = "camelCase")]
 pub struct UpdateStocktakingCommand {
     id: String,
-    stocktaking_date: i64,
     records: Vec<StocktakingRecordData>,
 }
 
@@ -82,7 +81,7 @@ pub fn get_stocktaking_by_id(
 ) -> Result<Option<StocktakingData>, String> {
     let stocktaking = app
         .stocktaking_usecase()
-        .get(GetStocktakingQuery { stocktaking_id: id })
+        .get(&id)
         .map_err(|e| e.to_string())?;
 
     let stocktaking = stocktaking.and_then(|stocktaking| {
@@ -156,7 +155,6 @@ pub fn update_stocktaking(
     app.stocktaking_usecase()
         .edit(provided_ports::EditStocktakingCommand {
             stocktaking_id: command.id,
-            stocktaken_date: command.stocktaking_date,
             records: command
                 .records
                 .into_iter()

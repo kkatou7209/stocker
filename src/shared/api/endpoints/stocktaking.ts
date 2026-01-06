@@ -20,7 +20,7 @@ export type StocktakingData = z.infer<typeof StocktakingData>;
 
 export type AddStocktakingCommand = Omit<StocktakingData, 'id'>;
 
-export type UpdateStocktakingCommand = StocktakingData;
+export type UpdateStocktakingCommand = Omit<StocktakingData, 'stocktakingDate'>;
 
 export type StocktakingQuery = {
 	periodStart?: number;
