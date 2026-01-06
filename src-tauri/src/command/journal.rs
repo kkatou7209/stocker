@@ -270,3 +270,12 @@ pub fn search_journals(
 
     Ok(journals)
 }
+
+#[tauri::command]
+pub fn delete_journal(app: tauri::State<Stocker>, id: String) -> Result<(), String> {
+    app.journal_usecase()
+        .delete(id)
+        .map_err(|e| e.to_string())?;
+
+    Ok(())
+}

@@ -42,4 +42,8 @@ export interface SupplyEndpoint {
 	 * update a supply
 	 */
 	readonly updateSupply: (command: UpdateSupplyCommand) => Promise<void>;
+	/**
+	 * delete a supply
+	 */
+	readonly deleteSupply: (id: string) => Promise<void>;
 }

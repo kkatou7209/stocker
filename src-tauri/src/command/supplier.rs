@@ -1,9 +1,11 @@
+//! Commands related to suppliers
 use serde::{Deserialize, Serialize};
 
 use crate::command::*;
 use crate::core::provided_ports::{self, *};
 use crate::core::stocker::Stocker;
 
+/// Data of supply
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SupplierData {
@@ -12,12 +14,14 @@ pub struct SupplierData {
     supplies: Vec<SupplyData>,
 }
 
+/// Command to add a new supplier
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AddSupplierCommand {
     supplier_name: String,
 }
 
+/// Command to update a supplier
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateSupplierCommand {
@@ -25,6 +29,7 @@ pub struct UpdateSupplierCommand {
     supplier_name: String,
 }
 
+/// Query to search suppliers
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SupplierQuery {
@@ -32,6 +37,7 @@ pub struct SupplierQuery {
     supply_name: Option<String>,
 }
 
+/// Command to list all suppliers
 #[tauri::command]
 pub fn list_all_suppliers(app: tauri::State<Stocker>) -> Result<Vec<SupplierData>, String> {
     let suppliers = app.supplier_usecase().list().map_err(|e| e.to_string())?;
@@ -68,6 +74,7 @@ pub fn list_all_suppliers(app: tauri::State<Stocker>) -> Result<Vec<SupplierData
     Ok(suppliers)
 }
 
+/// Command to get a supplier by id
 #[tauri::command]
 pub fn get_supplier_by_id(
     app: tauri::State<Stocker>,
@@ -101,6 +108,7 @@ pub fn get_supplier_by_id(
     Ok(supplier)
 }
 
+/// Command to search suppliers
 #[tauri::command]
 pub fn search_suppliers(
     app: tauri::State<Stocker>,
@@ -141,6 +149,7 @@ pub fn search_suppliers(
     Ok(suppliers)
 }
 
+/// Command to register a new supplier
 #[tauri::command]
 pub fn register_supplier(
     app: tauri::State<Stocker>,
@@ -155,6 +164,7 @@ pub fn register_supplier(
     Ok(())
 }
 
+/// Command to update a supplier
 #[tauri::command]
 pub fn update_supplier(
     app: tauri::State<Stocker>,
@@ -165,6 +175,16 @@ pub fn update_supplier(
             supplier_id: command.supplier_id,
             supplier_name: command.supplier_name,
         })
+        .map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+/// Command to delete a supplier by id
+#[tauri::command]
+pub fn delete_supplier(app: tauri::State<Stocker>, id: String) -> Result<(), String> {
+    app.supplier_usecase()
+        .delete(id)
         .map_err(|e| e.to_string())?;
 
     Ok(())

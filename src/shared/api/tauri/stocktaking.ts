@@ -8,7 +8,7 @@ import {
 	type UpdateStocktakingCommand,
 } from '@/shared/api/endpoints/stocktaking';
 
-export const tauriStocktakingEndpoint: StocktakingEndpoints = {
+export const tauriStocktakingEndpoint: StocktakingEndpoints = Object.freeze({
 	listAllStocktakings: async (): Promise<StocktakingData[]> => {
 		const stocktakings = await invoke<StocktakingData[]>(
 			'list_all_stocktakings',
@@ -65,4 +65,7 @@ export const tauriStocktakingEndpoint: StocktakingEndpoints = {
 
 		return stocktaking;
 	},
-};
+	deleteStocktaking: async (id: string): Promise<void> => {
+		await invoke<void>('delete_stocktaking', { id });
+	},
+});

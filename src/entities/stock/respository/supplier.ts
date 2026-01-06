@@ -56,6 +56,10 @@ class Repository {
 			supplyName: query.supplyName ?? null,
 		});
 	};
+
+	public delete = async (id: string): Promise<void> => {
+		await this.api.supplier.deleteSupplier(id);
+	};
 }
 
 /**

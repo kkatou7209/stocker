@@ -78,6 +78,10 @@ class Repository {
 			stocktakingDate: new Date(stocktaking.stocktakingDate),
 		}));
 	};
+
+	public delete = async (id: string): Promise<void> => {
+		await this.api.stocktaking.deleteStocktaking(id);
+	};
 }
 
 export type StocktakingRepository = InstanceType<typeof Repository>;

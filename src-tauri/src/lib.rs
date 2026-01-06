@@ -55,12 +55,14 @@ pub fn run() {
             get_supply_by_id,
             register_supply,
             update_supply,
+            delete_supply,
             // supplier commands
             list_all_suppliers,
             get_supplier_by_id,
             register_supplier,
             update_supplier,
             search_suppliers,
+            delete_supplier,
             // journal commands
             list_all_journals,
             get_journal_by_id,
@@ -68,6 +70,7 @@ pub fn run() {
             record_journal,
             update_journal,
             search_journals,
+            delete_journal,
             // stocktaking commands
             list_all_stocktakings,
             get_stocktaking_by_id,
@@ -75,6 +78,7 @@ pub fn run() {
             record_stocktaking,
             update_stocktaking,
             search_stocktakings,
+            delete_stocktaking,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

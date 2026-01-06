@@ -8,7 +8,7 @@ import {
 	type UpdateJournalCommand,
 } from '@/shared/api/endpoints/jurnal';
 
-export const tauriJournalEndpoint: JournalEndpoints = {
+export const tauriJournalEndpoint: JournalEndpoints = Object.freeze({
 	listAllJournals: async (): Promise<JournalData[]> => {
 		const journals = await invoke<JournalData[]>('list_all_journals');
 
@@ -55,4 +55,7 @@ export const tauriJournalEndpoint: JournalEndpoints = {
 
 		return validated;
 	},
-};
+	deleteJournal: async (id: string): Promise<void> => {
+		await invoke<void>('delete_journal', { id });
+	},
+});

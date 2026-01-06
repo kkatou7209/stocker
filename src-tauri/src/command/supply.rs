@@ -1,8 +1,10 @@
+//! Commands related to supplies
 use serde::{Deserialize, Serialize};
 
 use crate::core::provided_ports::{self, *};
 use crate::core::stocker::Stocker;
 
+/// Data of supply
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SupplyData {
@@ -12,6 +14,7 @@ pub struct SupplyData {
     pub supplier_id: String,
 }
 
+/// Command to add a new supply
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AddSupplyCommand {
@@ -20,6 +23,7 @@ pub struct AddSupplyCommand {
     pub unit_name: String,
 }
 
+/// Command to update a supply
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateSupplyCommand {
@@ -28,6 +32,7 @@ pub struct UpdateSupplyCommand {
     pub unit_name: String,
 }
 
+/// Command to list all supplies
 #[tauri::command]
 pub fn list_all_supplies(app: tauri::State<Stocker>) -> Result<Vec<SupplyData>, String> {
     let supplies = app.supply_usecase().list().map_err(|e| e.to_string())?;
@@ -45,6 +50,7 @@ pub fn list_all_supplies(app: tauri::State<Stocker>) -> Result<Vec<SupplyData>, 
     Ok(supplies)
 }
 
+/// Command to get a supply by id
 #[tauri::command]
 pub fn get_supply_by_id(
     app: tauri::State<Stocker>,
@@ -64,6 +70,7 @@ pub fn get_supply_by_id(
     Ok(supply)
 }
 
+/// Command to register a new supply
 #[tauri::command]
 pub fn register_supply(
     app: tauri::State<Stocker>,
@@ -80,6 +87,7 @@ pub fn register_supply(
     Ok(())
 }
 
+/// Command to update a supply
 #[tauri::command]
 pub fn update_supply(
     app: tauri::State<Stocker>,
@@ -104,6 +112,13 @@ pub fn update_supply(
             supplier_id: supply.supplier_id,
         })
         .map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub fn delete_supply(app: tauri::State<Stocker>, id: String) -> Result<(), String> {
+    app.supply_usecase().delete(id).map_err(|e| e.to_string())?;
 
     Ok(())
 }

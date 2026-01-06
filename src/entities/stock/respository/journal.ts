@@ -69,6 +69,10 @@ class Repository {
 			entryDate: new Date(journal.entryDate),
 		}));
 	};
+
+	public delete = async (id: string): Promise<void> => {
+		await this.api.journal.deleteJournal(id);
+	};
 }
 
 export type JournalRepository = InstanceType<typeof Repository>;

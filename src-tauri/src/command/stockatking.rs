@@ -259,3 +259,12 @@ pub fn get_stocktaking_at(
 
     Ok(stocktaking)
 }
+
+#[tauri::command]
+pub fn delete_stocktaking(app: tauri::State<Stocker>, id: String) -> Result<(), String> {
+    app.stocktaking_usecase()
+        .delete(id)
+        .map_err(|e| e.to_string())?;
+
+    Ok(())
+}

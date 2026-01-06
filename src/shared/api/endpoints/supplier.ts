@@ -53,4 +53,8 @@ export interface SupplierEndpoint {
 	 * update a supplier
 	 */
 	readonly updateSupplier: (command: UpdateSupplierCommand) => Promise<void>;
+	/**
+	 * delete a supplier
+	 */
+	readonly deleteSupplier: (id: string) => Promise<void>;
 }

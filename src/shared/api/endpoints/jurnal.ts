@@ -56,4 +56,8 @@ export interface JournalEndpoints {
 	 * search jorunals
 	 */
 	searchJournals: (query: JournalQuery) => Promise<JournalData[]>;
+	/**
+	 * delete a journal
+	 */
+	deleteJournal: (id: string) => Promise<void>;
 }

@@ -7,7 +7,7 @@ import {
 	type UpdateSupplyCommand,
 } from '@/shared/api/endpoints/supply';
 
-export const tauriSupplyEndpoint: SupplyEndpoint = {
+export const tauriSupplyEndpoint: SupplyEndpoint = Object.freeze({
 	listAllSupplies: async (): Promise<SupplyData[]> => {
 		const supplies = await invoke<SupplyData[]>('list_all_supplies');
 
@@ -30,4 +30,7 @@ export const tauriSupplyEndpoint: SupplyEndpoint = {
 	updateSupply: async (command: UpdateSupplyCommand): Promise<void> => {
 		await invoke('update_supply', { command });
 	},
-};
+	deleteSupply: async (id: string): Promise<void> => {
+		await invoke<void>('delete_supply', { id });
+	},
+});

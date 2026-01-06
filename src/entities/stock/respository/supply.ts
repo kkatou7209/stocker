@@ -31,6 +31,10 @@ class Repository {
 			unitName: supply.unitName,
 		});
 	};
+
+	public delete = async (id: string): Promise<void> => {
+		await this.api.supply.deleteSupply(id);
+	};
 }
 
 /**

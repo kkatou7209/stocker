@@ -54,4 +54,8 @@ export interface StocktakingEndpoints {
 	 * search stocktakign data
 	 */
 	searchStocktakings: (query: StocktakingQuery) => Promise<StocktakingData[]>;
+	/**
+	 * delete a stocktaking data
+	 */
+	deleteStocktaking: (id: string) => Promise<void>;
 }

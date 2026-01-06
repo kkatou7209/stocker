@@ -1,3 +1,5 @@
+//! This module contains Tauri commands related to suppliers, supplies, stocktaking, and journals.
+
 mod journal;
 mod stockatking;
 mod supplier;
