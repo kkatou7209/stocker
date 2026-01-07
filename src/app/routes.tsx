@@ -1,4 +1,5 @@
 import { Navigate, type RouteDefinition } from '@solidjs/router';
+import { ErrorPage } from '@/pages/Error';
 import EntryJournalPage from '@/pages/stock/ui/EntryJournalPage';
 import JournalListPage from '@/pages/stock/ui/JournalListPage';
 import StocktakingListPage from '@/pages/stock/ui/StocktakingListPage';
@@ -7,6 +8,10 @@ import SupplierListPage from '@/pages/stock/ui/SupplierListPage';
 import SupplyListPage from '@/pages/stock/ui/SupplyListPage';
 
 export const routes: RouteDefinition[] = [
+	{
+		path: '/error',
+		component: ErrorPage,
+	},
 	{
 		path: '/',
 		component: () => <Navigate href="/journal" />,

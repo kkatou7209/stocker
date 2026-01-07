@@ -5,6 +5,7 @@ mod persistence;
 use std::{env, fs};
 
 use tauri::Manager;
+use tauri_plugin_log::log;
 
 use crate::command::*;
 use crate::core::stocker::{Ports, Stocker};
@@ -15,6 +16,11 @@ const DB_NAME: &str = "stocker.db";
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                .level(tauri_plugin_log::log::LevelFilter::Info)
+                .build(),
+        )
         .setup(|app| {
             // database path
             let db_path = if tauri::is_dev() {
@@ -47,6 +53,16 @@ pub fn run() {
 
             Ok(())
         })
+        .plugin(
+            tauri_plugin_log::Builder::new()
+                // Logs only errors
+                .level(log::LevelFilter::Error)
+                // Keep all log files
+                .rotation_strategy(tauri_plugin_log::RotationStrategy::KeepAll)
+                // Use local timezone for log timestamps
+                .timezone_strategy(tauri_plugin_log::TimezoneStrategy::UseLocal)
+                .build(),
+        )
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![

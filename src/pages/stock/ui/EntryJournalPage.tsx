@@ -1,6 +1,4 @@
-/**
- * @fileoverview page for writing journal
- */
+import { useLocation, useParams } from '@solidjs/router';
 import { FilePenLineIcon } from 'lucide-solid';
 import * as luxon from 'luxon';
 import { type Component, createSignal, onMount } from 'solid-js';
@@ -13,11 +11,12 @@ import Button from '@/shared/ui/Button';
 import DateInput from '@/shared/ui/DateInput';
 
 /**
- * @summary page for entrying journal.
+ * Page component of journal entry
  */
 const EntryJournalPage: Component = () => {
-
 	const app = useApp();
+	const location = useLocation<{ date?: Date }>();
+
 	const supplierRepository = useSupplierRespository();
 	const journalRepository = useJournalepository();
 
@@ -27,7 +26,7 @@ const EntryJournalPage: Component = () => {
 		if (!id) return true;
 
 		return id.trim().length === 0;
-	}
+	};
 
 	const [journalId, setJournalId] = createSignal<string | null>(null);
 
@@ -40,13 +39,11 @@ const EntryJournalPage: Component = () => {
 	app.setPageTitle('記帳');
 
 	const reload = async () => {
-
 		const journal = await journalRepository.getAt(entryDate());
 
 		if (journal) {
-
 			setJournalId(journal.id);
-	
+
 			setRecords(journal.records);
 
 			return;
@@ -74,10 +71,9 @@ const EntryJournalPage: Component = () => {
 		});
 
 		setRecords(records);
-	}
+	};
 
 	const add = async () => {
-
 		const date = entryDate();
 
 		const journal = await journalRepository.add({
@@ -91,7 +87,6 @@ const EntryJournalPage: Component = () => {
 	};
 
 	const edit = async () => {
-
 		const id = journalId();
 
 		if (!id) return;
@@ -102,10 +97,9 @@ const EntryJournalPage: Component = () => {
 		});
 
 		app.toastInfo('更新しました。');
-	}
+	};
 
 	const onDateChange = async (date: Date | null) => {
-
 		if (!date) {
 			setJournalId(null);
 			setRecords([]);
@@ -115,9 +109,15 @@ const EntryJournalPage: Component = () => {
 		setEntryDate(date);
 
 		await reload();
-	}
+	};
 
 	onMount(async () => {
+
+		const date = location.state?.date;
+
+		if (date) {
+			setEntryDate(date);
+		}
 
 		await reload();
 	});
@@ -130,13 +130,13 @@ const EntryJournalPage: Component = () => {
 					value={entryDate()}
 					onChange={onDateChange}
 				/>
-				<Button onClick={() => isNewJournal() ? add() : edit()}>
+				<Button onClick={() => (isNewJournal() ? add() : edit())}>
 					<FilePenLineIcon class="size-4" />
 					<span>登録</span>
 				</Button>
 			</section>
 			<section class="max-h-[70vh] overflow-auto">
-				<JournalSheet value={records()} onChange={setRecords}/>
+				<JournalSheet value={records()} onChange={setRecords} />
 			</section>
 		</article>
 	);

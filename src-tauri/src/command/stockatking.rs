@@ -212,7 +212,6 @@ pub fn get_stocktaking_at(
     app: tauri::State<Stocker>,
     date: i64,
 ) -> Result<Option<StocktakingData>, String> {
-    println!("timestamp: {}", date);
     let date = Local.timestamp_millis_opt(date).unwrap();
 
     let start = date.date_naive().and_hms_milli_opt(0, 0, 0, 0).unwrap();
@@ -228,8 +227,6 @@ pub fn get_stocktaking_at(
         .unwrap();
 
     let end = Local.from_local_datetime(&end).unwrap().timestamp_millis();
-
-    println!("start: {}, end: {}", start, end);
 
     let stocktakings = app
         .stocktaking_usecase()
