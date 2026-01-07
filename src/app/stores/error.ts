@@ -11,6 +11,7 @@ const [state, setState] = createStore<{
 });
 
 const handle = async (err: Error, reset?: () => unknown) => {
+	console.error(err);
 	const navigation = useNavigate();
 
 	setState({
@@ -21,9 +22,9 @@ const handle = async (err: Error, reset?: () => unknown) => {
 		},
 	});
 
-	navigation('/error');
-
 	await error(`${err.message}\n${err.stack}`);
+
+	navigation('/error');
 };
 
 export const useError = () => {

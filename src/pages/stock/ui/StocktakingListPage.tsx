@@ -42,18 +42,6 @@ const StocktakingListPage: Component = () => {
 		setStocktakings(stocks);
 	};
 
-	onMount(async () => {
-		const today = luxon.DateTime.now();
-
-		const threeYearsAgo = today.minus({
-			years: 3,
-		});
-
-		setPeriodStart(threeYearsAgo.toJSDate());
-
-		reload();
-	});
-
 	createEffect(async () => {
 		const start = periodStart();
 		const end = periodEnd();
@@ -61,6 +49,20 @@ const StocktakingListPage: Component = () => {
 		if (start && end && start.getTime() > end.getTime()) {
 			setPeriodStart(end);
 		}
+
+		reload();
+	});
+
+	onMount(async () => {
+
+		
+		const today = luxon.DateTime.now();
+
+		const threeYearsAgo = today.minus({
+			years: 3,
+		});
+
+		setPeriodStart(threeYearsAgo.toJSDate());
 
 		reload();
 	});
