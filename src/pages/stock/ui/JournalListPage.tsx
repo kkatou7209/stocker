@@ -74,9 +74,6 @@ const JournalListPage: Component = () => {
 	};
 
 	onMount(() => {
-
-        error.handle(new Error(`記帳履歴の読み込みに失敗しました。`), () => navigation('/error'));
-        
 		const today = luxon.DateTime.now();
 
 		setYear(today.year);

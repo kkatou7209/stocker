@@ -1,4 +1,4 @@
-import { ChevronLeftIcon, ChevronRightIcon, FileCheckIcon, FilePenIcon, FileTextIcon, PencilLineIcon } from 'lucide-solid';
+import { ChevronLeftIcon, ChevronRightIcon, FileCheckIcon, PencilLineIcon } from 'lucide-solid';
 import * as luxon from 'luxon';
 import { type Component, createSignal, For, onMount, Show } from 'solid-js';
 import type { Journal } from '@/entities/stock/models/journal';

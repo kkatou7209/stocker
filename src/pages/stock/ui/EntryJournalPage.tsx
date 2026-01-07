@@ -1,4 +1,4 @@
-import { useLocation, useParams } from '@solidjs/router';
+import { useLocation } from '@solidjs/router';
 import { FilePenLineIcon } from 'lucide-solid';
 import * as luxon from 'luxon';
 import { type Component, createSignal, onMount } from 'solid-js';
