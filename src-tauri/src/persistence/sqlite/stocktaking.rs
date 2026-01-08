@@ -70,6 +70,7 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                     ON stocktaking_records.stocktaking_id = stocktakings.id
                 WHERE
                     stocktakings.deleted_at IS NULL
+                ORDER BY stocktakings.recorded_at DESC
                 ",
             )
             .map_err(|e| {

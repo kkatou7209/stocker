@@ -1,3 +1,5 @@
+import { useNavigate } from '@solidjs/router';
+import { CalendarArrowDownIcon, CalendarArrowUpIcon, PencilLineIcon, Trash2Icon } from 'lucide-solid';
 import * as luxon from 'luxon';
 import {
 	type Component,
@@ -8,16 +10,22 @@ import {
 	Show,
 } from 'solid-js';
 import { useApp } from '@/app/contexts/AppContext';
+import { useError } from '@/app/stores/error';
 import type { Stocktaking } from '@/entities/stock/models/stocktaking';
 import { useStocktakingRepository } from '@/entities/stock/respository/stocktaking';
 import StocktakingTable from '@/features/stock/ui/stocktaking/StocktakingTable';
 import DateInput from '@/shared/ui/DateInput';
+import { Confirm } from '@/shared/ui/modals/Confirm';
 
 /**
  * Page component of stocktaking history
  */
 const StocktakingListPage: Component = () => {
 	const app = useApp();
+
+	const error = useError();
+
+	const navigation = useNavigate();
 
 	app.setPageTitle('棚卸履歴');
 
@@ -29,6 +37,16 @@ const StocktakingListPage: Component = () => {
 
 	const [stocktakings, setStocktakings] = createSignal<Stocktaking[]>([]);
 
+	const [confirmOpen, setConfirmOpen] = createSignal(false);
+
+	const [sort, setSort] = createSignal<'asc' | 'desc'>('desc');
+
+	const [selectedStocktaking, setSelectedStocktaking] =
+		createSignal<Stocktaking | null>(null);
+
+	/**
+	 * Reload stocktaking records
+	 */
 	const reload = async () => {
 		const stocks = await stocktakingRepository.find({
 			periodStart: periodStart() ?? undefined,
@@ -42,7 +60,72 @@ const StocktakingListPage: Component = () => {
 		setStocktakings(stocks);
 	};
 
+	/**
+	 * Toggle sort order
+	 */
+	const toggleSort = () => {
+		const current = sort();
+		const newSort = current === 'asc' ? 'desc' : 'asc';
+		setSort(newSort);
+
+		const stocks = [ ...stocktakings() ];
+
+		stocks.sort((a, b) => a.stocktakingDate.getTime() - b.stocktakingDate.getTime());
+
+		if (newSort === 'desc') {
+			stocks.reverse();
+		}
+
+		setStocktakings(stocks);
+	};
+
+	/**
+	 * Handle edit button click
+	 */
+	const onEditClick = (stocktaking: Stocktaking) => {
+		navigation('/stocktaking', {
+			state: {
+				stocktakingId: stocktaking.stocktakingDate,
+			},
+		});
+	};
+
+	/**
+	 * Handle delete button click
+	 */
+	const onDeleteClick = (stocktaking: Stocktaking) => {
+
+		setSelectedStocktaking(stocktaking);
+		
+		// Ask user for deletion
+		setConfirmOpen(true);
+	};
+
+	/**
+	 * Handle delete confirmation
+	 */
+	const onDeleteConfirm = async () => {
+
+		setConfirmOpen(false);
+
+		const id = selectedStocktaking()?.id;
+
+		if (!id) {
+			error.handle(new Error('システムエラーが発生しました。'), () => {});
+			return;
+		}
+
+		try {
+			await stocktakingRepository.delete(id);
+		} catch (_) {
+			error.handle(new Error('システムエラーが発生しました。'), () => {});
+		}
+
+		reload();
+	};
+
 	createEffect(async () => {
+		// Ensure periodStart is not after periodEnd
 		const start = periodStart();
 		const end = periodEnd();
 
@@ -54,16 +137,6 @@ const StocktakingListPage: Component = () => {
 	});
 
 	onMount(async () => {
-
-		
-		const today = luxon.DateTime.now();
-
-		const threeYearsAgo = today.minus({
-			years: 3,
-		});
-
-		setPeriodStart(threeYearsAgo.toJSDate());
-
 		reload();
 	});
 
@@ -84,6 +157,20 @@ const StocktakingListPage: Component = () => {
 				</div>
 			</section>
 			<section class="max-h-[70vh] overflow-auto pb-100">
+					<div class='mb-4 pr-4 flex justify-end'>
+						<button
+						type='button'
+						class='hover:opacity-50 hover:cursor-pointer'
+						onclick={toggleSort}
+					>
+						<Show when={sort() === 'asc'}>
+							<CalendarArrowDownIcon class='size-5'/>
+						</Show>
+						<Show when={sort() === 'desc'}>
+							<CalendarArrowUpIcon class='size-5'/>
+						</Show>
+					</button>
+				</div>
 				<Show
 					when={stocktakings().length > 0}
 					fallback={
@@ -95,16 +182,53 @@ const StocktakingListPage: Component = () => {
 					<ul class="flex flex-col gap-5">
 						<For each={stocktakings()}>
 							{(stocktaking) => (
-								<li class="">
+								<li>
 									<details
 										class="collapse collapse-arrow bg-base-200"
 										name={`stocktaking-${stocktaking.id}`}
 									>
 										<summary class="collapse-title">
-											{luxon.DateTime.fromJSDate(
-												stocktaking.stocktakingDate,
-											).toFormat('yyyy年M月d日')}
+											<section class="flex justify-between items-center">
+												<div class="flex items-center gap-3">
+													{/* Edit button */}
+													<button
+														type="button"
+														class="btn btn-ghost"
+														onclick={() =>
+															onEditClick(
+																stocktaking,
+															)
+														}
+													>
+														<PencilLineIcon class="size-4" />
+													</button>
+
+													{/* Stocktaking date */}
+													<div>
+														{luxon.DateTime.fromJSDate(
+															stocktaking.stocktakingDate,
+														).toFormat(
+															'yyyy年M月d日',
+														)}
+													</div>
+												</div>
+
+												{/* Delete button */}
+												<button
+													type="button"
+													class="btn btn-error btn-ghost"
+													onclick={() =>
+														onDeleteClick(
+															stocktaking,
+														)
+													}
+												>
+													<Trash2Icon class="size-4" />
+												</button>
+											</section>
 										</summary>
+
+										{/* Stocktaking records */}
 										<div class="collapse-content">
 											<StocktakingTable
 												value={stocktaking.records}
@@ -117,6 +241,18 @@ const StocktakingListPage: Component = () => {
 					</ul>
 				</Show>
 			</section>
+
+			{/* Modal for confirmation */}
+			<Confirm
+				open={confirmOpen()}
+				onCancel={() => setConfirmOpen(false)}
+				onConfirm={onDeleteConfirm}
+			>
+				<div class='flex flex-col items-center gap-3'>
+					<p>一度削除すると元に戻せません。</p>
+					<p>本当に削除しますか？</p>
+				</div>
+			</Confirm>
 		</article>
 	);
 };

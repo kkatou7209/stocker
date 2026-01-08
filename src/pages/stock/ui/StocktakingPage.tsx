@@ -10,6 +10,9 @@ import StocktakingSheet from '@/features/stock/ui/stocktaking/StocktakingSheet';
 import Button from '@/shared/ui/Button';
 import DateInput from '@/shared/ui/DateInput';
 
+/**
+ * Page component for stocktaking
+ */
 const StocktakingPage: Component = () => {
 	
 	const app = useApp();
@@ -36,6 +39,9 @@ const StocktakingPage: Component = () => {
 		StocktakingRecord[]
 	>([]);
 
+	/**
+	 * Reload records
+	 */
 	const reload = async () => {
 
 		setStocktakingId(null);
@@ -82,6 +88,9 @@ const StocktakingPage: Component = () => {
 		setStocktakingRecords([...records]);
 	}
 
+	/**
+	 * Add new stocktaking records
+	 */
 	const add = async () => {
 
 		const date = stocktakingDate();
@@ -95,9 +104,12 @@ const StocktakingPage: Component = () => {
 
 		setStocktakingId(stocktaking.id);
 
-		app.toastInfo('登録しました。');
+		app.toastInfo('棚卸を登録しました。');
 	}
 
+	/**
+	 * Update stocktaking records
+	 */
 	const edit = async () => {
 
 		const date = stocktakingDate();
@@ -110,9 +122,12 @@ const StocktakingPage: Component = () => {
 			records: [...stocktakingRecords()],
 		});
 
-		app.toastInfo('更新しました。');
+		app.toastInfo('棚卸を更新しました。');
 	}
 
+	/**
+	 * Handle date change
+	 */
 	const onDateChange = async (date: Date | null) => {
 
 		setStocktakingDate(date);

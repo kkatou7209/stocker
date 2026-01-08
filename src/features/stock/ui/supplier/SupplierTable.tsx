@@ -1,16 +1,14 @@
-import { PencilLineIcon } from 'lucide-solid';
+import { PencilLineIcon, Trash2Icon } from 'lucide-solid';
 import type { Component } from 'solid-js';
 import type { SupplierTableRecord } from '@/features/stock/models/supplier-table-record';
 
 export interface SupplierTableProps {
 	value?: SupplierTableRecord[];
 	onSelect?: (record: SupplierTableRecord) => Promise<void> | void;
+	onDelete?: (record: SupplierTableRecord) => Promise<void> | void;
 }
 
 const SupplierTable: Component<SupplierTableProps> = (props) => {
-	const select = (record: SupplierTableRecord) => {
-		props.onSelect?.(record);
-	};
 
 	return (
 		<table class="table">
@@ -18,6 +16,7 @@ const SupplierTable: Component<SupplierTableProps> = (props) => {
 				<tr class="table block table-fixed">
 					<th class='w-20'></th>
 					<th>仕入先名</th>
+					<th class='w-20'></th>
 				</tr>
 			</thead>
 			<tbody class="block overflow-auto">
@@ -27,12 +26,21 @@ const SupplierTable: Component<SupplierTableProps> = (props) => {
 							<button
 								type="button"
 								class='btn btn-ghost'
-								onclick={() => select(record)}
+								onclick={() => props.onSelect?.(record)}
 							>
 								<PencilLineIcon class='size-4'/>
 							</button>
 						</td>
 						<td>{record.name}</td>
+						<td class='w-20'>
+							<button
+								type="button"
+								class='btn btn-error btn-ghost'
+								onclick={() => props.onDelete?.(record)}
+							>
+								<Trash2Icon class='size-4'/>
+							</button>
+						</td>
 					</tr>
 				))}
 			</tbody>

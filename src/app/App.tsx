@@ -1,14 +1,15 @@
-import { type Component, createSignal, ErrorBoundary, onMount } from 'solid-js';
+import { type Component, createSignal, onMount } from 'solid-js';
 import '@/app/App.css';
 import { Router } from '@solidjs/router';
 import { InfoIcon } from 'lucide-solid';
+import { AppContext, type AppContextValue } from '@/app/contexts/AppContext';
 import { routes } from '@/app/routes';
+import AppBar from '@/app/ui/AppBar';
 import SideNavigation from '@/app/ui/SideNavigation';
-import { ErrorPage } from '@/pages/Error';
-import { AppContext, type AppContextValue } from './contexts/AppContext';
-import AppBar from './ui/AppBar';
+import { Confirm } from '@/shared/ui/modals/Confirm';
 
 const App: Component = () => {
+
 	const [isDark, setIsDark] = createSignal(false);
 
 	const [pageTitle, setPageTitle] = createSignal('');
@@ -51,10 +52,12 @@ const App: Component = () => {
 	return (
 		<AppContext.Provider value={contextValue}>
 			<SideNavigation open={isDrawerOpen}>
-				<AppBar />
-				<main class="size-full">
-					<Router>{routes}</Router>
-				</main>
+				<div class="flex flex-col">
+					<AppBar />
+					<main class="w-full grow">
+						<Router>{routes}</Router>
+					</main>
+				</div>
 			</SideNavigation>
 
 			<div

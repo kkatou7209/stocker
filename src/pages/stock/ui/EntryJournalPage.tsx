@@ -83,7 +83,7 @@ const EntryJournalPage: Component = () => {
 
 		setJournalId(journal.id);
 
-		app.toastInfo('登録しました。');
+		app.toastInfo('記帳を登録しました。');
 	};
 
 	const edit = async () => {
@@ -96,7 +96,7 @@ const EntryJournalPage: Component = () => {
 			records: [...records()],
 		});
 
-		app.toastInfo('更新しました。');
+		app.toastInfo('記帳を更新しました。');
 	};
 
 	const onDateChange = async (date: Date | null) => {
