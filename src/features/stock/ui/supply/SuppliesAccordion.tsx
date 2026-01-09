@@ -1,5 +1,5 @@
 import { PencilLineIcon, Trash2Icon } from 'lucide-solid';
-import { type Component, createSignal, Show } from 'solid-js';
+import { type Component, Show } from 'solid-js';
 import type { SuppliesAccordionValue } from '@/features/stock/models/supplies-accordion-value';
 
 export interface SupplierListItemProps {
