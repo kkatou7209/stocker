@@ -1,26 +1,37 @@
 import { PencilLineIcon, Trash2Icon } from 'lucide-solid';
-import { type Component, Show } from 'solid-js';
+import { type Accessor, type Component, createSignal, Show } from 'solid-js';
 import type { SuppliesAccordionValue } from '@/features/stock/models/supplies-accordion-value';
 
 export interface SupplierListItemProps {
 	value: SuppliesAccordionValue;
+	open?: Accessor<boolean>;
+	onToggle?: (open: boolean) => void;
 	onSelect?: (
 		value: SuppliesAccordionValue['supplies'][number],
 	) => Promise<void> | void;
-    onDelete?: (
-        value: SuppliesAccordionValue['supplies'][number],
-    ) => Promise<void> | void;
+	onDelete?: (
+		value: SuppliesAccordionValue['supplies'][number],
+	) => Promise<void> | void;
 }
 
 const SuppliesAccordion: Component<SupplierListItemProps> = (props) => {
+	const [open, setOpen] = createSignal(!!props.open);
+
+	const toggle = (e: ToggleEvent) => {
+		setOpen(e.newState === 'open');
+		console.log('toggled', open());
+		props.onToggle?.(open());
+	};
 
 	return (
 		<details
 			class="collapse collapse-arrow bg-base-200 join-item"
 			name={`supplier-${props.value.supplierId}`}
+			open={props.open?.()}
+			ontoggle={toggle}
 		>
 			<summary class="collapse-title">
-				<section class='px-3 flex items-center justify-between'>
+				<section class="px-3 flex items-center justify-between">
 					{props.value.supplierName}
 				</section>
 			</summary>

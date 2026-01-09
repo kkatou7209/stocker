@@ -35,14 +35,33 @@ const StocktakingListPage: Component = () => {
 
 	const [periodEnd, setPeriodEnd] = createSignal<Date | null>(null);
 
+	/**
+	 * Stocktaking records
+	 */
 	const [stocktakings, setStocktakings] = createSignal<Stocktaking[]>([]);
 
+	/**
+	 * Confirmation modal open state
+	 */
 	const [confirmOpen, setConfirmOpen] = createSignal(false);
 
+	/** 
+	 * Selected sort order
+	 */
 	const [sort, setSort] = createSignal<'asc' | 'desc'>('desc');
 
+	/**
+	 * Selected stocktaking for deletion
+	 */
 	const [selectedStocktaking, setSelectedStocktaking] =
 		createSignal<Stocktaking | null>(null);
+
+	/**
+	 * Accordion open/close states
+	 */
+	const [accordionStates, setAccordionStates] = createSignal<Map<string, boolean>>(
+		new Map(),
+	);
 
 	/**
 	 * Reload stocktaking records
@@ -58,6 +77,15 @@ const StocktakingListPage: Component = () => {
 		);
 
 		setStocktakings(stocks);
+
+
+		for (const stock of stocks) {
+			if (!accordionStates().has(stock.id)) {
+				accordionStates().set(stock.id, false);
+			}
+		}
+
+		setAccordionStates(new Map(accordionStates()));
 	};
 
 	/**
@@ -78,6 +106,15 @@ const StocktakingListPage: Component = () => {
 
 		setStocktakings(stocks);
 	};
+
+	/**
+	 * Handle accordion toggle
+	 */
+	const toggleAccordion = (stocktakingId: string, open: boolean) => {
+		
+		accordionStates().set(stocktakingId, open);
+		setAccordionStates(new Map(accordionStates()));
+	}
 
 	/**
 	 * Handle edit button click
@@ -186,6 +223,8 @@ const StocktakingListPage: Component = () => {
 									<details
 										class="collapse collapse-arrow bg-base-200"
 										name={`stocktaking-${stocktaking.id}`}
+										open={accordionStates().get(stocktaking.id) ?? false}
+										ontoggle={(e) => toggleAccordion(stocktaking.id, e.newState === 'open')}
 									>
 										<summary class="collapse-title">
 											<section class="flex justify-between items-center">

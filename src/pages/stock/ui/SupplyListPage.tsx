@@ -56,10 +56,13 @@ const SupplyListPage: Component = () => {
 
 	const [confirmOpen, setConfirmOpen] = createSignal(false);
 
+	const [supplierOpeningStates, setSupplierOpeningStates] = createSignal<Map<string, boolean>>(new Map());
+
 	/**
 	 * Reload supplies
 	 */
 	const reload = async () => {
+
 		const suppliers = await supplierRepository.find({
 			supplierName: searchSupplierName(),
 			supplyName: searchSupplyName(),
@@ -80,7 +83,26 @@ const SupplyListPage: Component = () => {
 		});
 
 		setSuppliesAccordionValues(values);
+
+		for (const supply of suppliesAccordionValues()) {
+
+			if (!supplierOpeningStates().has(supply.supplierId)) {
+				supplierOpeningStates().set(supply.supplierId, false);
+			}
+		}
+
+		setSupplierOpeningStates(new Map(supplierOpeningStates()));
+
+		console.log(supplierOpeningStates());
 	};
+
+	/**
+	 * Handle accordion toggle
+	 */
+	const onToggle = (supplierId: string, open: boolean) => {
+		supplierOpeningStates().set(supplierId, open);
+		setSupplierOpeningStates(new Map(supplierOpeningStates()));
+	}
 
 	/**
 	 * Select supply for editing
@@ -236,8 +258,10 @@ const SupplyListPage: Component = () => {
 						{suppliesAccordionValues().map((value) => (
 							<SuppliesAccordion
 								value={value}
+								open={() => supplierOpeningStates().get(value.supplierId) ?? false}
 								onSelect={select}
 								onDelete={onDeleteClick}
+								onToggle={(state) => onToggle(value.supplierId, state)}
 							/>
 						))}
 					</div>
