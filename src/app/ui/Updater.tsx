@@ -1,7 +1,7 @@
 import { platform } from '@tauri-apps/plugin-os';
 import { relaunch } from '@tauri-apps/plugin-process';
 import { check, type DownloadEvent } from '@tauri-apps/plugin-updater';
-import { type Component, createSignal, onMount } from 'solid-js';
+import { type Component, createSignal, onMount, Show } from 'solid-js';
 
 /**
  * Component that handles application updates
@@ -62,17 +62,27 @@ export const Updater: Component = () => {
 
 	return (
 		<dialog class="modal" open={open()}>
-			<section class="modal-box w-50vw flex flex-col items-center gap-6 p-10">
-				<h3 class="text-xl mb-4">アップデートがあります。</h3>
-				<p>新バージョンをインストール中です。</p>
-				{/** biome-ignore lint/a11y/useAriaPropsSupportedByRole: required for DaisyUI */}
-				<div
-					class="radial-progress text-primary"
-					aria-valuenow={(downloadedLength() / contentLength()) * 100}
-				>
-					{Math.floor((downloadedLength() / contentLength()) * 100)}%
-				</div>
-			</section>
+            <Show when={state() === 'progress'}>
+                <section class="modal-box w-50vw flex flex-col items-center gap-6 p-10">
+                    <h3 class="text-xl mb-4">アップデートがあります。</h3>
+                    <p>新バージョンをインストール中です。</p>
+                    {/** biome-ignore lint/a11y/useAriaPropsSupportedByRole: required for DaisyUI */}
+                    <div
+                        class="radial-progress text-primary"
+                        aria-valuenow={(downloadedLength() / contentLength()) * 100}
+                    >
+                        {Math.floor((downloadedLength() / contentLength()) * 100)}%
+                    </div>
+                </section>
+            </Show>
+            <Show when={state() === 'finished'}>
+                <section class="modal-box w-50vw flex flex-col justify-center items-center gap-6 p-10">
+                    <h3 class='text-xl'>
+                        インストールが完了しました。
+                    </h3>
+                    <p>アプリケーションを再起動します。</p>
+                </section>
+            </Show>
 		</dialog>
 	);
 };
