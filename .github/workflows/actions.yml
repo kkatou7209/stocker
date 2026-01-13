@@ -54,6 +54,6 @@ jobs:
         with:
           tagName: app-v__VERSION__
           releaseName: "Stocker v__VERSION__"
-          releaseDraft: true
-          prerelease: false
+          releaseDraft: false
+          prerelease: true
           args: ${{ matrix.args }}

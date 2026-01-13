@@ -18,6 +18,8 @@
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-log": "~2",
     "@tauri-apps/plugin-opener": "^2",
+    "@tauri-apps/plugin-os": "~2",
+    "@tauri-apps/plugin-process": "~2",
     "@tauri-apps/plugin-updater": "~2",
     "@types/node": "^24.10.1",
     "cally": "^0.8.0",

@@ -1,15 +1,15 @@
-import { type Component, createSignal, onMount } from 'solid-js';
+import { type Component, createEffect, createSignal, onMount } from 'solid-js';
 import '@/app/App.css';
 import { Router } from '@solidjs/router';
+import { check } from '@tauri-apps/plugin-updater';
 import { InfoIcon } from 'lucide-solid';
 import { AppContext, type AppContextValue } from '@/app/contexts/AppContext';
 import { routes } from '@/app/routes';
 import AppBar from '@/app/ui/AppBar';
 import SideNavigation from '@/app/ui/SideNavigation';
-import { Confirm } from '@/shared/ui/modals/Confirm';
+import { Updater } from './ui/Updater';
 
 const App: Component = () => {
-
 	const [isDark, setIsDark] = createSignal(false);
 
 	const [pageTitle, setPageTitle] = createSignal('');
@@ -45,7 +45,11 @@ const App: Component = () => {
 		toastInfo,
 	};
 
-	onMount(() => {
+	createEffect(() => {
+		localStorage.setItem('theme', isDark() ? 'dark' : 'light');
+	});
+
+	onMount(async () => {
 		setIsDark(localStorage.getItem('theme') === 'dark');
 	});
 
@@ -68,7 +72,9 @@ const App: Component = () => {
 					{toastMessage()}
 				</div>
 			</div>
+			<Updater />
 		</AppContext.Provider>
+		
 	);
 };
 

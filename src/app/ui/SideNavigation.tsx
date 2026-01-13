@@ -1,4 +1,4 @@
-import { FilePenLineIcon, LibraryBigIcon, NotebookTextIcon, PackageIcon, PackageOpenIcon, StoreIcon, WheatIcon } from 'lucide-solid';
+import { FilePenLineIcon, LibraryBigIcon, NotebookTextIcon, PackageOpenIcon, StoreIcon, WheatIcon } from 'lucide-solid';
 import { type Accessor, children, type ParentComponent } from 'solid-js';
 import { useApp } from '@/app/contexts/AppContext';
 
