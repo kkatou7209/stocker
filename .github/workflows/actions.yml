@@ -55,5 +55,15 @@ jobs:
           tagName: v__VERSION__
           releaseName: "Stocker v__VERSION__"
           releaseDraft: false
-          prerelease: true
+          prerelease: false
+          args: ${{ matrix.args }}
+
+      - uses: tauri-apps/tauri-action@v0.6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: latest
+          releaseName: "Stocker v__VERSION__"
+          releaseDraft: false
+          prerelease: false
           args: ${{ matrix.args }}
