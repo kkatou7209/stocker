@@ -12,7 +12,7 @@ const JournalTable: Component<{ value?: JournalRecord[] }> = (props) => {
 	createEffect(() => {
 		const price = records().reduce((price, record) => price + (record.unitPrice * record.quantity), 0);
 
-		setTotalPrice(price);
+		setTotalPrice(Math.round(price));
 	})
 
 	return (

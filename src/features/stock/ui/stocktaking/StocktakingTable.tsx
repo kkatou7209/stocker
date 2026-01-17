@@ -15,7 +15,7 @@ const StocktakingTable: Component<{
 
         const total = props.value.reduce((price, record) => price + (record.unitPrice * record.quantity), 0);
 
-        setTotalPrice(total);
+        setTotalPrice(Math.round(total));
     });
 
 	return (

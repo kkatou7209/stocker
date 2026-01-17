@@ -129,7 +129,7 @@ const JournalRecordInput: Component<{
 	const [totalPrice, setTotalPrice] = createSignal(0);
 
 	createEffect(() => {
-		setTotalPrice(unitPrice() * quantity());
+		setTotalPrice(Math.round(unitPrice() * quantity()));
 		props.onChange({
 			supplyName: props.value.supplyName,
 			supplierName: props.value.supplierName,
@@ -148,7 +148,7 @@ const JournalRecordInput: Component<{
 		setUnitPrice(record.unitPrice);
 		setQuantity(record.quantity);
 
-		setTotalPrice(unitPrice() * quantity());
+		setTotalPrice(Math.round(unitPrice() * quantity()));
 	});
 
 	return (
@@ -157,10 +157,18 @@ const JournalRecordInput: Component<{
 			<td>{props.value.supplyName}</td>
 			<td>{props.value.unitName}</td>
 			<td>
-				<NumberInput value={(unitPrice())} onChange={setUnitPrice} suffix='円'/>
+				<NumberInput 
+					value={unitPrice()}
+					onChange={(value) => setUnitPrice(Math.round(value))}
+					suffix='円'
+				/>
 			</td>
 			<td>
-				<NumberInput value={quantity()} onChange={setQuantity} suffix={props.value.unitName}/>
+				<NumberInput 
+					value={quantity()} 
+					onChange={setQuantity} 
+					suffix={props.value.unitName}
+				/>
 			</td>
 			<td class="text-end">{formatter.number.format(totalPrice())} 円</td>
 		</tr>

@@ -1,69 +1,72 @@
-import type { Component } from 'solid-js';
+import { create } from 'node:domain';
+import { _ } from 'node_modules/tailwindcss/dist/colors-b_6i0Oi7';
+import { type Component, createEffect, createSignal } from 'solid-js';
 import { useFormat } from '@/shared/lib/format';
 
 const NumberInput: Component<{
 	value?: number;
 	suffix?: string;
-	onInput?: (value: number) => unknown;
 	onChange?: (value: number) => unknown;
 }> = (props) => {
 	const formatter = useFormat('ja-JP');
 
-	const onInput = (e: { currentTarget: HTMLInputElement }) => {
+	const [value, setValue] = createSignal(props.value ?? 0);
 
+	const onInput = (e: { currentTarget: HTMLInputElement }) => {
 		// Remove non-numeric and non-dot characters
-		let value = e.currentTarget.value.replace(/[^\d.]/g, '');
+		let _value = e.currentTarget.value.replace(/[^\d.]/g, '');
 
 		// Handle leading dot
-		if (value.startsWith('.')) {
-			value = `0${value}`;
+		if (_value.startsWith('.')) {
+			_value = `0${_value}`;
 		}
 
 		// Allow only one dot
-		if (value.indexOf('.') !== value.lastIndexOf('.')) {
-
-			const parts = value.split('.');
+		if (_value.indexOf('.') !== _value.lastIndexOf('.')) {
+			const parts = _value.split('.');
 
 			// Keep only the first dot
-			value = `${parts[0]}.${parts[1]}`;
+			_value = `${parts[0]}.${parts[1]}`;
 		}
 
-		const num = Number(value);
+		let num = Number(_value);
 
 		// If not a number, reset to 0
 		if (Number.isNaN(num)) {
-			props.onInput?.(0);
-			e.currentTarget.value = '0';
-			return;
+			num = 0;
 		}
 
-		props.onInput?.(num);
-		e.currentTarget.value = value;
+		e.currentTarget.value = _value;
 	};
 
 	const onChange = (e: { currentTarget: HTMLInputElement }) => {
-		
 		// Remove non-numeric and non-dot characters
-		const value = e.currentTarget.value.replace(/[^\d.]/g, '');
+		let _value = e.currentTarget.value.replace(/[^\d.]/g, '');
 
-		const num = Number(value);
+		let num = Number(_value);
 
 		// If not a number, reset to 0
 		if (Number.isNaN(num)) {
-			props.onChange?.(0);
-			e.currentTarget.value = '0';
-			return;
+			num = 0;
+			_value = '0';
 		}
 
-		props.onChange?.(num);
-		e.currentTarget.value = num.toString();
+		setValue(num);
+
+		props.onChange?.(value());
+		e.currentTarget.value = formatter.number.format(value());
 	};
+
+	createEffect(() => {
+		setValue(props.value ?? 0);
+	});
+
 	return (
 		<label class="floating-label input">
 			<input
 				type="text"
 				class="text-end"
-				value={formatter.number.format(props.value ?? 0)}
+				value={formatter.number.format(value())}
 				oninput={onInput}
 				onchange={onChange}
 			/>
