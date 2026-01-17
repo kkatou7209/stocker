@@ -34,7 +34,7 @@ const JournalSheet: Component<{
 
 		const total = records().reduce((price, record) => price + (record.unitPrice * record.quantity), 0);
 
-		setTotalPrice(total);
+		setTotalPrice(Math.round(total));
 	}
 
 	createEffect(() => {
