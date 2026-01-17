@@ -110,7 +110,7 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                             .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
                     )?,
                     StocktakingQuantity::new(
-                        u32::try_from(row.get::<_, i64>(6)?)
+                        f64::try_from(row.get::<_, i64>(6)? as f64 / 100.0)
                             .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
                     )?,
                 );
@@ -222,7 +222,7 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                             })?,
                         )?,
                         StocktakingQuantity::new(
-                            u32::try_from(row.get::<_, i64>(6)?).map_err(|e| {
+                            f64::try_from(row.get::<_, i64>(6)? as f64 / 100.0).map_err(|e| {
                                 rusqlite::Error::ToSqlConversionFailure(Box::new(e))
                             })?,
                         )?,
@@ -323,7 +323,7 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                             })?,
                         )?,
                         StocktakingQuantity::new(
-                            u32::try_from(row.get::<_, i64>(6)?).map_err(|e| {
+                            f64::try_from(row.get::<_, i64>(6)? as f64 / 100.0).map_err(|e| {
                                 rusqlite::Error::ToSqlConversionFailure(Box::new(e))
                             })?,
                         )?,
@@ -404,7 +404,7 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                         ":supply_name": record.supply_name().as_str(),
                         ":unit_name": record.unit_name().as_str(),
                         ":unit_price": record.unit_price().as_u32() as i64,
-                        ":quantity": record.quantity().as_u32() as i64,
+                        ":quantity": (record.quantity().as_f64() * 100.0) as i64,
                         ":stocktaking_id": stocktaking.id().as_str(),
                     })
                     .map_err(|e| {
@@ -492,7 +492,7 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                         ":supply_name": record.supply_name().as_str(),
                         ":unit_name": record.unit_name().as_str(),
                         ":unit_price": record.unit_price().as_u32() as i64,
-                        ":quantity": record.quantity().as_u32() as i64,
+                        ":quantity": (record.quantity().as_f64() * 100.0) as i64,
                         ":stocktaking_id": stocktaking.id().as_str(),
                     })
                     .map_err(|e| {

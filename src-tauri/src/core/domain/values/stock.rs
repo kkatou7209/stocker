@@ -249,10 +249,6 @@ impl PurchaseUnitPrice {
     pub fn new(value: impl Into<u32>) -> Result<Self> {
         let value = value.into();
 
-        if value <= 0 {
-            return Err(Error::DomainError(format!("price must be greater than 0")));
-        }
-
         Ok(Self { value })
     }
 
@@ -267,14 +263,14 @@ pub struct PurchaseQuantity {
 }
 
 impl PurchaseQuantity {
-    pub fn new(value: impl Into<u32>) -> Result<Self> {
-        let value = value.into();
+    pub fn new(value: impl Into<f64>) -> Result<Self> {
+        let value = (value.into() * 100.0) as u32;
 
         return Ok(Self { value });
     }
 
-    pub fn as_u32(&self) -> u32 {
-        self.value
+    pub fn as_f64(&self) -> f64 {
+        self.value as f64 / 100.0
     }
 }
 
@@ -328,14 +324,14 @@ pub struct StocktakingQuantity {
 }
 
 impl StocktakingQuantity {
-    pub fn new(value: impl Into<u32>) -> Result<Self> {
-        let value = value.into();
+    pub fn new(value: impl Into<f64>) -> Result<Self> {
+        let value = (value.into() * 100.0) as u32;
 
         return Ok(Self { value });
     }
 
-    pub fn as_u32(&self) -> u32 {
-        self.value
+    pub fn as_f64(&self) -> f64 {
+        self.value as f64 / 100.0
     }
 }
 

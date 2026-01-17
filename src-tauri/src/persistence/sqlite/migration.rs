@@ -52,6 +52,10 @@ pub fn migrate(db_path: impl AsRef<str>) -> Result<()> {
             conn.execute_batch(include_str!("migrations/002_add_deleted_at_column.sql"))?;
         }
 
+        if version < 3 {
+            conn.execute_batch(include_str!("migrations/003_quantity_int_to_real.sql"))?;
+        }
+
         Ok(())
     })()
     .map_err(|e| Error::InfrastructureError(format!("migration failed: {}", e)))?;

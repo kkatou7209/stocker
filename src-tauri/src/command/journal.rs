@@ -21,7 +21,7 @@ pub struct JournalRecordData {
     supplier_name: String,
     unit_name: String,
     unit_price: u32,
-    quantity: u32,
+    quantity: f64,
 }
 
 #[derive(Debug, Clone, Deserialize)]

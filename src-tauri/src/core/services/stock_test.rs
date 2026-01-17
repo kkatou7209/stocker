@@ -219,7 +219,7 @@ fn journal_service_test() {
                     supplier_name: "SupplierA".into(),
                     unit_name: "g".into(),
                     unit_price: 100,
-                    quantity: 10,
+                    quantity: 10.0,
                 },
                 JournalRecordDTO {
                     supply_id: "2".into(),
@@ -228,7 +228,7 @@ fn journal_service_test() {
                     supplier_name: "SupplierA".into(),
                     unit_name: "g".into(),
                     unit_price: 120,
-                    quantity: 5,
+                    quantity: 5.0,
                 },
             ],
         })
@@ -249,7 +249,7 @@ fn journal_service_test() {
                     supplier_name: "SupplierA".into(),
                     unit_name: "g".into(),
                     unit_price: 100,
-                    quantity: 10,
+                    quantity: 10.0,
                 },
                 JournalRecordDTO {
                     supply_id: "2".into(),
@@ -258,7 +258,7 @@ fn journal_service_test() {
                     supplier_name: "SupplierA".into(),
                     unit_name: "g".into(),
                     unit_price: 120,
-                    quantity: 5,
+                    quantity: 5.0,
                 },
             ],
         }]
@@ -279,7 +279,7 @@ fn journal_service_test() {
                     supplier_name: "SupplierA".into(),
                     unit_name: "g".into(),
                     unit_price: 100,
-                    quantity: 10,
+                    quantity: 10.0,
                 },
                 JournalRecordDTO {
                     supply_id: "2".into(),
@@ -288,7 +288,7 @@ fn journal_service_test() {
                     supplier_name: "SupplierA".into(),
                     unit_name: "g".into(),
                     unit_price: 120,
-                    quantity: 5,
+                    quantity: 5.0,
                 },
             ],
         })
@@ -304,7 +304,7 @@ fn journal_service_test() {
                 supplier_name: "SupplierC".into(),
                 unit_name: "g".into(),
                 unit_price: 200,
-                quantity: 10,
+                quantity: 10.0,
             }],
         })
         .unwrap();
@@ -323,7 +323,7 @@ fn journal_service_test() {
                 supplier_name: "SupplierC".into(),
                 unit_name: "g".into(),
                 unit_price: 200,
-                quantity: 10,
+                quantity: 10.0,
             },],
         })
     );
@@ -349,7 +349,7 @@ fn journal_service_test() {
                 supplier_name: "SupplierC".into(),
                 unit_name: "g".into(),
                 unit_price: 200,
-                quantity: 10,
+                quantity: 10.0,
             },],
         }]
     );
@@ -408,14 +408,14 @@ fn stocktaking_service_test() {
                     supply_name: "SupplyA".into(),
                     unit_name: "g".into(),
                     unit_price: 100,
-                    quantity: 10,
+                    quantity: 10.0,
                 },
                 StocktakingRecordDTO {
                     supply_id: "2".into(),
                     supply_name: "SupplyB".into(),
                     unit_name: "g".into(),
                     unit_price: 150,
-                    quantity: 15,
+                    quantity: 15.0,
                 },
             ],
         })
@@ -434,14 +434,14 @@ fn stocktaking_service_test() {
                     supply_name: "SupplyA".into(),
                     unit_name: "g".into(),
                     unit_price: 100,
-                    quantity: 10,
+                    quantity: 10.0,
                 },
                 StocktakingRecordDTO {
                     supply_id: "2".into(),
                     supply_name: "SupplyB".into(),
                     unit_name: "g".into(),
                     unit_price: 150,
-                    quantity: 15,
+                    quantity: 15.0,
                 },
             ],
         }],
@@ -460,14 +460,14 @@ fn stocktaking_service_test() {
                     supply_name: "SupplyA".into(),
                     unit_name: "g".into(),
                     unit_price: 100,
-                    quantity: 10,
+                    quantity: 10.0,
                 },
                 StocktakingRecordDTO {
                     supply_id: "2".into(),
                     supply_name: "SupplyB".into(),
                     unit_name: "g".into(),
                     unit_price: 150,
-                    quantity: 15,
+                    quantity: 15.0,
                 },
             ],
         })
@@ -481,7 +481,7 @@ fn stocktaking_service_test() {
                 supply_name: "SupplyA".into(),
                 unit_name: "kg".into(),
                 unit_price: 150,
-                quantity: 5,
+                quantity: 5.0,
             }],
         })
         .unwrap();
@@ -498,7 +498,7 @@ fn stocktaking_service_test() {
                 supply_name: "SupplyA".into(),
                 unit_name: "kg".into(),
                 unit_price: 150,
-                quantity: 5,
+                quantity: 5.0,
             },],
         })
     );
@@ -520,7 +520,7 @@ fn stocktaking_service_test() {
                 supply_name: "SupplyA".into(),
                 unit_name: "kg".into(),
                 unit_price: 150,
-                quantity: 5,
+                quantity: 5.0,
             },],
         }]
     );

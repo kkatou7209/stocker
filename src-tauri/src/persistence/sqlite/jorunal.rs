@@ -112,7 +112,7 @@ impl ForJournalPersistence for SqliteJournalRepository {
                             .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
                     )?,
                     PurchaseQuantity::new(
-                        u32::try_from(row.get::<_, i64>(8)?)
+                        f64::try_from(row.get::<_, i64>(8)? as f64 / 100.0)
                             .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
                     )?,
                 );
@@ -213,9 +213,11 @@ impl ForJournalPersistence for SqliteJournalRepository {
                             PurchaseUnitPrice::new(u32::try_from(row.get::<_, i64>(7)?).map_err(
                                 |e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)),
                             )?)?,
-                            PurchaseQuantity::new(u32::try_from(row.get::<_, i64>(8)?).map_err(
-                                |e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)),
-                            )?)?,
+                            PurchaseQuantity::new(
+                                f64::try_from(row.get::<_, i64>(8)? as f64 / 100.0).map_err(
+                                    |e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)),
+                                )?,
+                            )?,
                         );
 
                     Ok(journal_record)
@@ -321,7 +323,7 @@ impl ForJournalPersistence for SqliteJournalRepository {
                             .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
                     )?,
                     PurchaseQuantity::new(
-                        u32::try_from(row.get::<_, i64>(8)?)
+                        f64::try_from(row.get::<_, i64>(8)? as f64 / 100.0)
                             .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
                     )?,
                 );
@@ -428,7 +430,7 @@ impl ForJournalPersistence for SqliteJournalRepository {
                         ":supplier_name": record.supplier_name().as_str(),
                         ":unit_name": record.unit_name().as_str(),
                         ":unit_price": record.unit_price().as_u32() as i64,
-                        ":quantity": record.quantity().as_u32() as i64,
+                        ":quantity": (record.quantity().as_f64() * 100.0) as i64,
                         ":journal_id": journal.id().as_str(),
                     })
                     .map_err(|e| {
@@ -541,7 +543,7 @@ impl ForJournalPersistence for SqliteJournalRepository {
                         ":supplier_name": record.supplier_name().as_str(),
                         ":unit_name": record.unit_name().as_str(),
                         ":unit_price": record.unit_price().as_u32() as i64,
-                        ":quantity": record.quantity().as_u32() as i64,
+                        ":quantity": (record.quantity().as_f64() * 100.0) as i64,
                         ":journal_id": journal.id().as_str(),
                     })
                     .map_err(|e| {
