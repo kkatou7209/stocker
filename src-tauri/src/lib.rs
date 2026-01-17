@@ -4,8 +4,10 @@ mod persistence;
 
 use std::{env, fs};
 
+use chrono::Local;
 use tauri::Manager;
-use tauri_plugin_log::log;
+use tauri_plugin_log::log::Level;
+use tauri_plugin_log::{log, Target, TargetKind};
 
 use crate::command::*;
 use crate::core::stocker::{Ports, Stocker};
@@ -59,10 +61,17 @@ pub fn run() {
             tauri_plugin_log::Builder::new()
                 // Logs only errors
                 .level(log::LevelFilter::Error)
-                // Keep all log files
-                .rotation_strategy(tauri_plugin_log::RotationStrategy::KeepAll)
                 // Use local timezone for log timestamps
                 .timezone_strategy(tauri_plugin_log::TimezoneStrategy::UseLocal)
+                // Set max file size to 10 KB
+                .max_file_size(10_000)
+                .targets([
+                    // Error log file named with date
+                    Target::new(TargetKind::LogDir {
+                        file_name: Some(format!("error-{}", Local::now().format("%Y-%m-%d"))),
+                    })
+                    .filter(|meta| meta.level() == Level::Error),
+                ])
                 .build(),
         )
         .plugin(tauri_plugin_updater::Builder::new().build())
