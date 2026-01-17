@@ -58,7 +58,7 @@ pub fn run() {
         .plugin(
             tauri_plugin_log::Builder::new()
                 // Logs only errors
-                .level(log::LevelFilter::Info)
+                .level(log::LevelFilter::Error)
                 // Keep all log files
                 .rotation_strategy(tauri_plugin_log::RotationStrategy::KeepAll)
                 // Use local timezone for log timestamps

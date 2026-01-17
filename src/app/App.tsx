@@ -1,15 +1,20 @@
 import { type Component, createEffect, createSignal, onMount } from 'solid-js';
 import '@/app/App.css';
 import { Router } from '@solidjs/router';
-import { check } from '@tauri-apps/plugin-updater';
+import { error } from '@tauri-apps/plugin-log';
 import { InfoIcon } from 'lucide-solid';
 import { AppContext, type AppContextValue } from '@/app/contexts/AppContext';
 import { routes } from '@/app/routes';
 import AppBar from '@/app/ui/AppBar';
 import SideNavigation from '@/app/ui/SideNavigation';
+import { ErrorDialog } from './ui/ErrorDialog';
 import { Updater } from './ui/Updater';
 
 const App: Component = () => {
+	const [showError, setShowError] = createSignal(false);
+
+	const [errorMessage, setErrorMessage] = createSignal<string | null>(null);
+
 	const [isDark, setIsDark] = createSignal(false);
 
 	const [pageTitle, setPageTitle] = createSignal('');
@@ -31,6 +36,18 @@ const App: Component = () => {
 		}, 1500);
 	};
 
+	const handleError = (message: string, err: unknown) => {
+
+		if (err instanceof Error) {
+			error(`${message}\n${err.message}\n${err.stack}`);
+		} else {
+			error(`${message}\n${String(err)}`);
+		}
+
+		setErrorMessage(message);
+		setShowError(true);
+	};
+
 	const contextValue: AppContextValue = {
 		pageTitle,
 		isDrawerOpen,
@@ -43,6 +60,7 @@ const App: Component = () => {
 		setPageTitle,
 		setIsDark,
 		toastInfo,
+		handleError,
 	};
 
 	createEffect(() => {
@@ -72,9 +90,16 @@ const App: Component = () => {
 					{toastMessage()}
 				</div>
 			</div>
+
+			<ErrorDialog
+				open={showError()}
+				message={errorMessage()}
+				reset={() => setShowError(false)}
+			/>
+
+			{/* Application updater */}
 			<Updater />
 		</AppContext.Provider>
-		
 	);
 };
 

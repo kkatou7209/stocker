@@ -6,7 +6,6 @@ import { XIcon } from 'lucide-solid';
 import * as luxon from 'luxon';
 import { type Component, createSignal, onMount, Show } from 'solid-js';
 import { useApp } from '@/app/contexts/AppContext';
-import { useError } from '@/app/stores/error';
 import type { Journal } from '@/entities/stock/models/journal';
 import { useJournalepository } from '@/entities/stock/respository/journal';
 import JournalCalendar from '@/features/stock/ui/journal/JournalCalendar';
@@ -18,8 +17,6 @@ import { Confirm } from '@/shared/ui/modals/Confirm';
  */
 const JournalListPage: Component = () => {
 	const app = useApp();
-
-	const error = useError();
 
 	const navigation = useNavigate();
 
@@ -39,6 +36,9 @@ const JournalListPage: Component = () => {
 
 	const [confirmOpen, setConfirmOpen] = createSignal(false);
 
+	/**
+	 * Reload journal history
+	 */
 	const reload = async () => {
 		const firstDate = luxon.DateTime.local(year(), month(), 1);
 
@@ -51,10 +51,8 @@ const JournalListPage: Component = () => {
 			});
 
 			setJournals(journals);
-		} catch (_) {
-			error.handle(new Error(`記帳履歴の読み込みに失敗しました。`), () =>
-				navigation('/journal/list'),
-			);
+		} catch (err) {
+			app.handleError('記帳履歴の読み込みに失敗しました。', err);
 		}
 	};
 
@@ -84,7 +82,7 @@ const JournalListPage: Component = () => {
 
 		try {
 			if (!journal) {
-				error.handle(new Error('システムエラーが発生しました。'));
+				app.handleError('システムエラーが発生しました。', new Error('Selected journal is null'));
 				return;
 			}
 
@@ -93,7 +91,7 @@ const JournalListPage: Component = () => {
 
 				reload();
 			} catch (_) {
-				error.handle(new Error('記帳履歴の削除に失敗しました。'));
+				app.handleError('記帳履歴の削除に失敗しました。', new Error('Failed to delete journal history'));
 				return;
 			}
 
@@ -102,7 +100,7 @@ const JournalListPage: Component = () => {
 			try {
 				await reload();
 			} catch (_) {
-				error.handle(new Error('記帳履歴の更新に失敗しました。'));
+				app.handleError('記帳履歴の更新に失敗しました。', new Error('Failed to reload journal history'));
 			}
 		} finally {
 			setConfirmOpen(false);

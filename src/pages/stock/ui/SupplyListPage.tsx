@@ -1,7 +1,6 @@
 import { StoreIcon, WheatIcon } from 'lucide-solid';
 import { type Component, createSignal, onMount, Show } from 'solid-js';
 import { useApp } from '@/app/contexts/AppContext';
-import { useError } from '@/app/stores/error';
 import type { Supply } from '@/entities/stock/models/supply';
 import { useSupplierRespository } from '@/entities/stock/respository/supplier';
 import { useSupplyRepository } from '@/entities/stock/respository/supply';
@@ -23,9 +22,11 @@ import TextInput from '@/shared/ui/TextInput';
  * Page component of supply management
  */
 const SupplyListPage: Component = () => {
+	
 	const app = useApp();
-	const error = useError();
+	
 	const supplyRepository = useSupplyRepository();
+	
 	const supplierRepository = useSupplierRespository();
 
 	app.setPageTitle('仕入品');
@@ -129,7 +130,13 @@ const SupplyListPage: Component = () => {
 	 * Register new supply
 	 */
 	const add = async (supply: SupplyInputValue) => {
-		await supplyRepository.add(supply);
+
+		try {
+			await supplyRepository.add(supply);
+		} catch (err) {
+			app.handleError('仕入品の登録に失敗しました。', err);
+			return;
+		}
 
 		app.toastInfo('仕入品を登録しました。');
 
@@ -144,11 +151,16 @@ const SupplyListPage: Component = () => {
 
 		if (!id) return;
 
-		await supplyRepository.edit({
-			id,
-			name: supply.supplyName,
-			unitName: supply.unitName,
-		});
+		try {
+			await supplyRepository.edit({
+				id,
+				name: supply.supplyName,
+				unitName: supply.unitName,
+			});
+		} catch (error) {
+			app.handleError('仕入品の更新に失敗しました。', error);
+			return;
+		}
 
 		app.toastInfo('仕入品を更新しました。');
 
@@ -180,14 +192,15 @@ const SupplyListPage: Component = () => {
 		const id = selectedSupply()?.id;
 
 		if (!id) {
-			error.handle(new Error('システムエラーが発生しました。'));
+			app.handleError('システムエラーが発生しました。', new Error('ID is missing'));
 			return;
 		}
 
 		try {
 			await supplyRepository.delete(id);
-		} catch (_) {
-			error.handle(new Error('仕入品の削除に失敗しました。'));
+		} catch (err) {
+			app.handleError('仕入品の削除に失敗しました。', err);
+			return;
 		}
 
 		app.toastInfo('仕入品を削除しました。');

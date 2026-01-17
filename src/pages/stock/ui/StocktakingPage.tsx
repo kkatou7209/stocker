@@ -2,7 +2,7 @@ import { PackageOpenIcon } from 'lucide-solid';
 import * as luxon from 'luxon';
 import { type Component, createSignal, onMount } from 'solid-js';
 import { useApp } from '@/app/contexts/AppContext';
-import type { StocktakingRecord } from '@/entities/stock/models/stocktaking';
+import type { Stocktaking, StocktakingRecord } from '@/entities/stock/models/stocktaking';
 import type { Supply } from '@/entities/stock/models/supply';
 import { useStocktakingRepository } from '@/entities/stock/respository/stocktaking';
 import { useSupplyRepository } from '@/entities/stock/respository/supply';
@@ -14,8 +14,8 @@ import DateInput from '@/shared/ui/DateInput';
  * Page component for stocktaking
  */
 const StocktakingPage: Component = () => {
-	
 	const app = useApp();
+
 	const supplyRepository = useSupplyRepository();
 	const stocktakingRepository = useStocktakingRepository();
 
@@ -27,7 +27,7 @@ const StocktakingPage: Component = () => {
 		if (!id) return true;
 
 		return id.trim().length === 0;
-	}
+	};
 
 	const [stocktakingId, setStocktakingId] = createSignal<string | null>(null);
 
@@ -43,10 +43,16 @@ const StocktakingPage: Component = () => {
 	 * Reload records
 	 */
 	const reload = async () => {
-
 		setStocktakingId(null);
 
-		const supplies: Supply[] = await supplyRepository.list();
+		let supplies: Supply[];
+
+		try {
+			supplies = await supplyRepository.list();
+		} catch (err) {
+			app.handleError('仕入品の取得に失敗しました。', err);
+			return;
+		}
 
 		const records: StocktakingRecord[] = supplies.map((supply) => {
 			return {
@@ -64,7 +70,14 @@ const StocktakingPage: Component = () => {
 
 		if (!date) return;
 
-		const stocktaking = await stocktakingRepository.getAt(date);
+		let stocktaking: Stocktaking | null;
+
+		try {
+			stocktaking = await stocktakingRepository.getAt(date)
+		} catch (err) {
+			app.handleError('棚卸の取得に失敗しました。', err);
+			return;
+		}
 
 		if (!stocktaking) return;
 
@@ -72,7 +85,9 @@ const StocktakingPage: Component = () => {
 
 		for (const [i, record] of records.entries()) {
 
-			const registered = stocktaking.records.find(r => r.supplyId === record.supplyId);
+			const registered = stocktaking.records.find(
+				(r) => r.supplyId === record.supplyId,
+			);
 
 			if (!registered) {
 				records.splice(i, 0, record);
@@ -86,13 +101,12 @@ const StocktakingPage: Component = () => {
 		}
 
 		setStocktakingRecords([...records]);
-	}
+	};
 
 	/**
 	 * Add new stocktaking records
 	 */
 	const add = async () => {
-
 		const date = stocktakingDate();
 
 		if (!date) return;
@@ -105,38 +119,42 @@ const StocktakingPage: Component = () => {
 		setStocktakingId(stocktaking.id);
 
 		app.toastInfo('棚卸を登録しました。');
-	}
+	};
 
 	/**
 	 * Update stocktaking records
 	 */
 	const edit = async () => {
-
+		
 		const date = stocktakingDate();
+
 		const id = stocktakingId();
 
 		if (!date || !id || id.trim().length === 0) return;
 
-		await stocktakingRepository.edit({
-			id,
-			records: [...stocktakingRecords()],
-		});
+		try {
+			await stocktakingRepository.edit({
+				id,
+				records: [...stocktakingRecords()],
+			});
+		} catch (error) {
+			app.handleError('棚卸の更新に失敗しました。', error);
+			return;
+		}
 
 		app.toastInfo('棚卸を更新しました。');
-	}
+	};
 
 	/**
 	 * Handle date change
 	 */
 	const onDateChange = async (date: Date | null) => {
-
 		setStocktakingDate(date);
 
 		await reload();
-	}
+	};
 
 	onMount(async () => {
-
 		await reload();
 	});
 
@@ -148,7 +166,7 @@ const StocktakingPage: Component = () => {
 					value={stocktakingDate()}
 					onChange={onDateChange}
 				/>
-				<Button onClick={() => isNewStocktaking() ? add() : edit()}>
+				<Button onClick={() => (isNewStocktaking() ? add() : edit())}>
 					<PackageOpenIcon class="size-4" />
 					<span>登録</span>
 				</Button>

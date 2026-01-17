@@ -10,7 +10,6 @@ import {
 	Show,
 } from 'solid-js';
 import { useApp } from '@/app/contexts/AppContext';
-import { useError } from '@/app/stores/error';
 import type { Stocktaking } from '@/entities/stock/models/stocktaking';
 import { useStocktakingRepository } from '@/entities/stock/respository/stocktaking';
 import StocktakingTable from '@/features/stock/ui/stocktaking/StocktakingTable';
@@ -21,9 +20,8 @@ import { Confirm } from '@/shared/ui/modals/Confirm';
  * Page component of stocktaking history
  */
 const StocktakingListPage: Component = () => {
+	
 	const app = useApp();
-
-	const error = useError();
 
 	const navigation = useNavigate();
 
@@ -67,19 +65,26 @@ const StocktakingListPage: Component = () => {
 	 * Reload stocktaking records
 	 */
 	const reload = async () => {
-		const stocks = await stocktakingRepository.find({
-			periodStart: periodStart() ?? undefined,
-			periodEnd: periodEnd() ?? undefined,
-		});
+		let stocktakings: Stocktaking[];
+		
+		try {
+			stocktakings = await stocktakingRepository.find({
+				periodStart: periodStart() ?? undefined,
+				periodEnd: periodEnd() ?? undefined,
+			});
+		} catch (error) {
+			app.handleError('棚卸履歴の読み込みに失敗しました。', error);
+			return;
+		}
 
-		stocks.sort(
+		stocktakings.sort(
 			(a, b) => b.stocktakingDate.getTime() - a.stocktakingDate.getTime(),
 		);
 
-		setStocktakings(stocks);
+		setStocktakings(stocktakings);
 
 
-		for (const stock of stocks) {
+		for (const stock of stocktakings) {
 			if (!accordionStates().has(stock.id)) {
 				accordionStates().set(stock.id, false);
 			}
@@ -92,8 +97,11 @@ const StocktakingListPage: Component = () => {
 	 * Toggle sort order
 	 */
 	const toggleSort = () => {
+
 		const current = sort();
+		
 		const newSort = current === 'asc' ? 'desc' : 'asc';
+		
 		setSort(newSort);
 
 		const stocks = [ ...stocktakings() ];
@@ -148,14 +156,15 @@ const StocktakingListPage: Component = () => {
 		const id = selectedStocktaking()?.id;
 
 		if (!id) {
-			error.handle(new Error('システムエラーが発生しました。'), () => {});
+			app.handleError('システムエラーが発生しました。', new Error('ID is not set'));
 			return;
 		}
 
 		try {
 			await stocktakingRepository.delete(id);
-		} catch (_) {
-			error.handle(new Error('システムエラーが発生しました。'), () => {});
+		} catch (err) {
+			app.handleError('棚卸履歴の削除に失敗しました。', err);
+			return;
 		}
 
 		reload();

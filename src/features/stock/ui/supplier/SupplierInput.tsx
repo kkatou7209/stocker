@@ -41,7 +41,7 @@ const SupplierInput: Component<SupplierInputProps> = (props) => {
 								class="input validator"
 								placeholder="仕入先名"
 								required
-								pattern="[^\s]+"
+								pattern=".*[^\s]+.*"
 								oninput={(e) =>
 									setSupplierName(e.currentTarget.value)
 								}

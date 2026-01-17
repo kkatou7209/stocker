@@ -17,6 +17,7 @@ export type AppContextValue = Readonly<{
 	setPageTitle: (title: string) => void;
 	setIsDark: Setter<boolean>;
 	toastInfo: (message: string) => void;
+	handleError: (message: string, err: unknown) => void;
 }>;
 
 export const AppContext = createContext<AppContextValue>();

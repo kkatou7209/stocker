@@ -1,7 +1,6 @@
 import { StoreIcon, XIcon } from 'lucide-solid';
 import { type Component, createSignal, onMount, Show } from 'solid-js';
 import { useApp } from '@/app/contexts/AppContext';
-import { useError } from '@/app/stores/error';
 import type { Supplier } from '@/entities/stock/models/supplier';
 import { useSupplierRespository } from '@/entities/stock/respository/supplier';
 import type { SupplierTableRecord } from '@/features/stock/models/supplier-table-record';
@@ -18,8 +17,6 @@ import TextInput from '@/shared/ui/TextInput';
  */
 const SupplierListPage: Component = () => {
 	const app = useApp();
-
-	const error = useError();
 
 	const supplierRepository = useSupplierRespository();
 
@@ -67,7 +64,7 @@ const SupplierListPage: Component = () => {
 		const supp = await supplierRepository.get(record.id);
 
 		if (!supp) {
-			error.handle(new Error('システムエラーが発生しました。'));
+			app.handleError('システムエラーが発生しました。', new Error('ID is missing'));
 			return;
 		}
 
@@ -89,8 +86,8 @@ const SupplierListPage: Component = () => {
 			await supplierRepository.add({
 				name: input.supplierName,
 			});
-		} catch (_) {
-			error.handle(new Error('仕入先の登録に失敗しました。'));
+		} catch (err) {
+			app.handleError('仕入先の登録に失敗しました。', err);
 			return;
 		}
 
@@ -106,7 +103,7 @@ const SupplierListPage: Component = () => {
 		const id = supplier()?.id;
 
 		if (!id) {
-			error.handle(new Error('システムエラーが発生しました。'));
+			app.handleError('システムエラーが発生しました。', new Error('ID is missing'));
 			return;
 		}
 
@@ -115,8 +112,8 @@ const SupplierListPage: Component = () => {
 				id,
 				name: input.supplierName,
 			});
-		} catch (_) {
-			error.handle(new Error('仕入先の更新に失敗しました。'));
+		} catch (err) {
+			app.handleError('仕入先の更新に失敗しました。', err);
 			return;
 		}
 
@@ -147,14 +144,14 @@ const SupplierListPage: Component = () => {
 		const id = supplier()?.id;
 
 		if (!id) {
-			error.handle(new Error('システムエラーが発生しました。'));
+			app.handleError('システムエラーが発生しました。', new Error('ID is missing'));
 			return;
 		}
 
 		try {
 			await supplierRepository.delete(id);
-		} catch (_) {
-			error.handle(new Error('仕入先の削除に失敗しました。'));
+		} catch (err) {
+			app.handleError('仕入先の削除に失敗しました。', err);
 			return;
 		}
 

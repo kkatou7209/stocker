@@ -3,7 +3,8 @@ import { FilePenLineIcon } from 'lucide-solid';
 import * as luxon from 'luxon';
 import { type Component, createSignal, onMount } from 'solid-js';
 import { useApp } from '@/app/contexts/AppContext';
-import type { JournalRecord } from '@/entities/stock/models/journal';
+import type { Journal, JournalRecord } from '@/entities/stock/models/journal';
+import type { Supplier } from '@/entities/stock/models/supplier';
 import { useJournalepository } from '@/entities/stock/respository/journal';
 import { useSupplierRespository } from '@/entities/stock/respository/supplier';
 import JournalSheet from '@/features/stock/ui/journal/JournalSheet';
@@ -15,6 +16,7 @@ import DateInput from '@/shared/ui/DateInput';
  */
 const EntryJournalPage: Component = () => {
 	const app = useApp();
+
 	const location = useLocation<{ date?: Date }>();
 
 	const supplierRepository = useSupplierRespository();
@@ -39,7 +41,19 @@ const EntryJournalPage: Component = () => {
 	app.setPageTitle('記帳');
 
 	const reload = async () => {
-		const journal = await journalRepository.getAt(entryDate());
+		let journal: Journal | null;
+
+		try {
+			journal = await journalRepository.getAt(entryDate());
+		} catch (err) {
+			
+			app.handleError(
+				'記帳の読み込みに失敗しました。',
+				err,
+			);
+
+			return;
+		}
 
 		if (journal) {
 			setJournalId(journal.id);
@@ -51,7 +65,14 @@ const EntryJournalPage: Component = () => {
 
 		setJournalId(null);
 
-		const suppliers = await supplierRepository.list();
+		let suppliers: Supplier[];
+
+		try {
+			suppliers = await supplierRepository.list();
+		} catch (error) {
+			app.handleError('仕入先の取得に失敗しました。', error);
+			return;
+		}
 
 		const records: JournalRecord[] = suppliers.flatMap((supplier) => {
 			return supplier.supplies.map((supply) => {
@@ -76,10 +97,20 @@ const EntryJournalPage: Component = () => {
 	const add = async () => {
 		const date = entryDate();
 
-		const journal = await journalRepository.add({
-			entryDate: date,
-			records: [...records()],
-		});
+		let journal: Journal | null;
+
+		try {
+			journal = await journalRepository.add({
+				entryDate: date,
+				records: [...records()],
+			});
+		} catch (err) {
+			app.handleError(
+				'記帳の登録に失敗しました。',
+				err,
+			);
+			return;
+		}
 
 		setJournalId(journal.id);
 
@@ -91,10 +122,18 @@ const EntryJournalPage: Component = () => {
 
 		if (!id) return;
 
-		await journalRepository.edit({
-			id,
-			records: [...records()],
-		});
+		try {
+			await journalRepository.edit({
+				id,
+				records: [...records()],
+			});
+		} catch (err) {
+			app.handleError(
+				'記帳の更新に失敗しました。',
+				err as Error,
+			);
+			return;
+		}
 
 		app.toastInfo('記帳を更新しました。');
 	};
@@ -112,7 +151,6 @@ const EntryJournalPage: Component = () => {
 	};
 
 	onMount(async () => {
-
 		const date = location.state?.date;
 
 		if (date) {
