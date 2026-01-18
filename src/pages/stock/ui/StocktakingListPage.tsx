@@ -1,5 +1,11 @@
 import { useNavigate } from '@solidjs/router';
-import { CalendarArrowDownIcon, CalendarArrowUpIcon, PencilLineIcon, Trash2Icon } from 'lucide-solid';
+import {
+	CalendarArrowDownIcon,
+	CalendarArrowUpIcon,
+	DownloadIcon,
+	PencilLineIcon,
+	Trash2Icon,
+} from 'lucide-solid';
 import * as luxon from 'luxon';
 import {
 	type Component,
@@ -12,6 +18,7 @@ import {
 import { useApp } from '@/app/contexts/AppContext';
 import type { Stocktaking } from '@/entities/stock/models/stocktaking';
 import { useStocktakingRepository } from '@/entities/stock/respository/stocktaking';
+import { useExport } from '@/features/stock/api/export';
 import StocktakingTable from '@/features/stock/ui/stocktaking/StocktakingTable';
 import DateInput from '@/shared/ui/DateInput';
 import { Confirm } from '@/shared/ui/modals/Confirm';
@@ -20,8 +27,9 @@ import { Confirm } from '@/shared/ui/modals/Confirm';
  * Page component of stocktaking history
  */
 const StocktakingListPage: Component = () => {
-	
 	const app = useApp();
+
+	const exporter = useExport();
 
 	const navigation = useNavigate();
 
@@ -43,7 +51,7 @@ const StocktakingListPage: Component = () => {
 	 */
 	const [confirmOpen, setConfirmOpen] = createSignal(false);
 
-	/** 
+	/**
 	 * Selected sort order
 	 */
 	const [sort, setSort] = createSignal<'asc' | 'desc'>('desc');
@@ -57,16 +65,16 @@ const StocktakingListPage: Component = () => {
 	/**
 	 * Accordion open/close states
 	 */
-	const [accordionStates, setAccordionStates] = createSignal<Map<string, boolean>>(
-		new Map(),
-	);
+	const [accordionStates, setAccordionStates] = createSignal<
+		Map<string, boolean>
+	>(new Map());
 
 	/**
 	 * Reload stocktaking records
 	 */
 	const reload = async () => {
 		let stocktakings: Stocktaking[];
-		
+
 		try {
 			stocktakings = await stocktakingRepository.find({
 				periodStart: periodStart() ?? undefined,
@@ -83,7 +91,6 @@ const StocktakingListPage: Component = () => {
 
 		setStocktakings(stocktakings);
 
-
 		for (const stock of stocktakings) {
 			if (!accordionStates().has(stock.id)) {
 				accordionStates().set(stock.id, false);
@@ -97,16 +104,17 @@ const StocktakingListPage: Component = () => {
 	 * Toggle sort order
 	 */
 	const toggleSort = () => {
-
 		const current = sort();
-		
+
 		const newSort = current === 'asc' ? 'desc' : 'asc';
-		
+
 		setSort(newSort);
 
-		const stocks = [ ...stocktakings() ];
+		const stocks = [...stocktakings()];
 
-		stocks.sort((a, b) => a.stocktakingDate.getTime() - b.stocktakingDate.getTime());
+		stocks.sort(
+			(a, b) => a.stocktakingDate.getTime() - b.stocktakingDate.getTime(),
+		);
 
 		if (newSort === 'desc') {
 			stocks.reverse();
@@ -119,10 +127,9 @@ const StocktakingListPage: Component = () => {
 	 * Handle accordion toggle
 	 */
 	const toggleAccordion = (stocktakingId: string, open: boolean) => {
-		
 		accordionStates().set(stocktakingId, open);
 		setAccordionStates(new Map(accordionStates()));
-	}
+	};
 
 	/**
 	 * Handle edit button click
@@ -139,9 +146,8 @@ const StocktakingListPage: Component = () => {
 	 * Handle delete button click
 	 */
 	const onDeleteClick = (stocktaking: Stocktaking) => {
-
 		setSelectedStocktaking(stocktaking);
-		
+
 		// Ask user for deletion
 		setConfirmOpen(true);
 	};
@@ -150,13 +156,15 @@ const StocktakingListPage: Component = () => {
 	 * Handle delete confirmation
 	 */
 	const onDeleteConfirm = async () => {
-
 		setConfirmOpen(false);
 
 		const id = selectedStocktaking()?.id;
 
 		if (!id) {
-			app.handleError('システムエラーが発生しました。', new Error('ID is not set'));
+			app.handleError(
+				'システムエラーが発生しました。',
+				new Error('ID is not set'),
+			);
 			return;
 		}
 
@@ -168,6 +176,18 @@ const StocktakingListPage: Component = () => {
 		}
 
 		reload();
+	};
+
+	/**
+	 * Handle download button click
+	 */
+	const onDownloadClick = async (id: string) => {
+		try {
+			await exporter.downloadStocktakingCsv(id);
+		} catch (err) {
+			app.handleError('棚卸履歴のCSVダウンロードに失敗しました。', err);
+			return;
+		}
 	};
 
 	createEffect(async () => {
@@ -203,17 +223,17 @@ const StocktakingListPage: Component = () => {
 				</div>
 			</section>
 			<section class="max-h-[70vh] overflow-auto pb-100">
-					<div class='mb-4 pr-4 flex justify-end'>
-						<button
-						type='button'
-						class='hover:opacity-50 hover:cursor-pointer'
+				<div class="mb-4 pr-4 flex justify-end">
+					<button
+						type="button"
+						class="hover:opacity-50 hover:cursor-pointer"
 						onclick={toggleSort}
 					>
 						<Show when={sort() === 'asc'}>
-							<CalendarArrowDownIcon class='size-5'/>
+							<CalendarArrowDownIcon class="size-5" />
 						</Show>
 						<Show when={sort() === 'desc'}>
-							<CalendarArrowUpIcon class='size-5'/>
+							<CalendarArrowUpIcon class="size-5" />
 						</Show>
 					</button>
 				</div>
@@ -232,8 +252,17 @@ const StocktakingListPage: Component = () => {
 									<details
 										class="collapse collapse-arrow bg-base-200"
 										name={`stocktaking-${stocktaking.id}`}
-										open={accordionStates().get(stocktaking.id) ?? false}
-										ontoggle={(e) => toggleAccordion(stocktaking.id, e.newState === 'open')}
+										open={
+											accordionStates().get(
+												stocktaking.id,
+											) ?? false
+										}
+										ontoggle={(e) =>
+											toggleAccordion(
+												stocktaking.id,
+												e.newState === 'open',
+											)
+										}
 									>
 										<summary class="collapse-title">
 											<section class="flex justify-between items-center">
@@ -259,6 +288,18 @@ const StocktakingListPage: Component = () => {
 															'yyyy年M月d日',
 														)}
 													</div>
+
+													<button
+														type="button"
+														class="btn btn-ghost"
+														onclick={() =>
+															onDownloadClick(
+																stocktaking.id,
+															)
+														}
+													>
+														<DownloadIcon class="size-4" />
+													</button>
 												</div>
 
 												{/* Delete button */}
@@ -296,7 +337,7 @@ const StocktakingListPage: Component = () => {
 				onCancel={() => setConfirmOpen(false)}
 				onConfirm={onDeleteConfirm}
 			>
-				<div class='flex flex-col items-center gap-3'>
+				<div class="flex flex-col items-center gap-3">
 					<p>一度削除すると元に戻せません。</p>
 					<p>本当に削除しますか？</p>
 				</div>

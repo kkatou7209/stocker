@@ -81,6 +81,13 @@ export const mockSupplierEndpoints: SupplierEndpoint = {
 
 		return suppliers;
 	},
+	deleteSupplier: async (id: string) => {
+		const index = fakeSuppliers.findIndex((s) => s.id === id);
+
+		if (index < 0) return;
+
+		fakeSuppliers.splice(index, 1);
+	},
 };
 
 export const mockSupplyEndpoints: SupplyEndpoint = {
@@ -116,6 +123,15 @@ export const mockSupplyEndpoints: SupplyEndpoint = {
 
 			supply.name = data.supplyName;
 			supply.unitName = data.unitName;
+		}
+	},
+	deleteSupply: async (id: string) => {
+		for (const supplier of fakeSuppliers) {
+			const index = supplier.supplies.findIndex((s) => s.id === id);
+
+			if (index < 0) continue;
+
+			supplier.supplies.splice(index, 1);
 		}
 	},
 };
@@ -159,7 +175,7 @@ export const mockJournalEndpoints: JournalEndpoints = {
 
 		fakeJournals[index] = {
 			id: command.id,
-			entryDate: command.entryDate,
+			entryDate: fakeJournals[index].entryDate,
 			records: [...command.records],
 		};
 	},
@@ -211,6 +227,13 @@ export const mockJournalEndpoints: JournalEndpoints = {
 
 		return journals;
 	},
+	deleteJournal: async (id: string) => {
+		const index = fakeJournals.findIndex((j) => j.id === id);
+
+		if (index < 0) return;
+
+		fakeJournals.splice(index, 1);
+	},
 };
 
 export const mockStocktakingEndpoints: StocktakingEndpoints = {
@@ -240,7 +263,7 @@ export const mockStocktakingEndpoints: StocktakingEndpoints = {
 
 		fakeStocktakings[index] = {
 			id: command.id,
-			stocktakingDate: command.stocktakingDate,
+			stocktakingDate: fakeStocktakings[index].stocktakingDate,
 			records: [...command.records],
 		};
 	},
@@ -297,5 +320,16 @@ export const mockStocktakingEndpoints: StocktakingEndpoints = {
 				);
 			}) ?? null
 		);
+	},
+
+	deleteStocktaking: async (id: string) => {
+		const index = fakeStocktakings.findIndex((s) => s.id === id);
+
+		if (index < 0) return;
+
+		fakeStocktakings.splice(index, 1);
+	},
+	downloadStocktakingCsv: async (id: string): Promise<void> => {
+		// no-op in mock
 	},
 };

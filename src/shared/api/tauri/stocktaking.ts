@@ -68,4 +68,7 @@ export const tauriStocktakingEndpoint: StocktakingEndpoints = Object.freeze({
 	deleteStocktaking: async (id: string): Promise<void> => {
 		await invoke<void>('delete_stocktaking', { id });
 	},
+	downloadStocktakingCsv: async (id: string): Promise<void> => {
+		await invoke<void>('download_stocktaking_csv', { id });
+	},
 });

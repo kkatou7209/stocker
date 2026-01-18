@@ -58,4 +58,8 @@ export interface StocktakingEndpoints {
 	 * delete a stocktaking data
 	 */
 	deleteStocktaking: (id: string) => Promise<void>;
+	/**
+	 * download stocktaking data as CSV file
+	 */
+	downloadStocktakingCsv: (id: string) => Promise<void>;
 }

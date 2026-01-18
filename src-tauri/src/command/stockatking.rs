@@ -1,5 +1,7 @@
 use chrono::{Local, TimeZone};
 use serde::{Deserialize, Serialize};
+use tauri::AppHandle;
+use tauri_plugin_dialog::DialogExt;
 
 use crate::core::provided_ports::{
     self, SearchStocktakingQuery, StocktakingRecordDTO, StocktakingUsecase,
@@ -45,6 +47,7 @@ pub struct StocktakingQuery {
     period_end: Option<i64>,
 }
 
+/// Command to list all stocktakings
 #[tauri::command]
 pub fn list_all_stocktakings(app: tauri::State<Stocker>) -> Result<Vec<StocktakingData>, String> {
     let stocktakings = app
@@ -74,6 +77,7 @@ pub fn list_all_stocktakings(app: tauri::State<Stocker>) -> Result<Vec<Stocktaki
     Ok(stocktakings)
 }
 
+/// Command to get a stocktaking by ID
 #[tauri::command]
 pub fn get_stocktaking_by_id(
     app: tauri::State<Stocker>,
@@ -105,6 +109,7 @@ pub fn get_stocktaking_by_id(
     Ok(stocktaking)
 }
 
+/// Command to record a new stocktaking
 #[tauri::command]
 pub fn record_stocktaking(
     app: tauri::State<Stocker>,
@@ -147,6 +152,7 @@ pub fn record_stocktaking(
     Ok(stocktaking)
 }
 
+/// Command to update an existing stocktaking
 #[tauri::command]
 pub fn update_stocktaking(
     app: tauri::State<Stocker>,
@@ -172,6 +178,7 @@ pub fn update_stocktaking(
     Ok(())
 }
 
+/// Command to search stocktakings
 #[tauri::command]
 pub fn search_stocktakings(
     app: tauri::State<Stocker>,
@@ -207,6 +214,7 @@ pub fn search_stocktakings(
     Ok(stocktakings)
 }
 
+/// Command to get a stocktaking by date
 #[tauri::command]
 pub fn get_stocktaking_at(
     app: tauri::State<Stocker>,
@@ -257,11 +265,52 @@ pub fn get_stocktaking_at(
     Ok(stocktaking)
 }
 
+/// Command to delete a stocktaking by ID
 #[tauri::command]
 pub fn delete_stocktaking(app: tauri::State<Stocker>, id: String) -> Result<(), String> {
     app.stocktaking_usecase()
         .delete(id)
         .map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+/// Command to download stocktaking CSV
+#[tauri::command]
+pub fn download_stocktaking_csv(
+    app: AppHandle,
+    state: tauri::State<Stocker>,
+    id: String,
+) -> Result<(), String> {
+    let stocktaking = state
+        .stocktaking_usecase()
+        .get(&id)
+        .map_err(|e| e.to_string())?
+        .ok_or("Stocktaking not found".to_string())?;
+
+    let mut csv = "\"仕入品名\",\"単位\",\"単価\",\"数量\",\"金額\"\n".to_string();
+
+    for record in stocktaking.records {
+        let amount = (record.unit_price as f64 * record.quantity).round() as u32;
+
+        csv.push_str(&format!(
+            "\"{}\",\"{}\",\"{}\",\"{}\",\"{}\"\n",
+            record.supply_name, record.unit_name, record.unit_price, record.quantity, amount
+        ));
+    }
+
+    app.dialog()
+        .file()
+        .add_filter("csv", &["csv"])
+        .save_file(|file_path| {
+            if let Some(file_path) = file_path {
+                let path = file_path.as_path().ok_or("Failed to get path").unwrap();
+
+                std::fs::write(path, csv)
+                    .map_err(|e| e.to_string())
+                    .unwrap();
+            }
+        });
 
     Ok(())
 }

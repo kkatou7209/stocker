@@ -18,6 +18,7 @@ const DB_NAME: &str = "stocker.db";
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_process::init())
         .plugin(
@@ -76,6 +77,7 @@ pub fn run() {
         )
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
             // supply comamnds
             list_all_supplies,
@@ -106,6 +108,7 @@ pub fn run() {
             update_stocktaking,
             search_stocktakings,
             delete_stocktaking,
+            download_stocktaking_csv
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
