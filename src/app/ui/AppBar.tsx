@@ -5,17 +5,11 @@ import {
 	PanelLeftOpenIcon,
 	SunIcon,
 } from 'lucide-solid';
-import { type Component, createEffect, createSignal } from 'solid-js';
+import type { Component } from 'solid-js';
 import { useApp } from '@/app/contexts/AppContext';
 
 const AppBar: Component = () => {
 	const app = useApp();
-
-	const [isDark, setIsDark] = createSignal(false);
-
-	createEffect(() => {
-		app.setIsDark(isDark());
-	});
 
 	return (
 		<header class="navbar shadow-md flex items-center gap-5">
@@ -47,9 +41,9 @@ const AppBar: Component = () => {
 								type="checkbox"
 								class="theme-controller"
 								value="sunset"
-								checked={isDark()}
+								checked={app.isDark()}
 								onchange={(e) =>
-									setIsDark(e.currentTarget.checked)
+									app.setIsDark(e.currentTarget.checked)
 								}
 							/>
 

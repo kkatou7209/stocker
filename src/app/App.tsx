@@ -1,4 +1,4 @@
-import { type Component, createSignal, onMount } from 'solid-js';
+import { type Component, createEffect, createSignal, on, onMount } from 'solid-js';
 import '@/app/App.css';
 import { Router } from '@solidjs/router';
 import { getVersion } from '@tauri-apps/api/app';
@@ -8,6 +8,7 @@ import { AppContext, type AppContextValue } from '@/app/contexts/AppContext';
 import { routes } from '@/app/routes';
 import AppBar from '@/app/ui/AppBar';
 import SideNavigation from '@/app/ui/SideNavigation';
+import { getCurrentTheme, setTheme } from '@/shared/api/tauri/theme';
 import { ErrorDialog } from './ui/ErrorDialog';
 import { Updater } from './ui/Updater';
 
@@ -15,7 +16,6 @@ import { Updater } from './ui/Updater';
  * Application root component.
  */
 const App: Component = () => {
-
 	// Application version
 	const [version, setVersion] = createSignal<string | null>(null);
 
@@ -25,7 +25,7 @@ const App: Component = () => {
 	// Error message state
 	const [errorMessage, setErrorMessage] = createSignal<string | null>(null);
 
-	// Dark mode state	
+	// Dark mode state
 	const [isDark, setIsDark] = createSignal(false);
 
 	// Page title state
@@ -80,7 +80,27 @@ const App: Component = () => {
 		handleError,
 	};
 
+	createEffect(
+		on(isDark, async (dark) => {
+
+			try {
+				await setTheme(dark ? 'dark' : 'light');
+			} catch (error) {
+				handleError('システムエラーが発生しました。', error);
+			}
+
+		}, {
+			defer: true,
+		}),
+	);
+
 	onMount(async () => {
+		/// Get current theme
+		const theme = await getCurrentTheme();
+
+		console.log('Current theme:', theme);
+
+		setIsDark(theme === 'dark');
 
 		// Get application version
 		const ver = await getVersion();
@@ -98,7 +118,7 @@ const App: Component = () => {
 					</main>
 					<footer class="f-4">
 						<section class="size-full flex justify-end items-center px-7">
-							<span class='text-base-300'>v {version()}</span>
+							<span class="text-base-300">v {version()}</span>
 						</section>
 					</footer>
 				</div>
@@ -123,7 +143,6 @@ const App: Component = () => {
 
 			{/* Application updater */}
 			<Updater />
-
 		</AppContext.Provider>
 	);
 };

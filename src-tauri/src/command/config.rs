@@ -2,6 +2,7 @@ use std::fs;
 use std::path::PathBuf;
 
 use tauri::{AppHandle, Manager};
+use tauri_plugin_log::log::info;
 
 use crate::config::{Config, Theme, CONFIG_FILE_NAME};
 
@@ -11,6 +12,8 @@ pub fn init_config(app: &AppHandle) -> Result<PathBuf, String> {
         .path()
         .config_dir()
         .map_err(|e| format!("Failed to get config directory: {}", e))?;
+
+    info!("Config directory path: {:?}", path);
 
     fs::create_dir_all(&path).map_err(|e| format!("Failed to create config directory: {}", e))?;
 
