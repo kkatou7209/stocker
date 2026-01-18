@@ -1,6 +1,7 @@
 import { type Component, createEffect, createSignal, onMount } from 'solid-js';
 import '@/app/App.css';
 import { Router } from '@solidjs/router';
+import { getVersion } from '@tauri-apps/api/app';
 import { error } from '@tauri-apps/plugin-log';
 import { InfoIcon } from 'lucide-solid';
 import { AppContext, type AppContextValue } from '@/app/contexts/AppContext';
@@ -10,21 +11,36 @@ import SideNavigation from '@/app/ui/SideNavigation';
 import { ErrorDialog } from './ui/ErrorDialog';
 import { Updater } from './ui/Updater';
 
+/**
+ * Application root component.
+ */
 const App: Component = () => {
+
+	// Application version
+	const [version, setVersion] = createSignal<string | null>(null);
+
+	// Error dialog state
 	const [showError, setShowError] = createSignal(false);
 
+	// Error message state
 	const [errorMessage, setErrorMessage] = createSignal<string | null>(null);
 
+	// Dark mode state	
 	const [isDark, setIsDark] = createSignal(false);
 
+	// Page title state
 	const [pageTitle, setPageTitle] = createSignal('');
 
+	// Side drawer state
 	const [isDrawerOpen, setOpen] = createSignal(false);
 
+	// Toast info state
 	const [showToastInfo, setShowToastInfo] = createSignal(false);
 
+	// Toast message state
 	const [toastMessage, setToastMessage] = createSignal('');
 
+	// Shows a toast info message
 	const toastInfo = (message: string) => {
 		setToastMessage(message);
 
@@ -36,8 +52,8 @@ const App: Component = () => {
 		}, 1500);
 	};
 
+	// Handles an error by logging and showing the error dialog
 	const handleError = (message: string, err: unknown) => {
-
 		if (err instanceof Error) {
 			error(`${message}\n${err.message}\n${err.stack}`);
 		} else {
@@ -48,6 +64,7 @@ const App: Component = () => {
 		setShowError(true);
 	};
 
+	// Application context value
 	const contextValue: AppContextValue = {
 		pageTitle,
 		isDrawerOpen,
@@ -63,12 +80,12 @@ const App: Component = () => {
 		handleError,
 	};
 
-	createEffect(() => {
-		localStorage.setItem('theme', isDark() ? 'dark' : 'light');
-	});
-
 	onMount(async () => {
-		setIsDark(localStorage.getItem('theme') === 'dark');
+
+		// Get application version
+		const ver = await getVersion();
+
+		setVersion(ver);
 	});
 
 	return (
@@ -79,9 +96,15 @@ const App: Component = () => {
 					<main class="w-full grow">
 						<Router>{routes}</Router>
 					</main>
+					<footer class="f-4">
+						<section class="size-full flex justify-end items-center px-7">
+							<span class='text-base-300'>v {version()}</span>
+						</section>
+					</footer>
 				</div>
 			</SideNavigation>
 
+			{/* Toast info message */}
 			<div
 				class={`top-10 z-100 toast toast-top toast-center transition-opacity duration-150 ${showToastInfo() ? 'opacity-100' : 'opacity-0'}`}
 			>
@@ -91,6 +114,7 @@ const App: Component = () => {
 				</div>
 			</div>
 
+			{/* Error dialog */}
 			<ErrorDialog
 				open={showError()}
 				message={errorMessage()}
@@ -99,6 +123,7 @@ const App: Component = () => {
 
 			{/* Application updater */}
 			<Updater />
+			
 		</AppContext.Provider>
 	);
 };
