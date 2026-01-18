@@ -1,4 +1,4 @@
-import { type Component, createEffect, createSignal, onMount } from 'solid-js';
+import { type Component, createSignal, onMount } from 'solid-js';
 import '@/app/App.css';
 import { Router } from '@solidjs/router';
 import { getVersion } from '@tauri-apps/api/app';
@@ -123,7 +123,7 @@ const App: Component = () => {
 
 			{/* Application updater */}
 			<Updater />
-			
+
 		</AppContext.Provider>
 	);
 };

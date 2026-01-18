@@ -62,12 +62,12 @@ const JournalSheet: Component<{
 		<table class="table text-nowrap table-pin-rows table-fixed pr-3">
 			<thead>
 				<tr>
-					<th></th>
-					<th>仕入品</th>
-					<th>単位</th>
-					<th class='text-end'>単価</th>
-					<th class='text-end'>数量</th>
-					<th class='text-end'>金額</th>
+					<th class='w-[5%]'></th>
+					<th class='w-[30%]'>仕入品</th>
+					<th class='w-[5%]'>単位</th>
+					<th class='w-[10%] text-end'>単価</th>
+					<th class='w-[10%] text-end'>数量</th>
+					<th class='w-[10%] text-end'>金額</th>
 				</tr>
 			</thead>
 			<tbody>

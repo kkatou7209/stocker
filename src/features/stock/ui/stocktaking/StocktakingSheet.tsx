@@ -46,10 +46,10 @@ const StocktakingSheet: Component<{
 			<thead>
 				<tr>
 					<th>仕入品名</th>
-					<th>単位</th>
-					<th class='text-end'>単価</th>
-					<th class='text-end'>数量</th>
-					<th class='text-end'>金額</th>
+					<th class='w-[5%]'>単位</th>
+					<th class='w-[20%] text-end'>単価</th>
+					<th class='w-[20%] text-end'>数量</th>
+					<th class='w-[20%] text-end'>金額</th>
 				</tr>
 			</thead>
 			<tbody>
