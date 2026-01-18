@@ -3,7 +3,7 @@ use std::path::PathBuf;
 
 use tauri::{AppHandle, Manager};
 
-use crate::config::{Theme, CONFIG_FILE_NAME};
+use crate::config::{Config, Theme, CONFIG_FILE_NAME};
 
 /// Initialize configuration file if it does not exist
 pub fn init_config(app: &AppHandle) -> Result<PathBuf, String> {
@@ -17,9 +17,7 @@ pub fn init_config(app: &AppHandle) -> Result<PathBuf, String> {
     let config_path = path.join(CONFIG_FILE_NAME);
 
     if !config_path.exists() {
-        let default_config = crate::config::Config {
-            theme: Theme::Light,
-        };
+        let default_config = Config::default();
 
         let config_data =
             serde_json::to_string_pretty(&default_config).map_err(|e| format!("{}", e))?;

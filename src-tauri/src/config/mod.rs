@@ -17,3 +17,11 @@ pub struct Config {
     /// Application theme
     pub theme: Theme,
 }
+
+impl Default for Config {
+    fn default() -> Self {
+        Config {
+            theme: Theme::Light,
+        }
+    }
+}

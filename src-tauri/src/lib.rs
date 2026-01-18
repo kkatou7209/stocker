@@ -109,7 +109,10 @@ pub fn run() {
             update_stocktaking,
             search_stocktakings,
             delete_stocktaking,
-            download_stocktaking_csv
+            download_stocktaking_csv,
+            // config commands
+            get_current_theme,
+            set_theme,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
