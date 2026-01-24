@@ -34,31 +34,46 @@ pub fn migrate(db_path: impl AsRef<str>) -> Result<()> {
         )));
     }
 
-    let conn = Connection::open(path)
+    let mut conn = Connection::open(path)
         .map_err(|e| Error::InfrastructureError(format!("fail to open connection: {}", e)))?;
 
     let version = conn
         .query_row("PRAGMA user_version", [], |row| row.get::<_, i64>(0))
         .map_err(|e| Error::InfrastructureError(format!("fail to get migration version: {}", e)))?;
 
+    let tran = conn
+        .transaction()
+        .map_err(|e| Error::InfrastructureError(format!("fail to start transaction: {}", e)))?;
+
     // Apply migrations
     // Note: Each migration should be idempotent.
-    (|| -> rusqlite::Result<(), rusqlite::Error> {
+    let migration_result = (|| -> rusqlite::Result<(), rusqlite::Error> {
         if version < 1 {
-            conn.execute_batch(include_str!("migrations/001_create_tables.sql"))?;
+            tran.execute_batch(include_str!("migrations/001_create_tables.sql"))?;
         }
 
         if version < 2 {
-            conn.execute_batch(include_str!("migrations/002_add_deleted_at_column.sql"))?;
+            tran.execute_batch(include_str!("migrations/002_add_deleted_at_column.sql"))?;
         }
 
         if version < 3 {
-            conn.execute_batch(include_str!("migrations/003_quantity_int_to_real.sql"))?;
+            tran.execute_batch(include_str!("migrations/003_quantity_int_to_real.sql"))?;
+        }
+
+        if version < 4 {
+            tran.execute_batch(include_str!("migrations/004_add_total_price_column.sql"))?;
         }
 
         Ok(())
     })()
-    .map_err(|e| Error::InfrastructureError(format!("migration failed: {}", e)))?;
+    .map_err(|e| Error::InfrastructureError(format!("migration failed: {}", e)));
+
+    if let Err(_) = &migration_result {
+        tran.rollback()
+            .map_err(|e| Error::InfrastructureError(format!("rollback failed: {}", e)))?;
+
+        return migration_result;
+    }
 
     Ok(())
 }
