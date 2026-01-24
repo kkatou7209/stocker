@@ -129,7 +129,7 @@ const StocktakingRecordInput: Component<{
 			<td>{props.value.supplyName}</td>
 			<td>{props.value.unitName}</td>
 			<td>
-				<NumberInput value={unitPrice()} onChange={(value) => setUnitPrice(Math.round(value))} suffix='円'/>
+				<NumberInput value={unitPrice()} onChange={setUnitPrice} suffix='円'/>
 			</td>
 			<td>
 				<NumberInput value={quantity()} onChange={setQuantity} suffix={props.value.unitName}/>

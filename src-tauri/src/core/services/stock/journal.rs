@@ -54,7 +54,7 @@ impl JournalUsecase for JournalService {
                     supply_id: record.supply_id().to_string(),
                     supply_name: record.supply_name().to_string(),
                     unit_name: record.unit_name().to_string(),
-                    unit_price: record.unit_price().as_u32(),
+                    unit_price: record.unit_price().as_f64(),
                     quantity: record.quantity().as_f64(),
                 })
                 .collect(),
@@ -80,7 +80,7 @@ impl JournalUsecase for JournalService {
                         supply_id: record.supply_id().to_string(),
                         supply_name: record.supply_name().to_string(),
                         unit_name: record.unit_name().to_string(),
-                        unit_price: record.unit_price().as_u32(),
+                        unit_price: record.unit_price().as_f64(),
                         quantity: record.quantity().as_f64(),
                     })
                     .collect(),
@@ -132,7 +132,7 @@ impl JournalUsecase for JournalService {
                         supply_id: record.supply_id().to_string(),
                         supply_name: record.supply_name().to_string(),
                         unit_name: record.unit_name().to_string(),
-                        unit_price: record.unit_price().as_u32(),
+                        unit_price: record.unit_price().as_f64(),
                         quantity: record.quantity().as_f64(),
                     })
                     .collect(),
@@ -203,7 +203,7 @@ impl JournalUsecase for JournalService {
                     supply_id: record.supply_id().to_string(),
                     supply_name: record.supply_name().to_string(),
                     unit_name: record.unit_name().to_string(),
-                    unit_price: record.unit_price().as_u32(),
+                    unit_price: record.unit_price().as_f64(),
                     quantity: record.quantity().as_f64(),
                 })
                 .collect(),

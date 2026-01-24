@@ -24,7 +24,7 @@ pub struct StocktakingRecordDTO {
     pub supply_id: String,
     pub supply_name: String,
     pub unit_name: String,
-    pub unit_price: u32,
+    pub unit_price: f64,
     pub quantity: f64,
 }
 
@@ -42,7 +42,7 @@ pub struct JournalRecordDTO {
     pub supplier_id: String,
     pub supplier_name: String,
     pub unit_name: String,
-    pub unit_price: u32,
+    pub unit_price: f64,
     pub quantity: f64,
 }
 

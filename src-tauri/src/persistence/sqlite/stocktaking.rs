@@ -106,12 +106,10 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                     SupplyName::new(row.get::<_, String>(3)?)?,
                     UnitName::new(row.get::<_, String>(4)?)?,
                     StocktakingUnitPrice::new(
-                        u32::try_from(row.get::<_, i64>(5)?)
-                            .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
+                        row.get::<_, i64>(5)? as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
                     )?,
                     StocktakingQuantity::new(
-                        f64::try_from(row.get::<_, i64>(6)? as f64 / 100.0)
-                            .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?,
+                        row.get::<_, i64>(6)? as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
                     )?,
                 );
 
@@ -217,14 +215,12 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                         SupplyName::new(row.get::<_, String>(3)?)?,
                         UnitName::new(row.get::<_, String>(4)?)?,
                         StocktakingUnitPrice::new(
-                            u32::try_from(row.get::<_, i64>(5)?).map_err(|e| {
-                                rusqlite::Error::ToSqlConversionFailure(Box::new(e))
-                            })?,
+                            row.get::<_, i64>(5)? as f64
+                                / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
                         )?,
                         StocktakingQuantity::new(
-                            f64::try_from(row.get::<_, i64>(6)? as f64 / 100.0).map_err(|e| {
-                                rusqlite::Error::ToSqlConversionFailure(Box::new(e))
-                            })?,
+                            row.get::<_, i64>(6)? as f64
+                                / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
                         )?,
                     );
 
@@ -318,14 +314,12 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                         SupplyName::new(row.get::<_, String>(3)?)?,
                         UnitName::new(row.get::<_, String>(4)?)?,
                         StocktakingUnitPrice::new(
-                            u32::try_from(row.get::<_, i64>(5)?).map_err(|e| {
-                                rusqlite::Error::ToSqlConversionFailure(Box::new(e))
-                            })?,
+                            row.get::<_, i64>(5)? as f64
+                                / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
                         )?,
                         StocktakingQuantity::new(
-                            f64::try_from(row.get::<_, i64>(6)? as f64 / 100.0).map_err(|e| {
-                                rusqlite::Error::ToSqlConversionFailure(Box::new(e))
-                            })?,
+                            row.get::<_, i64>(6)? as f64
+                                / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
                         )?,
                     );
 
@@ -403,8 +397,8 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                         ":supply_id": record.supply_id().as_str(),
                         ":supply_name": record.supply_name().as_str(),
                         ":unit_name": record.unit_name().as_str(),
-                        ":unit_price": record.unit_price().as_u32() as i64,
-                        ":quantity": (record.quantity().as_f64() * 100.0) as i64,
+                        ":unit_price": (record.unit_price().as_f64() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as i64,
+                        ":quantity": (record.quantity().as_f64() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as i64,
                         ":stocktaking_id": stocktaking.id().as_str(),
                     })
                     .map_err(|e| {
@@ -491,8 +485,8 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                         ":supply_id": record.supply_id().as_str(),
                         ":supply_name": record.supply_name().as_str(),
                         ":unit_name": record.unit_name().as_str(),
-                        ":unit_price": record.unit_price().as_u32() as i64,
-                        ":quantity": (record.quantity().as_f64() * 100.0) as i64,
+                        ":unit_price": (record.unit_price().as_f64() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as i64,
+                        ":quantity": (record.quantity().as_f64() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as i64,
                         ":stocktaking_id": stocktaking.id().as_str(),
                     })
                     .map_err(|e| {

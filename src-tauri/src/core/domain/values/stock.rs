@@ -1,5 +1,9 @@
 use crate::core::{Error, Result};
 
+/// Number of digits for guaranteed price precision.
+pub const GUARANTEED_DECIMAL_PRECISION: u32 = 2;
+
+/// ID of supplier.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct SupplierId {
     value: String,
@@ -246,14 +250,14 @@ pub struct PurchaseUnitPrice {
 }
 
 impl PurchaseUnitPrice {
-    pub fn new(value: impl Into<u32>) -> Result<Self> {
-        let value = value.into();
+    pub fn new(value: impl Into<f64>) -> Result<Self> {
+        let value = (value.into() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as u32;
 
         Ok(Self { value })
     }
 
-    pub fn as_u32(&self) -> u32 {
-        self.value
+    pub fn as_f64(&self) -> f64 {
+        self.value as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64
     }
 }
 
@@ -264,13 +268,13 @@ pub struct PurchaseQuantity {
 
 impl PurchaseQuantity {
     pub fn new(value: impl Into<f64>) -> Result<Self> {
-        let value = (value.into() * 100.0) as u32;
+        let value = (value.into() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as u32;
 
         return Ok(Self { value });
     }
 
     pub fn as_f64(&self) -> f64 {
-        self.value as f64 / 100.0
+        self.value as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64
     }
 }
 
@@ -325,13 +329,13 @@ pub struct StocktakingQuantity {
 
 impl StocktakingQuantity {
     pub fn new(value: impl Into<f64>) -> Result<Self> {
-        let value = (value.into() * 100.0) as u32;
+        let value = (value.into() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as u32;
 
         return Ok(Self { value });
     }
 
     pub fn as_f64(&self) -> f64 {
-        self.value as f64 / 100.0
+        self.value as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64
     }
 }
 
@@ -341,14 +345,14 @@ pub struct StocktakingUnitPrice {
 }
 
 impl StocktakingUnitPrice {
-    pub fn new(value: impl Into<u32>) -> Result<Self> {
-        let value = value.into();
+    pub fn new(value: impl Into<f64>) -> Result<Self> {
+        let value = (value.into() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as u32;
 
         return Ok(Self { value });
     }
 
-    pub fn as_u32(&self) -> u32 {
-        self.value
+    pub fn as_f64(&self) -> f64 {
+        self.value as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64
     }
 }
 

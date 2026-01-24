@@ -22,7 +22,7 @@ pub struct StocktakingRecordData {
     supply_id: String,
     supply_name: String,
     unit_name: String,
-    unit_price: u32,
+    unit_price: f64,
     quantity: f64,
 }
 

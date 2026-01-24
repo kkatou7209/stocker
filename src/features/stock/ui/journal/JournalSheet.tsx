@@ -159,7 +159,7 @@ const JournalRecordInput: Component<{
 			<td>
 				<NumberInput 
 					value={unitPrice()}
-					onChange={(value) => setUnitPrice(Math.round(value))}
+					onChange={setUnitPrice}
 					suffix='円'
 				/>
 			</td>
