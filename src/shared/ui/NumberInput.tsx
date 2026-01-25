@@ -1,11 +1,17 @@
 import { create } from 'node:domain';
 import { _ } from 'node_modules/tailwindcss/dist/colors-b_6i0Oi7';
-import { type Component, createEffect, createSignal } from 'solid-js';
+import {
+	type Component,
+	createEffect,
+	createSignal,
+	type JSXElement,
+} from 'solid-js';
 import { useFormat } from '@/shared/lib/format';
 
 const NumberInput: Component<{
 	value?: number;
-	suffix?: string;
+	suffix?: JSXElement;
+	prefix?: JSXElement;
 	onChange?: (value: number) => unknown;
 }> = (props) => {
 	const formatter = useFormat('ja-JP');
@@ -63,6 +69,7 @@ const NumberInput: Component<{
 
 	return (
 		<label class="floating-label input">
+			{props.prefix ? <p class="label">{props.prefix}</p> : ''}
 			<input
 				type="text"
 				class="text-end"

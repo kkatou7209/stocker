@@ -29,6 +29,10 @@ export const JournalRecord = z.object({
 	 */
 	supplyId: z.string().nonempty(),
 	/**
+	 * total price of this record
+	 */
+	totalPrice: z.number().nonnegative(),
+	/**
 	 * id of supplier purchased from
 	 */
 	supplierId: z.string(),
@@ -48,6 +52,12 @@ export const Journal = z.object({
 	 * date that journal entered
 	 */
 	entryDate: z.date().nonoptional(),
+
+	/**
+	 * total price of this journal
+	 */
+	totalPrice: z.number().nonnegative(),
+
 	/**
 	 * records of purchasing
 	 */

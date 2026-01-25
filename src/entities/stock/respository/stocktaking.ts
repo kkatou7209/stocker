@@ -32,6 +32,8 @@ class Repository {
 			date.getTime(),
 		);
 
+		console.log(stocktaking);
+
 		if (!stocktaking) return null;
 
 		return {
@@ -42,6 +44,7 @@ class Repository {
 
 	public add = async (stocktaking: {
 		stocktakingDate: Date;
+		totalPrice: number;
 		records: StocktakingRecord[];
 	}): Promise<Stocktaking> => {
 		const registered = await this.api.stocktaking.recordStocktaking({
@@ -57,6 +60,7 @@ class Repository {
 
 	public edit = async (stocktaking: {
 		id: string;
+		totalPrice: number;
 		records: StocktakingRecord[];
 	}): Promise<void> => {
 		await this.api.stocktaking.updateStocktaking({

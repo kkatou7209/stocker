@@ -111,13 +111,13 @@ const App: Component = () => {
 	return (
 		<AppContext.Provider value={contextValue}>
 			<SideNavigation open={isDrawerOpen}>
-				<div class="flex flex-col">
+				<div class="flex flex-col h-full">
 					<AppBar />
 					<main class="w-full grow">
 						<Router>{routes}</Router>
 					</main>
-					<footer class="f-4">
-						<section class="size-full flex justify-end items-center px-7">
+					<footer class="w-full">
+						<section class="size-full flex justify-end items-center px-7 py-4">
 							<span class="text-base-300">v {version()}</span>
 						</section>
 					</footer>

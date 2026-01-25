@@ -15,13 +15,19 @@ import DateInput from '@/shared/ui/DateInput';
  * Page component of journal entry
  */
 const EntryJournalPage: Component = () => {
+	
 	const app = useApp();
+
+	app.setPageTitle('記帳');
 
 	const location = useLocation<{ date?: Date }>();
 
 	const supplierRepository = useSupplierRespository();
 	const journalRepository = useJournalepository();
 
+	/**
+	 * Check if the journal is new
+	 */
 	const isNewJournal = () => {
 		const id = journalId();
 
@@ -30,16 +36,23 @@ const EntryJournalPage: Component = () => {
 		return id.trim().length === 0;
 	};
 
+	// Journal ID
 	const [journalId, setJournalId] = createSignal<string | null>(null);
 
+	// Total price
+	const [totalPrice, setTotalPrice] = createSignal<number>(0);
+
+	// Entry date
 	const [entryDate, setEntryDate] = createSignal(
 		luxon.DateTime.now().toJSDate(),
 	);
 
+	// Journal records
 	const [records, setRecords] = createSignal<JournalRecord[]>([]);
 
-	app.setPageTitle('記帳');
-
+	/**
+	 * Reload journal records
+	 */
 	const reload = async () => {
 		let journal: Journal | null;
 
@@ -57,6 +70,8 @@ const EntryJournalPage: Component = () => {
 
 		if (journal) {
 			setJournalId(journal.id);
+
+			setTotalPrice(journal.totalPrice);
 
 			setRecords(journal.records);
 
@@ -94,6 +109,9 @@ const EntryJournalPage: Component = () => {
 		setRecords(records);
 	};
 
+	/**
+	 * Add new journal
+	 */
 	const add = async () => {
 		const date = entryDate();
 
@@ -101,6 +119,7 @@ const EntryJournalPage: Component = () => {
 
 		try {
 			journal = await journalRepository.add({
+				totalPrice: totalPrice(),
 				entryDate: date,
 				records: [...records()],
 			});
@@ -117,6 +136,9 @@ const EntryJournalPage: Component = () => {
 		app.toastInfo('記帳を登録しました。');
 	};
 
+	/**
+	 * Edit existing journal
+	 */
 	const edit = async () => {
 		const id = journalId();
 
@@ -125,6 +147,7 @@ const EntryJournalPage: Component = () => {
 		try {
 			await journalRepository.edit({
 				id,
+				totalPrice: totalPrice(),
 				records: [...records()],
 			});
 		} catch (err) {
@@ -138,6 +161,9 @@ const EntryJournalPage: Component = () => {
 		app.toastInfo('記帳を更新しました。');
 	};
 
+	/**
+	 * Handle date change
+	 */
 	const onDateChange = async (date: Date | null) => {
 		if (!date) {
 			setJournalId(null);
@@ -174,7 +200,12 @@ const EntryJournalPage: Component = () => {
 				</Button>
 			</section>
 			<section class="max-h-[70vh] overflow-auto">
-				<JournalSheet value={records()} onChange={setRecords} />
+				<JournalSheet
+					records={records()}
+					onRecordsChange={setRecords}
+					totalPrice={totalPrice()}
+					onTotalPriceChange={setTotalPrice}
+				/>
 			</section>
 		</article>
 	);

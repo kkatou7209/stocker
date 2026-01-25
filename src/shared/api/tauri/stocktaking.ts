@@ -63,6 +63,8 @@ export const tauriStocktakingEndpoint: StocktakingEndpoints = Object.freeze({
 			{ date },
 		);
 
+		console.log(stocktaking);
+
 		return stocktaking;
 	},
 	deleteStocktaking: async (id: string): Promise<void> => {

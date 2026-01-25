@@ -6,11 +6,13 @@ export const StocktakingRecordData = z.object({
 	unitPrice: z.number().nonnegative(),
 	quantity: z.number().nonnegative(),
 	supplyId: z.string().nonempty(),
+	totalPrice: z.number().nonnegative(),
 });
 
 export const StocktakingData = z.object({
 	id: z.string().nonempty(),
 	stocktakingDate: z.number().nonoptional(),
+	totalPrice: z.number().nonnegative(),
 	records: z.array(StocktakingRecordData),
 });
 

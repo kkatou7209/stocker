@@ -1,4 +1,13 @@
-import { type Component, createEffect, createSignal, For, onMount, Show } from 'solid-js';
+import { CalculatorIcon } from 'lucide-solid';
+import {
+	type Component,
+	createEffect,
+	createSignal,
+	For,
+	on,
+	onMount,
+	Show,
+} from 'solid-js';
 import type { JournalRecord } from '@/entities/stock/models/journal';
 import { useFormat } from '@/shared/lib/format';
 import NumberInput from '@/shared/ui/NumberInput';
@@ -7,44 +16,72 @@ interface RecordsPerSupplier {
 	id: string;
 	name: string;
 	records: JournalRecord[];
-};
+}
 
+/**
+ * Journal sheet component
+ */
 const JournalSheet: Component<{
-	value?: JournalRecord[];
-	onChange?: (value: JournalRecord[]) => unknown;
+	records?: JournalRecord[];
+	onRecordsChange?: (value: JournalRecord[]) => unknown;
+	totalPrice?: number;
+	onTotalPriceChange?: (value: number) => unknown;
 }> = (props) => {
-
-	const formatter = useFormat('ja-JP');
-
+	// Journal records
 	const [records, setRecords] = createSignal<JournalRecord[]>([]);
 
+	// Records grouped by supplier
 	const [suppliers, setSuppliers] = createSignal<RecordsPerSupplier[]>([]);
 
+	// Total price
 	const [totalPrice, setTotalPrice] = createSignal(0);
 
-	const onChange = (value: JournalRecord) => {
+	const onRecalculate = () => {
 
-		const index =  records().findIndex(r => 
-			r.supplierId === value.supplierId && r.supplyId === value.supplyId);
+		const total = records().reduce(
+			(price, record) => price + record.unitPrice * record.quantity,
+			0,
+		);
+
+		setTotalPrice(Math.round(total));
+
+		props.onTotalPriceChange?.(totalPrice());
+	}
+
+	// Handle change of a record
+	const onChange = (value: JournalRecord) => {
+		const index = records().findIndex(
+			(r) =>
+				r.supplierId === value.supplierId &&
+				r.supplyId === value.supplyId,
+		);
 
 		if (index >= 0) {
 			records()[index] = value;
-			props.onChange?.(records());
+			props.onRecordsChange?.(records());
 		}
 
-		const total = records().reduce((price, record) => price + (record.unitPrice * record.quantity), 0);
+		if (totalPrice() <= 0) {
 
-		setTotalPrice(Math.round(total));
-	}
+			const total = records().reduce(
+				(price, record) => price + record.unitPrice * record.quantity,
+				0,
+			);
+
+			setTotalPrice(Math.round(total));
+
+			props.onTotalPriceChange?.(totalPrice());
+		}
+
+	};
 
 	createEffect(() => {
-
-		setRecords(props.value ?? []);
+		setRecords(props.records ?? []);
 
 		const supps: RecordsPerSupplier[] = [];
 
 		for (const record of records()) {
-			if (!supps.some(s => s.id === record.supplierId)) {
+			if (!supps.some((s) => s.id === record.supplierId)) {
 				supps.push({
 					id: record.supplierId,
 					name: record.supplierName,
@@ -52,7 +89,7 @@ const JournalSheet: Component<{
 				});
 			}
 
-			supps.find(s => s.id === record.supplierId)?.records.push(record)
+			supps.find((s) => s.id === record.supplierId)?.records.push(record);
 		}
 
 		setSuppliers(supps);
@@ -62,12 +99,12 @@ const JournalSheet: Component<{
 		<table class="table text-nowrap table-pin-rows table-fixed pr-3">
 			<thead>
 				<tr>
-					<th class='w-[5%]'></th>
-					<th class='w-[30%]'>仕入品</th>
-					<th class='w-[5%]'>単位</th>
-					<th class='w-[10%] text-end'>単価</th>
-					<th class='w-[10%] text-end'>数量</th>
-					<th class='w-[10%] text-end'>金額</th>
+					<th class="w-[5%]"></th>
+					<th class="w-[30%]">仕入品</th>
+					<th class="w-[5%]">単位</th>
+					<th class="text-end">単価</th>
+					<th class="text-end">数量</th>
+					<th class="text-end">金額</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -83,13 +120,10 @@ const JournalSheet: Component<{
 				>
 					{(supp) => (
 						<>
-							<tr class='bg-base-200'>
+							<tr class="bg-base-200">
 								<td colspan={6}>{supp.name}</td>
 							</tr>
-							<For
-								each={supp.records}
-								fallback={''}
-							>
+							<For each={supp.records} fallback={''}>
 								{(record) => (
 									<JournalRecordInput
 										value={record}
@@ -101,14 +135,26 @@ const JournalSheet: Component<{
 					)}
 				</For>
 			</tbody>
-			<Show
-				when={records().length > 0}
-				fallback={''}
-			>
+			<Show when={records().length > 0} fallback={''}>
 				<tfoot>
-					<tr class='rounded-none bg-base-300'>
-						<td colSpan={5}>合計</td>
-						<td class='text-end'>{formatter.number.format(totalPrice())} 円</td>
+					<tr class="rounded-none bg-base-300">
+						<td colSpan={4}>合計</td>
+						<td class='text-end' colSpan={2}>
+							<NumberInput
+								value={totalPrice()}
+								onChange={setTotalPrice}
+								suffix="円"
+								prefix={
+									<button
+										type="button"
+										class="btn btn-ghost btn-sm"
+										onClick={onRecalculate}
+									>
+										<CalculatorIcon class="size-4" />
+									</button>
+								}
+							/>
+						</td>
 					</tr>
 				</tfoot>
 			</Show>
@@ -120,35 +166,52 @@ const JournalRecordInput: Component<{
 	value: JournalRecord;
 	onChange: (value: JournalRecord) => unknown;
 }> = (props) => {
-	const formatter = useFormat('ja-JP');
-
+	// The unit price of the supply
 	const [unitPrice, setUnitPrice] = createSignal(0);
 
+	// The quantity of the supply
 	const [quantity, setQuantity] = createSignal(0);
 
+	// The total price of the supply
 	const [totalPrice, setTotalPrice] = createSignal(0);
 
-	createEffect(() => {
-		setTotalPrice(Math.round(unitPrice() * quantity()));
-		props.onChange({
-			supplyName: props.value.supplyName,
-			supplierName: props.value.supplierName,
-			unitName: props.value.unitName,
-			supplierId: props.value.supplierId,
-			supplyId: props.value.supplyId,
+	createEffect(
+		on([unitPrice, quantity], () => {
+			if (totalPrice() <= 0) {
+				setTotalPrice(Math.round(unitPrice() * quantity()));
+			}
+
+			const record: JournalRecord = {
+				...props.value,
+				unitPrice: unitPrice(),
+				quantity: quantity(),
+				totalPrice: totalPrice(),
+			};
+
+			props.onChange(record);
+		}),
+	);
+
+	const onRecalculate = () => {
+
+		setTotalPrice(unitPrice() * quantity());
+
+		const record: JournalRecord = {
+			...props.value,
 			unitPrice: unitPrice(),
 			quantity: quantity(),
-		});
-	});
+			totalPrice: totalPrice(),
+		};
+
+		props.onChange(record);
+	}
 
 	onMount(() => {
-
 		const record = props.value;
 
 		setUnitPrice(record.unitPrice);
 		setQuantity(record.quantity);
-
-		setTotalPrice(Math.round(unitPrice() * quantity()));
+		setTotalPrice(record.totalPrice);
 	});
 
 	return (
@@ -157,20 +220,35 @@ const JournalRecordInput: Component<{
 			<td>{props.value.supplyName}</td>
 			<td>{props.value.unitName}</td>
 			<td>
-				<NumberInput 
+				<NumberInput
 					value={unitPrice()}
 					onChange={setUnitPrice}
-					suffix='円'
+					suffix="円"
 				/>
 			</td>
 			<td>
-				<NumberInput 
-					value={quantity()} 
-					onChange={setQuantity} 
+				<NumberInput
+					value={quantity()}
+					onChange={setQuantity}
 					suffix={props.value.unitName}
 				/>
 			</td>
-			<td class="text-end">{formatter.number.format(totalPrice())} 円</td>
+			<td>
+				<NumberInput
+					value={totalPrice()}
+					onChange={setTotalPrice}
+					suffix="円"
+					prefix={
+						<button
+							type="button"
+							class="btn btn-ghost btn-sm"
+							onClick={onRecalculate}
+						>
+							<CalculatorIcon class="size-4" />
+						</button>
+					}
+				/>
+			</td>
 		</tr>
 	);
 };

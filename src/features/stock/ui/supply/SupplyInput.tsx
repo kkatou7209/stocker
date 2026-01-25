@@ -56,7 +56,7 @@ const SupplyInput: Component<SupplyInputProps> = (props) => {
 								placeholder="仕入品名"
 								value={supplyName()}
 								required
-								pattern="[^\s]+"
+								pattern=".*[^\s]+.*"
 								oninput={(e) =>
 									setSupplyName(e.currentTarget.value)
 								}

@@ -31,10 +31,12 @@ class Repository {
 
 	public add = async (journal: {
 		entryDate: Date;
+		totalPrice: number;
 		records: JournalRecord[];
 	}): Promise<Journal> => {
 		const registered = await this.api.journal.recordJournal({
 			entryDate: journal.entryDate.getTime(),
+			totalPrice: journal.totalPrice,
 			records: [...journal.records],
 		});
 
@@ -43,10 +45,12 @@ class Repository {
 
 	public edit = async (journal: {
 		id: string;
+		totalPrice: number;
 		records: JournalRecord[];
 	}): Promise<void> => {
 		await this.api.journal.updateJournal({
 			id: journal.id,
+			totalPrice: journal.totalPrice,
 			records: [...journal.records],
 		});
 	};

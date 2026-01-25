@@ -18,14 +18,31 @@ export const StocktakingRecord = z.object({
 	 */
 	quantity: z.number().nonnegative(),
 	/**
+	 * total price of this record
+	 */
+	totalPrice: z.number().nonnegative(),
+	/**
 	 * id of supply
 	 */
 	supplyId: z.string().nonempty(),
 });
 
 export const Stocktaking = z.object({
+	/**
+	 * id of stocktaking
+	 */
 	id: z.string().nonempty(),
+	/**
+	 * date of stocktaking
+	 */
 	stocktakingDate: z.date().nonoptional(),
+	/**
+	 * total price of this stocktaking
+	 */
+	totalPrice: z.number().nonnegative(),
+	/**
+	 * records of stocktaking
+	 */
 	records: z.array(StocktakingRecord),
 });
 

@@ -8,6 +8,7 @@ export const JournalRecordData = z.object({
 	quantity: z.number().nonnegative(),
 	supplyId: z.string().nonempty(),
 	supplierId: z.string(),
+	totalPrice: z.number().nonnegative(),
 });
 
 export type JournalRecordData = z.infer<typeof JournalRecordData>;
@@ -15,6 +16,7 @@ export type JournalRecordData = z.infer<typeof JournalRecordData>;
 export const JournalData = z.object({
 	id: z.string().nonempty(),
 	entryDate: z.number().nonoptional(),
+	totalPrice: z.number().nonnegative(),
 	records: z.array(JournalRecordData),
 });
 

@@ -35,6 +35,8 @@ const StocktakingPage: Component = () => {
 		luxon.DateTime.now().toJSDate(),
 	);
 
+	const [totalPrice, setTotalPrice] = createSignal<number>(0);
+
 	const [stocktakingRecords, setStocktakingRecords] = createSignal<
 		StocktakingRecord[]
 	>([]);
@@ -83,6 +85,8 @@ const StocktakingPage: Component = () => {
 
 		setStocktakingId(stocktaking.id);
 
+		setTotalPrice(stocktaking.totalPrice);
+
 		for (const [i, record] of records.entries()) {
 
 			const registered = stocktaking.records.find(
@@ -98,6 +102,7 @@ const StocktakingPage: Component = () => {
 			record.unitName = registered.unitName;
 			record.unitPrice = registered.unitPrice;
 			record.quantity = registered.quantity;
+			record.totalPrice = registered.totalPrice;
 		}
 
 		setStocktakingRecords([...records]);
@@ -112,6 +117,7 @@ const StocktakingPage: Component = () => {
 		if (!date) return;
 
 		const stocktaking = await stocktakingRepository.add({
+			totalPrice: totalPrice(),
 			stocktakingDate: date,
 			records: [...stocktakingRecords()],
 		});
@@ -135,6 +141,7 @@ const StocktakingPage: Component = () => {
 		try {
 			await stocktakingRepository.edit({
 				id,
+				totalPrice: totalPrice(),
 				records: [...stocktakingRecords()],
 			});
 		} catch (error) {
@@ -173,8 +180,10 @@ const StocktakingPage: Component = () => {
 			</section>
 			<section class="max-h-[70vh] overflow-auto">
 				<StocktakingSheet
-					value={stocktakingRecords()}
-					onChange={setStocktakingRecords}
+					records={stocktakingRecords()}
+					totalPrice={totalPrice()}
+					onTotalPriceChange={setTotalPrice}
+					onRecordsChange={setStocktakingRecords}
 				/>
 			</section>
 		</article>
