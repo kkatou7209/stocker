@@ -59,13 +59,15 @@ impl ForJournalPersistence for SqliteJournalRepository {
                 SELECT
                     journals.id,
                     journals.recorded_at,
+                    journals.total_price,
                     journal_records.supply_id,
                     journal_records.supply_name,
                     journal_records.supplier_id,
                     journal_records.supplier_name,
                     journal_records.unit_name,
                     journal_records.unit_price,
-                    journal_records.quantity
+                    journal_records.quantity,
+                    journal_records.total_price
                 FROM journals
                 INNER JOIN journal_records
                     ON journal_records.journal_id = journals.id
@@ -83,6 +85,9 @@ impl ForJournalPersistence for SqliteJournalRepository {
                 let journal = Journal::restore(
                     JournalId::new(row.get::<_, i64>(0)?.to_string())?,
                     EntryDateTime::new(row.get::<_, i64>(1)?),
+                    TotalPrice::new(
+                        row.get::<_, i64>(2)? as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
+                    )?,
                     Vec::new(),
                 );
 
@@ -102,16 +107,19 @@ impl ForJournalPersistence for SqliteJournalRepository {
                     .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?;
 
                 let journal_record = JournalRecord::new(
-                    SupplyId::new(row.get::<_, i64>(2)?.to_string())?,
-                    SupplyName::new(row.get::<_, String>(3)?)?,
-                    SupplierId::new(row.get::<_, i64>(4)?.to_string())?,
-                    SupplierName::new(row.get::<_, String>(5)?)?,
-                    UnitName::new(row.get::<_, String>(6)?)?,
+                    SupplyId::new(row.get::<_, i64>(3)?.to_string())?,
+                    SupplyName::new(row.get::<_, String>(4)?)?,
+                    SupplierId::new(row.get::<_, i64>(5)?.to_string())?,
+                    SupplierName::new(row.get::<_, String>(6)?)?,
+                    UnitName::new(row.get::<_, String>(7)?)?,
                     PurchaseUnitPrice::new(
-                        row.get::<_, i64>(7)? as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
+                        row.get::<_, i64>(8)? as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
                     )?,
                     PurchaseQuantity::new(
-                        row.get::<_, i64>(8)? as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
+                        row.get::<_, i64>(9)? as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
+                    )?,
+                    TotalPrice::new(
+                        row.get::<_, i64>(10)? as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
                     )?,
                 );
 
@@ -156,6 +164,7 @@ impl ForJournalPersistence for SqliteJournalRepository {
                 SELECT
                     journals.id,
                     journals.recorded_at,
+                    journals.total_price,
                     journal_records.supply_id,
                     journal_records.supply_name,
                     journal_records.supplier_id,
@@ -163,7 +172,7 @@ impl ForJournalPersistence for SqliteJournalRepository {
                     journal_records.unit_name,
                     journal_records.unit_price,
                     journal_records.quantity,
-                    journal_records.journal_id
+                    journal_records.total_price
                 FROM journals
                 INNER JOIN journal_records
                     ON journal_records.journal_id = journals.id
@@ -186,6 +195,10 @@ impl ForJournalPersistence for SqliteJournalRepository {
                     let journal = Journal::restore(
                         JournalId::new(row.get::<_, i64>(0)?.to_string())?,
                         EntryDateTime::new(row.get::<_, i64>(1)?),
+                        TotalPrice::new(
+                            row.get::<_, i64>(2)? as f64
+                                / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
+                        )?,
                         Vec::new(),
                     );
 
@@ -202,17 +215,21 @@ impl ForJournalPersistence for SqliteJournalRepository {
                 },
                 |row| {
                     let journal_record = JournalRecord::new(
-                        SupplyId::new(row.get::<_, i64>(2)?.to_string())?,
-                        SupplyName::new(row.get::<_, String>(3)?)?,
-                        SupplierId::new(row.get::<_, i64>(4)?.to_string())?,
-                        SupplierName::new(row.get::<_, String>(5)?)?,
-                        UnitName::new(row.get::<_, String>(6)?)?,
+                        SupplyId::new(row.get::<_, i64>(3)?.to_string())?,
+                        SupplyName::new(row.get::<_, String>(4)?)?,
+                        SupplierId::new(row.get::<_, i64>(5)?.to_string())?,
+                        SupplierName::new(row.get::<_, String>(6)?)?,
+                        UnitName::new(row.get::<_, String>(7)?)?,
                         PurchaseUnitPrice::new(
-                            row.get::<_, i64>(7)? as f64
+                            row.get::<_, i64>(8)? as f64
                                 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
                         )?,
                         PurchaseQuantity::new(
-                            row.get::<_, i64>(8)? as f64
+                            row.get::<_, i64>(9)? as f64
+                                / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
+                        )?,
+                        TotalPrice::new(
+                            row.get::<_, i64>(10)? as f64
                                 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
                         )?,
                     );
@@ -245,6 +262,7 @@ impl ForJournalPersistence for SqliteJournalRepository {
                 SELECT
                     journals.id,
                     journals.recorded_at,
+                    journals.total_price,
                     journal_records.supply_id,
                     journal_records.supply_name,
                     journal_records.supplier_id,
@@ -252,7 +270,7 @@ impl ForJournalPersistence for SqliteJournalRepository {
                     journal_records.unit_name,
                     journal_records.unit_price,
                     journal_records.quantity,
-                    journal_records.journal_id
+                    journal_records.total_price
                 FROM journals
                 INNER JOIN journal_records
                     ON journal_records.journal_id = journals.id
@@ -285,6 +303,7 @@ impl ForJournalPersistence for SqliteJournalRepository {
                     let journal = Journal::restore(
                         JournalId::new(row.get::<_, i64>(0)?.to_string())?,
                         EntryDateTime::new(row.get::<_, i64>(1)?),
+                        TotalPrice::new(row.get::<_, i64>(2)? as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64)?,
                         Vec::new(),
                     );
 
@@ -310,17 +329,20 @@ impl ForJournalPersistence for SqliteJournalRepository {
                     .map_err(|e| rusqlite::Error::ToSqlConversionFailure(Box::new(e)))?;
 
                 let journal_record = JournalRecord::new(
-                    SupplyId::new(row.get::<_, i64>(2)?.to_string())?,
-                    SupplyName::new(row.get::<_, String>(3)?)?,
-                    SupplierId::new(row.get::<_, i64>(4)?.to_string())?,
-                    SupplierName::new(row.get::<_, String>(5)?)?,
-                    UnitName::new(row.get::<_, String>(6)?)?,
+                    SupplyId::new(row.get::<_, i64>(3)?.to_string())?,
+                    SupplyName::new(row.get::<_, String>(4)?)?,
+                    SupplierId::new(row.get::<_, i64>(5)?.to_string())?,
+                    SupplierName::new(row.get::<_, String>(6)?)?,
+                    UnitName::new(row.get::<_, String>(7)?)?,
                     PurchaseUnitPrice::new(
-                        row.get::<_, i64>(7)? as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64
-                    )?,
-                    PurchaseQuantity::new(
                         row.get::<_, i64>(8)? as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64
                     )?,
+                    PurchaseQuantity::new(
+                        row.get::<_, i64>(9)? as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64
+                    )?,
+                    TotalPrice::new(
+                        row.get::<_, i64>(10)? as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64
+                    )?
                 );
 
                 Ok((journal_id, journal_record))
@@ -368,10 +390,12 @@ impl ForJournalPersistence for SqliteJournalRepository {
                     r"
                     INSERT INTO journals (
                         id,
-                        recorded_at
+                        recorded_at,
+                        total_price
                     ) VALUES (
                         :id,
-                        :recorded_at
+                        :recorded_at,
+                        :total_price
                     );
                     ",
                 )
@@ -383,6 +407,7 @@ impl ForJournalPersistence for SqliteJournalRepository {
                 .execute(named_params! {
                     ":id": journal.id().as_str(),
                     ":recorded_at": journal.entry_datetime().as_i64(),
+                    ":total_price": (journal.total_price().as_f64() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as i64,
                 })
                 .map_err(|e| {
                     Error::InfrastructureError(format!("failed to execute statement: {}", e))
@@ -399,6 +424,7 @@ impl ForJournalPersistence for SqliteJournalRepository {
                         unit_name,
                         unit_price,
                         quantity,
+                        total_price,
                         journal_id
                     ) VALUES (
                         :supply_id,
@@ -408,6 +434,7 @@ impl ForJournalPersistence for SqliteJournalRepository {
                         :unit_name,
                         :unit_price,
                         :quantity,
+                        :total_price,
                         :journal_id
                     )
                     ",
@@ -426,6 +453,7 @@ impl ForJournalPersistence for SqliteJournalRepository {
                         ":unit_name": record.unit_name().as_str(),
                         ":unit_price": (record.unit_price().as_f64() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as i64,
                         ":quantity": (record.quantity().as_f64() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as i64,
+                        ":total_price": (record.total_price().as_f64() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as i64,
                         ":journal_id": journal.id().as_str(),
                     })
                     .map_err(|e| {
@@ -463,7 +491,8 @@ impl ForJournalPersistence for SqliteJournalRepository {
                     r"
                     UPDATE journals
                     SET
-                        recorded_at = :recorded_at
+                        recorded_at = :recorded_at,
+                        total_price = :total_price
                     WHERE
                         id = :id
                     ",
@@ -476,6 +505,7 @@ impl ForJournalPersistence for SqliteJournalRepository {
                 .execute(named_params! {
                     ":id": journal.id().as_str(),
                     ":recorded_at": journal.entry_datetime().as_i64(),
+                    ":total_price": (journal.total_price().as_f64() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as i64,
                 })
                 .map_err(|e| {
                     Error::InfrastructureError(format!("failed to execute statement: {}", e))
@@ -512,6 +542,7 @@ impl ForJournalPersistence for SqliteJournalRepository {
                         unit_name,
                         unit_price,
                         quantity,
+                        total_price,
                         journal_id
                     ) VALUES (
                         :supply_id,
@@ -521,6 +552,7 @@ impl ForJournalPersistence for SqliteJournalRepository {
                         :unit_name,
                         :unit_price,
                         :quantity,
+                        :total_price,
                         :journal_id
                     )
                     ",
@@ -539,6 +571,7 @@ impl ForJournalPersistence for SqliteJournalRepository {
                         ":unit_name": record.unit_name().as_str(),
                         ":unit_price": (record.unit_price().as_f64() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as i64,
                         ":quantity": (record.quantity().as_f64() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as i64,
+                        ":total_price": (record.total_price().as_f64() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as i64,
                         ":journal_id": journal.id().as_str(),
                     })
                     .map_err(|e| {

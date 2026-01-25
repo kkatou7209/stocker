@@ -211,6 +211,7 @@ fn journal_service_test() {
     service
         .record(RecordJournalCommand {
             entry_date: 100000,
+            total_price: 1600.0,
             records: vec![
                 JournalRecordDTO {
                     supply_id: "1".into(),
@@ -220,6 +221,7 @@ fn journal_service_test() {
                     unit_name: "g".into(),
                     unit_price: 100.0,
                     quantity: 10.0,
+                    total_price: 1000.0,
                 },
                 JournalRecordDTO {
                     supply_id: "2".into(),
@@ -229,6 +231,7 @@ fn journal_service_test() {
                     unit_name: "g".into(),
                     unit_price: 120.0,
                     quantity: 5.0,
+                    total_price: 600.0,
                 },
             ],
         })
@@ -241,6 +244,7 @@ fn journal_service_test() {
         vec![JournalDTO {
             id: "1".into(),
             entry_date: 100000,
+            total_price: 1600.0,
             records: vec![
                 JournalRecordDTO {
                     supply_id: "1".into(),
@@ -250,6 +254,7 @@ fn journal_service_test() {
                     unit_name: "g".into(),
                     unit_price: 100.0,
                     quantity: 10.0,
+                    total_price: 1000.0,
                 },
                 JournalRecordDTO {
                     supply_id: "2".into(),
@@ -259,6 +264,7 @@ fn journal_service_test() {
                     unit_name: "g".into(),
                     unit_price: 120.0,
                     quantity: 5.0,
+                    total_price: 600.0,
                 },
             ],
         }]
@@ -271,6 +277,7 @@ fn journal_service_test() {
         Some(JournalDTO {
             id: "1".into(),
             entry_date: 100000,
+            total_price: 1600.0,
             records: vec![
                 JournalRecordDTO {
                     supply_id: "1".into(),
@@ -280,6 +287,7 @@ fn journal_service_test() {
                     unit_name: "g".into(),
                     unit_price: 100.0,
                     quantity: 10.0,
+                    total_price: 1000.0,
                 },
                 JournalRecordDTO {
                     supply_id: "2".into(),
@@ -289,6 +297,7 @@ fn journal_service_test() {
                     unit_name: "g".into(),
                     unit_price: 120.0,
                     quantity: 5.0,
+                    total_price: 600.0,
                 },
             ],
         })
@@ -297,6 +306,7 @@ fn journal_service_test() {
     service
         .edit(EditJournalCommand {
             journal_id: "1".into(),
+            total_price: 2000.0,
             records: vec![JournalRecordDTO {
                 supply_id: "2".into(),
                 supplier_id: "1".into(),
@@ -305,6 +315,7 @@ fn journal_service_test() {
                 unit_name: "g".into(),
                 unit_price: 200.0,
                 quantity: 10.0,
+                total_price: 2000.0,
             }],
         })
         .unwrap();
@@ -316,6 +327,7 @@ fn journal_service_test() {
         Some(JournalDTO {
             id: "1".into(),
             entry_date: 100000,
+            total_price: 2000.0,
             records: vec![JournalRecordDTO {
                 supply_id: "2".into(),
                 supplier_id: "1".into(),
@@ -324,6 +336,7 @@ fn journal_service_test() {
                 unit_name: "g".into(),
                 unit_price: 200.0,
                 quantity: 10.0,
+                total_price: 2000.0,
             },],
         })
     );
@@ -342,6 +355,7 @@ fn journal_service_test() {
         vec![JournalDTO {
             id: "1".into(),
             entry_date: 100000,
+            total_price: 2000.0,
             records: vec![JournalRecordDTO {
                 supply_id: "2".into(),
                 supplier_id: "1".into(),
@@ -350,6 +364,7 @@ fn journal_service_test() {
                 unit_name: "g".into(),
                 unit_price: 200.0,
                 quantity: 10.0,
+                total_price: 2000.0,
             },],
         }]
     );
@@ -402,6 +417,7 @@ fn stocktaking_service_test() {
     service
         .record(RecordStocktakingCommand {
             stocktaken_date: 100000,
+            total_price: 3250.0,
             records: vec![
                 StocktakingRecordDTO {
                     supply_id: "1".into(),
@@ -409,6 +425,7 @@ fn stocktaking_service_test() {
                     unit_name: "g".into(),
                     unit_price: 100.0,
                     quantity: 10.0,
+                    total_price: 1000.0,
                 },
                 StocktakingRecordDTO {
                     supply_id: "2".into(),
@@ -416,6 +433,7 @@ fn stocktaking_service_test() {
                     unit_name: "g".into(),
                     unit_price: 150.0,
                     quantity: 15.0,
+                    total_price: 2250.0,
                 },
             ],
         })
@@ -428,6 +446,7 @@ fn stocktaking_service_test() {
         vec![StocktakingDTO {
             id: "1".into(),
             stocktaken_date: 100000,
+            total_price: 3250.0,
             records: vec![
                 StocktakingRecordDTO {
                     supply_id: "1".into(),
@@ -435,6 +454,7 @@ fn stocktaking_service_test() {
                     unit_name: "g".into(),
                     unit_price: 100.0,
                     quantity: 10.0,
+                    total_price: 1000.0,
                 },
                 StocktakingRecordDTO {
                     supply_id: "2".into(),
@@ -442,6 +462,7 @@ fn stocktaking_service_test() {
                     unit_name: "g".into(),
                     unit_price: 150.0,
                     quantity: 15.0,
+                    total_price: 2250.0,
                 },
             ],
         }],
@@ -454,6 +475,7 @@ fn stocktaking_service_test() {
         Some(StocktakingDTO {
             id: "1".into(),
             stocktaken_date: 100000,
+            total_price: 3250.0,
             records: vec![
                 StocktakingRecordDTO {
                     supply_id: "1".into(),
@@ -461,6 +483,7 @@ fn stocktaking_service_test() {
                     unit_name: "g".into(),
                     unit_price: 100.0,
                     quantity: 10.0,
+                    total_price: 1000.0,
                 },
                 StocktakingRecordDTO {
                     supply_id: "2".into(),
@@ -468,6 +491,7 @@ fn stocktaking_service_test() {
                     unit_name: "g".into(),
                     unit_price: 150.0,
                     quantity: 15.0,
+                    total_price: 2250.0,
                 },
             ],
         })
@@ -476,12 +500,14 @@ fn stocktaking_service_test() {
     service
         .edit(EditStocktakingCommand {
             stocktaking_id: "1".into(),
+            total_price: 750.0,
             records: vec![StocktakingRecordDTO {
                 supply_id: "1".into(),
                 supply_name: "SupplyA".into(),
                 unit_name: "kg".into(),
                 unit_price: 150.0,
                 quantity: 5.0,
+                total_price: 750.0,
             }],
         })
         .unwrap();
@@ -493,12 +519,14 @@ fn stocktaking_service_test() {
         Some(StocktakingDTO {
             id: "1".into(),
             stocktaken_date: 100000,
+            total_price: 750.0,
             records: vec![StocktakingRecordDTO {
                 supply_id: "1".into(),
                 supply_name: "SupplyA".into(),
                 unit_name: "kg".into(),
                 unit_price: 150.0,
                 quantity: 5.0,
+                total_price: 750.0,
             },],
         })
     );
@@ -515,12 +543,14 @@ fn stocktaking_service_test() {
         vec![StocktakingDTO {
             id: "1".into(),
             stocktaken_date: 100000,
+            total_price: 750.0,
             records: vec![StocktakingRecordDTO {
                 supply_id: "1".into(),
                 supply_name: "SupplyA".into(),
                 unit_name: "kg".into(),
                 unit_price: 150.0,
                 quantity: 5.0,
+                total_price: 750.0,
             },],
         }]
     );

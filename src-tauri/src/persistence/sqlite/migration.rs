@@ -75,5 +75,8 @@ pub fn migrate(db_path: impl AsRef<str>) -> Result<()> {
         return migration_result;
     }
 
+    tran.commit()
+        .map_err(|e| Error::InfrastructureError(format!("commit failed: {}", e)))?;
+
     Ok(())
 }

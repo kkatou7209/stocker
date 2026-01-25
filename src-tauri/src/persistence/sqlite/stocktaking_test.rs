@@ -47,6 +47,7 @@ fn stocktaking_repository_test() {
         .add(Stocktaking::restore(
             StocktakingId::new("1").unwrap(),
             StocktakenDateTime::new(200000),
+            TotalPrice::new(1650_u32).unwrap(),
             vec![
                 StocktakingRecord::new(
                     SupplyId::new("1").unwrap(),
@@ -54,6 +55,7 @@ fn stocktaking_repository_test() {
                     UnitName::new("g").unwrap(),
                     StocktakingUnitPrice::new(100_u32).unwrap(),
                     StocktakingQuantity::new(10_u32).unwrap(),
+                    TotalPrice::new(1000_u32).unwrap(),
                 ),
                 StocktakingRecord::new(
                     SupplyId::new("2").unwrap(),
@@ -61,6 +63,7 @@ fn stocktaking_repository_test() {
                     UnitName::new("g").unwrap(),
                     StocktakingUnitPrice::new(130_u32).unwrap(),
                     StocktakingQuantity::new(5_u32).unwrap(),
+                    TotalPrice::new(650_u32).unwrap(),
                 ),
             ],
         ))
@@ -75,6 +78,10 @@ fn stocktaking_repository_test() {
             &StocktakenDateTime::new(200000)
         );
         assert_eq!(
+            stocktaking.total_price(),
+            &TotalPrice::new(1650_u32).unwrap()
+        );
+        assert_eq!(
             stocktaking.records(),
             &[
                 StocktakingRecord::new(
@@ -83,6 +90,7 @@ fn stocktaking_repository_test() {
                     UnitName::new("g").unwrap(),
                     StocktakingUnitPrice::new(100_u32).unwrap(),
                     StocktakingQuantity::new(10_u32).unwrap(),
+                    TotalPrice::new(1000_u32).unwrap(),
                 ),
                 StocktakingRecord::new(
                     SupplyId::new("2").unwrap(),
@@ -90,6 +98,7 @@ fn stocktaking_repository_test() {
                     UnitName::new("g").unwrap(),
                     StocktakingUnitPrice::new(130_u32).unwrap(),
                     StocktakingQuantity::new(5_u32).unwrap(),
+                    TotalPrice::new(650_u32).unwrap(),
                 ),
             ]
         );
@@ -100,12 +109,14 @@ fn stocktaking_repository_test() {
         .save(Stocktaking::restore(
             StocktakingId::new("1").unwrap(),
             StocktakenDateTime::new(240000),
+            TotalPrice::new(2100_u32).unwrap(),
             vec![StocktakingRecord::new(
                 SupplyId::new("1").unwrap(),
                 SupplyName::new("SupplyC").unwrap(),
                 UnitName::new("kg").unwrap(),
                 StocktakingUnitPrice::new(140_u32).unwrap(),
                 StocktakingQuantity::new(15_u32).unwrap(),
+                TotalPrice::new(2100_u32).unwrap(),
             )],
         ))
         .unwrap();
@@ -119,6 +130,10 @@ fn stocktaking_repository_test() {
             &StocktakenDateTime::new(240000)
         );
         assert_eq!(
+            stocktaking.total_price(),
+            &TotalPrice::new(2100_u32).unwrap()
+        );
+        assert_eq!(
             stocktaking.records(),
             &[StocktakingRecord::new(
                 SupplyId::new("1").unwrap(),
@@ -126,6 +141,7 @@ fn stocktaking_repository_test() {
                 UnitName::new("kg").unwrap(),
                 StocktakingUnitPrice::new(140_u32).unwrap(),
                 StocktakingQuantity::new(15_u32).unwrap(),
+                TotalPrice::new(2100_u32).unwrap(),
             ),]
         );
         true
@@ -145,6 +161,10 @@ fn stocktaking_repository_test() {
             &StocktakenDateTime::new(240000)
         );
         assert_eq!(
+            stocktaking.total_price(),
+            &TotalPrice::new(2100_u32).unwrap()
+        );
+        assert_eq!(
             stocktaking.records(),
             &[StocktakingRecord::new(
                 SupplyId::new("1").unwrap(),
@@ -152,6 +172,7 @@ fn stocktaking_repository_test() {
                 UnitName::new("kg").unwrap(),
                 StocktakingUnitPrice::new(140_u32).unwrap(),
                 StocktakingQuantity::new(15_u32).unwrap(),
+                TotalPrice::new(2100_u32).unwrap(),
             ),]
         );
         true

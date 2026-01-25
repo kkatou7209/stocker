@@ -9,6 +9,7 @@ use crate::core::stocker::Stocker;
 pub struct JournalData {
     id: String,
     entry_date: i64,
+    total_price: f64,
     records: Vec<JournalRecordData>,
 }
 
@@ -21,6 +22,7 @@ pub struct JournalRecordData {
     supplier_name: String,
     unit_name: String,
     unit_price: f64,
+    total_price: f64,
     quantity: f64,
 }
 
@@ -28,6 +30,7 @@ pub struct JournalRecordData {
 #[serde(rename_all = "camelCase")]
 pub struct RecordJournalCommand {
     entry_date: i64,
+    total_price: f64,
     records: Vec<JournalRecordData>,
 }
 
@@ -35,6 +38,7 @@ pub struct RecordJournalCommand {
 #[serde(rename_all = "camelCase")]
 pub struct UpdateJournalCommand {
     id: String,
+    total_price: f64,
     records: Vec<JournalRecordData>,
 }
 
@@ -56,6 +60,7 @@ pub fn list_all_journals(app: tauri::State<Stocker>) -> Result<Vec<JournalData>,
         .map(|journal| JournalData {
             id: journal.id,
             entry_date: journal.entry_date,
+            total_price: journal.total_price,
             records: journal
                 .records
                 .into_iter()
@@ -67,6 +72,7 @@ pub fn list_all_journals(app: tauri::State<Stocker>) -> Result<Vec<JournalData>,
                     unit_name: record.unit_name,
                     unit_price: record.unit_price,
                     quantity: record.quantity,
+                    total_price: record.total_price,
                 })
                 .collect::<Vec<JournalRecordData>>(),
         })
@@ -86,6 +92,7 @@ pub fn get_journal_by_id(
         Some(JournalData {
             id: journal.id,
             entry_date: journal.entry_date,
+            total_price: journal.total_price,
             records: journal
                 .records
                 .into_iter()
@@ -97,6 +104,7 @@ pub fn get_journal_by_id(
                     unit_name: record.unit_name,
                     unit_price: record.unit_price,
                     quantity: record.quantity,
+                    total_price: record.total_price,
                 })
                 .collect::<Vec<JournalRecordData>>(),
         })
@@ -114,6 +122,7 @@ pub fn record_journal(
         .journal_usecase()
         .record(provided_ports::RecordJournalCommand {
             entry_date: command.entry_date,
+            total_price: command.total_price,
             records: command
                 .records
                 .into_iter()
@@ -125,6 +134,7 @@ pub fn record_journal(
                     unit_name: record.unit_name,
                     unit_price: record.unit_price,
                     quantity: record.quantity,
+                    total_price: record.total_price,
                 })
                 .collect::<Vec<JournalRecordDTO>>(),
         })
@@ -133,6 +143,7 @@ pub fn record_journal(
     let journal = JournalData {
         id: journal.id,
         entry_date: journal.entry_date,
+        total_price: journal.total_price,
         records: journal
             .records
             .into_iter()
@@ -144,6 +155,7 @@ pub fn record_journal(
                 unit_name: record.unit_name,
                 unit_price: record.unit_price,
                 quantity: record.quantity,
+                total_price: record.total_price,
             })
             .collect::<Vec<JournalRecordData>>(),
     };
@@ -186,6 +198,7 @@ pub fn get_journal_at(
         Some(JournalData {
             id: journal.id,
             entry_date: journal.entry_date,
+            total_price: journal.total_price,
             records: journal
                 .records
                 .into_iter()
@@ -197,6 +210,7 @@ pub fn get_journal_at(
                     unit_name: record.unit_name,
                     unit_price: record.unit_price,
                     quantity: record.quantity,
+                    total_price: record.total_price,
                 })
                 .collect::<Vec<JournalRecordData>>(),
         })
@@ -213,6 +227,7 @@ pub fn update_journal(
     app.journal_usecase()
         .edit(provided_ports::EditJournalCommand {
             journal_id: command.id,
+            total_price: command.total_price,
             records: command
                 .records
                 .into_iter()
@@ -224,6 +239,7 @@ pub fn update_journal(
                     unit_name: record.unit_name,
                     unit_price: record.unit_price,
                     quantity: record.quantity,
+                    total_price: record.total_price,
                 })
                 .collect::<Vec<JournalRecordDTO>>(),
         })
@@ -252,6 +268,7 @@ pub fn search_journals(
         .map(|journal| JournalData {
             id: journal.id,
             entry_date: journal.entry_date,
+            total_price: journal.total_price,
             records: journal
                 .records
                 .into_iter()
@@ -263,6 +280,7 @@ pub fn search_journals(
                     unit_name: record.unit_name,
                     unit_price: record.unit_price,
                     quantity: record.quantity,
+                    total_price: record.total_price,
                 })
                 .collect::<Vec<JournalRecordData>>(),
         })

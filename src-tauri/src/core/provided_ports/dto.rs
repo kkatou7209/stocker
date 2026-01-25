@@ -16,6 +16,7 @@ pub struct SupplierDTO {
 pub struct StocktakingDTO {
     pub id: String,
     pub stocktaken_date: i64,
+    pub total_price: f64,
     pub records: Vec<StocktakingRecordDTO>,
 }
 
@@ -26,12 +27,14 @@ pub struct StocktakingRecordDTO {
     pub unit_name: String,
     pub unit_price: f64,
     pub quantity: f64,
+    pub total_price: f64,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct JournalDTO {
     pub id: String,
     pub entry_date: i64,
+    pub total_price: f64,
     pub records: Vec<JournalRecordDTO>,
 }
 
@@ -44,6 +47,7 @@ pub struct JournalRecordDTO {
     pub unit_name: String,
     pub unit_price: f64,
     pub quantity: f64,
+    pub total_price: f64,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -87,12 +91,14 @@ pub struct SearchStocktakingQuery {
 #[derive(Debug, Clone, PartialEq)]
 pub struct RecordStocktakingCommand {
     pub stocktaken_date: i64,
+    pub total_price: f64,
     pub records: Vec<StocktakingRecordDTO>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct EditStocktakingCommand {
     pub stocktaking_id: String,
+    pub total_price: f64,
     pub records: Vec<StocktakingRecordDTO>,
 }
 
@@ -107,11 +113,13 @@ pub struct SearchJournalsQuery {
 #[derive(Debug, Clone, PartialEq)]
 pub struct RecordJournalCommand {
     pub entry_date: i64,
+    pub total_price: f64,
     pub records: Vec<JournalRecordDTO>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct EditJournalCommand {
     pub journal_id: String,
+    pub total_price: f64,
     pub records: Vec<JournalRecordDTO>,
 }

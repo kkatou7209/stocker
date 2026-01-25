@@ -41,6 +41,7 @@ impl StocktakingUsecase for StocktakingService {
         let stocktaking = StocktakingDTO {
             id: stocktaking.id().to_string(),
             stocktaken_date: stocktaking.stocktaken_at().as_i64(),
+            total_price: stocktaking.total_price().as_f64(),
             records: stocktaking
                 .records()
                 .iter()
@@ -50,6 +51,7 @@ impl StocktakingUsecase for StocktakingService {
                     quantity: record.quantity().as_f64(),
                     unit_name: record.unit_name().to_string(),
                     unit_price: record.unit_price().as_f64(),
+                    total_price: record.total_price().as_f64(),
                 })
                 .collect(),
         };
@@ -65,6 +67,7 @@ impl StocktakingUsecase for StocktakingService {
             .map(|stocktaking| StocktakingDTO {
                 id: stocktaking.id().to_string(),
                 stocktaken_date: stocktaking.stocktaken_at().as_i64(),
+                total_price: stocktaking.total_price().as_f64(),
                 records: stocktaking
                     .records()
                     .iter()
@@ -74,6 +77,7 @@ impl StocktakingUsecase for StocktakingService {
                         supply_name: record.supply_name().to_string(),
                         unit_name: record.unit_name().to_string(),
                         unit_price: record.unit_price().as_f64(),
+                        total_price: record.total_price().as_f64(),
                     })
                     .collect(),
             })
@@ -97,6 +101,7 @@ impl StocktakingUsecase for StocktakingService {
             .map(|stocktaking| StocktakingDTO {
                 id: stocktaking.id().to_string(),
                 stocktaken_date: stocktaking.stocktaken_at().as_i64(),
+                total_price: stocktaking.total_price().as_f64(),
                 records: stocktaking
                     .records()
                     .iter()
@@ -106,6 +111,7 @@ impl StocktakingUsecase for StocktakingService {
                         supply_name: record.supply_name().to_string(),
                         unit_name: record.unit_name().to_string(),
                         unit_price: record.unit_price().as_f64(),
+                        total_price: record.total_price().as_f64(),
                     })
                     .collect(),
             })
@@ -136,12 +142,14 @@ impl StocktakingUsecase for StocktakingService {
                 UnitName::new(&record.unit_name)?,
                 StocktakingUnitPrice::new(record.unit_price)?,
                 StocktakingQuantity::new(record.quantity)?,
+                TotalPrice::new(record.total_price)?,
             ));
         }
 
         let stocktaking = Stocktaking::restore(
             id,
             StocktakenDateTime::new(command.stocktaken_date),
+            TotalPrice::new(command.total_price)?,
             records,
         );
 
@@ -150,6 +158,7 @@ impl StocktakingUsecase for StocktakingService {
         let stocktaking = StocktakingDTO {
             id: stocktaking.id().to_string(),
             stocktaken_date: stocktaking.stocktaken_at().as_i64(),
+            total_price: stocktaking.total_price().as_f64(),
             records: stocktaking
                 .records()
                 .iter()
@@ -159,6 +168,7 @@ impl StocktakingUsecase for StocktakingService {
                     supply_name: record.supply_name().to_string(),
                     unit_name: record.unit_name().to_string(),
                     unit_price: record.unit_price().as_f64(),
+                    total_price: record.total_price().as_f64(),
                 })
                 .collect(),
         };
@@ -174,6 +184,10 @@ impl StocktakingUsecase for StocktakingService {
             .get(stocktaking_id)?
             .ok_or(Error::DomainError(format!("stocktaking does not exist.")))?;
 
+        let total_price = TotalPrice::new(command.total_price)?;
+
+        stocktaking.change_total_price(total_price);
+
         let mut records: Vec<StocktakingRecord> = Vec::new();
 
         for record in &command.records {
@@ -183,6 +197,7 @@ impl StocktakingUsecase for StocktakingService {
                 UnitName::new(&record.unit_name)?,
                 StocktakingUnitPrice::new(record.unit_price)?,
                 StocktakingQuantity::new(record.quantity)?,
+                TotalPrice::new(record.total_price)?,
             ));
         }
 

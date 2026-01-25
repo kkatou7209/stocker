@@ -60,11 +60,13 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                 SELECT
                     stocktakings.id,
                     stocktakings.recorded_at,
+                    stocktakings.total_price,
                     stocktaking_records.supply_id,
                     stocktaking_records.supply_name,
                     stocktaking_records.unit_name,
                     stocktaking_records.unit_price,
-                    stocktaking_records.quantity
+                    stocktaking_records.quantity,
+                    stocktaking_records.total_price
                 FROM stocktakings
                 INNER JOIN stocktaking_records
                     ON stocktaking_records.stocktaking_id = stocktakings.id
@@ -82,6 +84,9 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                 let stocktaking = Stocktaking::restore(
                     StocktakingId::new(row.get::<_, i64>(0)?.to_string())?,
                     StocktakenDateTime::new(row.get::<_, i64>(1)?),
+                    TotalPrice::new(
+                        row.get::<_, i64>(2)? as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
+                    )?,
                     vec![],
                 );
 
@@ -102,14 +107,17 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                 let id = StocktakingId::new(row.get::<_, i64>(0)?.to_string())?;
 
                 let stocktaking_record = StocktakingRecord::new(
-                    SupplyId::new(row.get::<_, i64>(2)?.to_string())?,
-                    SupplyName::new(row.get::<_, String>(3)?)?,
-                    UnitName::new(row.get::<_, String>(4)?)?,
+                    SupplyId::new(row.get::<_, i64>(3)?.to_string())?,
+                    SupplyName::new(row.get::<_, String>(4)?)?,
+                    UnitName::new(row.get::<_, String>(5)?)?,
                     StocktakingUnitPrice::new(
-                        row.get::<_, i64>(5)? as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
+                        row.get::<_, i64>(6)? as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
                     )?,
                     StocktakingQuantity::new(
-                        row.get::<_, i64>(6)? as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
+                        row.get::<_, i64>(7)? as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
+                    )?,
+                    TotalPrice::new(
+                        row.get::<_, i64>(8)? as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
                     )?,
                 );
 
@@ -155,11 +163,13 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                 SELECT
                     stocktakings.id,
                     stocktakings.recorded_at,
+                    stocktakings.total_price,
                     stocktaking_records.supply_id,
                     stocktaking_records.supply_name,
                     stocktaking_records.unit_name,
                     stocktaking_records.unit_price,
-                    stocktaking_records.quantity
+                    stocktaking_records.quantity,
+                    stocktaking_records.total_price
                 FROM stocktakings
                 INNER JOIN stocktaking_records
                     ON stocktaking_records.stocktaking_id = stocktakings.id
@@ -185,6 +195,10 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                     let stocktaking = Stocktaking::restore(
                         StocktakingId::new(row.get::<_, i64>(0)?.to_string())?,
                         StocktakenDateTime::new(row.get::<_, i64>(1)?),
+                        TotalPrice::new(
+                            row.get::<_, i64>(2)? as f64
+                                / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
+                        )?,
                         vec![],
                     );
 
@@ -211,15 +225,19 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                     let id = StocktakingId::new(row.get::<_, i64>(0)?.to_string())?;
 
                     let stocktaking_record = StocktakingRecord::new(
-                        SupplyId::new(row.get::<_, i64>(2)?.to_string())?,
-                        SupplyName::new(row.get::<_, String>(3)?)?,
-                        UnitName::new(row.get::<_, String>(4)?)?,
+                        SupplyId::new(row.get::<_, i64>(3)?.to_string())?,
+                        SupplyName::new(row.get::<_, String>(4)?)?,
+                        UnitName::new(row.get::<_, String>(5)?)?,
                         StocktakingUnitPrice::new(
-                            row.get::<_, i64>(5)? as f64
+                            row.get::<_, i64>(6)? as f64
                                 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
                         )?,
                         StocktakingQuantity::new(
-                            row.get::<_, i64>(6)? as f64
+                            row.get::<_, i64>(7)? as f64
+                                / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
+                        )?,
+                        TotalPrice::new(
+                            row.get::<_, i64>(8)? as f64
                                 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
                         )?,
                     );
@@ -267,11 +285,13 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                 SELECT
                     stocktakings.id,
                     stocktakings.recorded_at,
+                    stocktakings.total_price,
                     stocktaking_records.supply_id,
                     stocktaking_records.supply_name,
                     stocktaking_records.unit_name,
                     stocktaking_records.unit_price,
-                    stocktaking_records.quantity
+                    stocktaking_records.quantity,
+                    stocktaking_records.total_price
                 FROM stocktakings
                 INNER JOIN stocktaking_records
                     ON stocktaking_records.stocktaking_id = stocktakings.id
@@ -294,6 +314,10 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                     let stocktaking = Stocktaking::restore(
                         StocktakingId::new(row.get::<_, i64>(0)?.to_string())?,
                         StocktakenDateTime::new(row.get::<_, i64>(1)?),
+                        TotalPrice::new(
+                            row.get::<_, i64>(2)? as f64
+                                / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
+                        )?,
                         vec![],
                     );
 
@@ -310,15 +334,19 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                 },
                 |row| {
                     let stocktaking_record = StocktakingRecord::new(
-                        SupplyId::new(row.get::<_, i64>(2)?.to_string())?,
-                        SupplyName::new(row.get::<_, String>(3)?)?,
-                        UnitName::new(row.get::<_, String>(4)?)?,
+                        SupplyId::new(row.get::<_, i64>(3)?.to_string())?,
+                        SupplyName::new(row.get::<_, String>(4)?)?,
+                        UnitName::new(row.get::<_, String>(5)?)?,
                         StocktakingUnitPrice::new(
-                            row.get::<_, i64>(5)? as f64
+                            row.get::<_, i64>(6)? as f64
                                 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
                         )?,
                         StocktakingQuantity::new(
-                            row.get::<_, i64>(6)? as f64
+                            row.get::<_, i64>(7)? as f64
+                                / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
+                        )?,
+                        TotalPrice::new(
+                            row.get::<_, i64>(8)? as f64
                                 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64,
                         )?,
                     );
@@ -354,15 +382,18 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                 r"
                 INSERT INTO stocktakings (
                     id,
-                    recorded_at
+                    recorded_at,
+                    total_price
                 ) VALUES (
                     :id,
-                    :recorded_at
+                    :recorded_at,
+                    :total_price
                 )
                 ",
                 named_params! {
                     ":id": stocktaking.id().as_str(),
                     ":recorded_at": stocktaking.stocktaken_at().as_i64(),
+                    ":total_price": (stocktaking.total_price().as_f64() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as i64
                 },
             )
             .map_err(|e| Error::InfrastructureError(format!("failed to execute: {}", e)))?;
@@ -376,6 +407,7 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                     unit_name,
                     unit_price,
                     quantity,
+                    total_price,
                     stocktaking_id
                 ) VALUES (
                     :supply_id,
@@ -383,6 +415,7 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                     :unit_name,
                     :unit_price,
                     :quantity,
+                    :total_price,
                     :stocktaking_id
                 )
                 ",
@@ -399,6 +432,7 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                         ":unit_name": record.unit_name().as_str(),
                         ":unit_price": (record.unit_price().as_f64() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as i64,
                         ":quantity": (record.quantity().as_f64() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as i64,
+                        ":total_price": (record.total_price().as_f64() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as i64,
                         ":stocktaking_id": stocktaking.id().as_str(),
                     })
                     .map_err(|e| {
@@ -434,12 +468,15 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
             tran.execute(
                 r"
                 UPDATE stocktakings
-                SET recorded_at = :recorded_at
+                SET
+                    recorded_at = :recorded_at,
+                    total_price = :total_price
                 WHERE id = :id
                 ",
                 named_params! {
                     ":id": stocktaking.id().as_str(),
                     ":recorded_at": stocktaking.stocktaken_at().as_i64(),
+                    ":total_price": (stocktaking.total_price().as_f64() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as i64,
                 },
             )
             .map_err(|e| Error::InfrastructureError(format!("failed to execute: {}", e)))?;
@@ -464,6 +501,7 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                     unit_name,
                     unit_price,
                     quantity,
+                    total_price,
                     stocktaking_id
                 ) VALUES (
                     :supply_id,
@@ -471,6 +509,7 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                     :unit_name,
                     :unit_price,
                     :quantity,
+                    :total_price,
                     :stocktaking_id
                 )
                 ",
@@ -487,6 +526,7 @@ impl ForStocktakingPersistence for SqliteStocktakingRepository {
                         ":unit_name": record.unit_name().as_str(),
                         ":unit_price": (record.unit_price().as_f64() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as i64,
                         ":quantity": (record.quantity().as_f64() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as i64,
+                        ":total_price": (record.total_price().as_f64() * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as i64,
                         ":stocktaking_id": stocktaking.id().as_str(),
                     })
                     .map_err(|e| {

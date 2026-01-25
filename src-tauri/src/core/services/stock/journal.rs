@@ -45,6 +45,7 @@ impl JournalUsecase for JournalService {
         let journal = JournalDTO {
             id: journal.id().to_string(),
             entry_date: journal.entry_datetime().as_i64(),
+            total_price: journal.total_price().as_f64(),
             records: journal
                 .records()
                 .iter()
@@ -56,6 +57,7 @@ impl JournalUsecase for JournalService {
                     unit_name: record.unit_name().to_string(),
                     unit_price: record.unit_price().as_f64(),
                     quantity: record.quantity().as_f64(),
+                    total_price: record.total_price().as_f64(),
                 })
                 .collect(),
         };
@@ -71,6 +73,7 @@ impl JournalUsecase for JournalService {
             .map(|journal| JournalDTO {
                 id: journal.id().to_string(),
                 entry_date: journal.entry_datetime().as_i64(),
+                total_price: journal.total_price().as_f64(),
                 records: journal
                     .records()
                     .iter()
@@ -82,6 +85,7 @@ impl JournalUsecase for JournalService {
                         unit_name: record.unit_name().to_string(),
                         unit_price: record.unit_price().as_f64(),
                         quantity: record.quantity().as_f64(),
+                        total_price: record.total_price().as_f64(),
                     })
                     .collect(),
             })
@@ -123,6 +127,7 @@ impl JournalUsecase for JournalService {
             .map(|journal| JournalDTO {
                 id: journal.id().to_string(),
                 entry_date: journal.entry_datetime().as_i64(),
+                total_price: journal.total_price().as_f64(),
                 records: journal
                     .records()
                     .iter()
@@ -134,6 +139,7 @@ impl JournalUsecase for JournalService {
                         unit_name: record.unit_name().to_string(),
                         unit_price: record.unit_price().as_f64(),
                         quantity: record.quantity().as_f64(),
+                        total_price: record.total_price().as_f64(),
                     })
                     .collect(),
             })
@@ -184,16 +190,23 @@ impl JournalUsecase for JournalService {
                 UnitName::new(&record.unit_name)?,
                 PurchaseUnitPrice::new(record.unit_price)?,
                 PurchaseQuantity::new(record.quantity)?,
+                TotalPrice::new(record.total_price)?,
             ));
         }
 
-        let journal = Journal::restore(id, EntryDateTime::new(command.entry_date), records);
+        let journal = Journal::restore(
+            id,
+            EntryDateTime::new(command.entry_date),
+            TotalPrice::new(command.total_price)?,
+            records,
+        );
 
         self.journal_respository.add(journal.clone())?;
 
         let journal = JournalDTO {
             id: journal.id().to_string(),
             entry_date: journal.entry_datetime().as_i64(),
+            total_price: journal.total_price().as_f64(),
             records: journal
                 .records()
                 .iter()
@@ -205,6 +218,7 @@ impl JournalUsecase for JournalService {
                     unit_name: record.unit_name().to_string(),
                     unit_price: record.unit_price().as_f64(),
                     quantity: record.quantity().as_f64(),
+                    total_price: record.total_price().as_f64(),
                 })
                 .collect(),
         };
@@ -220,6 +234,10 @@ impl JournalUsecase for JournalService {
             .get(journal_id)?
             .ok_or(Error::DomainError(format!("journal does not exist.")))?;
 
+        let total_price = TotalPrice::new(command.total_price)?;
+
+        journal.change_total_price(total_price);
+
         let mut records: Vec<JournalRecord> = Vec::new();
 
         for record in &command.records {
@@ -231,6 +249,7 @@ impl JournalUsecase for JournalService {
                 UnitName::new(&record.unit_name)?,
                 PurchaseUnitPrice::new(record.unit_price)?,
                 PurchaseQuantity::new(record.quantity)?,
+                TotalPrice::new(record.total_price)?,
             ));
         }
 

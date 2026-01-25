@@ -148,6 +148,7 @@ pub struct JournalRecord {
     unit_name: UnitName,
     unit_price: PurchaseUnitPrice,
     quantity: PurchaseQuantity,
+    total_price: TotalPrice,
 }
 
 impl JournalRecord {
@@ -159,6 +160,7 @@ impl JournalRecord {
         unit_name: UnitName,
         unit_price: PurchaseUnitPrice,
         quantity: PurchaseQuantity,
+        total_price: TotalPrice,
     ) -> Self {
         Self {
             supply_id,
@@ -168,6 +170,7 @@ impl JournalRecord {
             unit_name,
             unit_price,
             quantity,
+            total_price,
         }
     }
 
@@ -197,6 +200,10 @@ impl JournalRecord {
 
     pub fn quantity(&self) -> &PurchaseQuantity {
         &self.quantity
+    }
+
+    pub fn total_price(&self) -> &TotalPrice {
+        &self.total_price
     }
 }
 
@@ -363,6 +370,7 @@ pub struct StocktakingRecord {
     unit_name: UnitName,
     unit_price: StocktakingUnitPrice,
     quantity: StocktakingQuantity,
+    total_price: TotalPrice,
 }
 
 impl StocktakingRecord {
@@ -372,6 +380,7 @@ impl StocktakingRecord {
         unit_name: UnitName,
         unit_price: StocktakingUnitPrice,
         quantity: StocktakingQuantity,
+        total_price: TotalPrice,
     ) -> Self {
         Self {
             supply_id,
@@ -379,6 +388,7 @@ impl StocktakingRecord {
             unit_name,
             unit_price,
             quantity,
+            total_price,
         }
     }
 
@@ -400,5 +410,35 @@ impl StocktakingRecord {
 
     pub fn quantity(&self) -> &StocktakingQuantity {
         &self.quantity
+    }
+
+    pub fn total_price(&self) -> &TotalPrice {
+        &self.total_price
+    }
+}
+
+/// The total price value object.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct TotalPrice {
+    value: u32,
+}
+
+impl TotalPrice {
+    /// Create `TotalPrice`
+    pub fn new(price: impl Into<f64>) -> Result<Self> {
+        let value = price.into();
+
+        if value < 0.0 {
+            panic!("The total price must be at least more than 0.");
+        }
+
+        let value = (value * (GUARANTEED_DECIMAL_PRECISION * 10) as f64) as u32;
+
+        Ok(Self { value })
+    }
+
+    /// Returns total price value as `f64`.
+    pub fn as_f64(&self) -> f64 {
+        self.value as f64 / (GUARANTEED_DECIMAL_PRECISION * 10) as f64
     }
 }

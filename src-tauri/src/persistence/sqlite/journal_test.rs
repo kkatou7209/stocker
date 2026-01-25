@@ -7,7 +7,7 @@ use scopeguard::defer;
 use crate::core::domain::entities::stock::Journal;
 use crate::core::domain::values::stock::{
     EntryDateTime, JournalId, JournalRecord, PurchaseQuantity, PurchaseUnitPrice, SupplierId,
-    SupplierName, SupplyId, SupplyName, UnitName,
+    SupplierName, SupplyId, SupplyName, TotalPrice, UnitName,
 };
 use crate::core::required_ports::{FindJournalsQuery, ForJournalPersistence};
 use crate::persistence::sqlite::{migrate, SqliteJournalRepository};
@@ -50,6 +50,7 @@ fn journal_repository_test() {
         .add(Journal::restore(
             JournalId::new("1").unwrap(),
             EntryDateTime::new(200000),
+            TotalPrice::new(1700.0).unwrap(),
             vec![
                 JournalRecord::new(
                     SupplyId::new("1").unwrap(),
@@ -59,6 +60,7 @@ fn journal_repository_test() {
                     UnitName::new("g").unwrap(),
                     PurchaseUnitPrice::new(100_u32).unwrap(),
                     PurchaseQuantity::new(5_u32).unwrap(),
+                    TotalPrice::new(500.0).unwrap(),
                 ),
                 JournalRecord::new(
                     SupplyId::new("2").unwrap(),
@@ -68,6 +70,7 @@ fn journal_repository_test() {
                     UnitName::new("g").unwrap(),
                     PurchaseUnitPrice::new(120_u32).unwrap(),
                     PurchaseQuantity::new(10_u32).unwrap(),
+                    TotalPrice::new(1200.0).unwrap(),
                 ),
             ],
         ))
@@ -78,6 +81,7 @@ fn journal_repository_test() {
     assert!(journals.first().is_some_and(|journal| {
         assert_eq!(journal.id(), &JournalId::new("1").unwrap());
         assert_eq!(journal.entry_datetime(), &EntryDateTime::new(200000),);
+        assert_eq!(journal.total_price(), &TotalPrice::new(1700.0).unwrap());
         assert_eq!(
             journal.records(),
             &[
@@ -89,6 +93,7 @@ fn journal_repository_test() {
                     UnitName::new("g").unwrap(),
                     PurchaseUnitPrice::new(100_u32).unwrap(),
                     PurchaseQuantity::new(5_u32).unwrap(),
+                    TotalPrice::new(500.0).unwrap(),
                 ),
                 JournalRecord::new(
                     SupplyId::new("2").unwrap(),
@@ -98,6 +103,7 @@ fn journal_repository_test() {
                     UnitName::new("g").unwrap(),
                     PurchaseUnitPrice::new(120_u32).unwrap(),
                     PurchaseQuantity::new(10_u32).unwrap(),
+                    TotalPrice::new(1200.0).unwrap(),
                 ),
             ]
         );
@@ -108,6 +114,7 @@ fn journal_repository_test() {
         .save(Journal::restore(
             JournalId::new("1").unwrap(),
             EntryDateTime::new(200000),
+            TotalPrice::new(1950.0).unwrap(),
             vec![JournalRecord::new(
                 SupplyId::new("1").unwrap(),
                 SupplyName::new("SupplyC").unwrap(),
@@ -116,6 +123,7 @@ fn journal_repository_test() {
                 UnitName::new("kg").unwrap(),
                 PurchaseUnitPrice::new(130_u32).unwrap(),
                 PurchaseQuantity::new(15_u32).unwrap(),
+                TotalPrice::new(1950.0).unwrap(),
             )],
         ))
         .unwrap();
@@ -125,6 +133,7 @@ fn journal_repository_test() {
     assert!(journal.is_some_and(|journal| {
         assert_eq!(journal.id(), &JournalId::new("1").unwrap());
         assert_eq!(journal.entry_datetime(), &EntryDateTime::new(200000),);
+        assert_eq!(journal.total_price(), &TotalPrice::new(1950.0).unwrap());
         assert_eq!(
             journal.records(),
             &[JournalRecord::new(
@@ -135,6 +144,7 @@ fn journal_repository_test() {
                 UnitName::new("kg").unwrap(),
                 PurchaseUnitPrice::new(130_u32).unwrap(),
                 PurchaseQuantity::new(15_u32).unwrap(),
+                TotalPrice::new(1950.0).unwrap(),
             ),]
         );
         true
@@ -152,6 +162,7 @@ fn journal_repository_test() {
     assert!(journals.first().as_ref().is_some_and(|journal| {
         assert_eq!(journal.id(), &JournalId::new("1").unwrap());
         assert_eq!(journal.entry_datetime(), &EntryDateTime::new(200000),);
+        assert_eq!(journal.total_price(), &TotalPrice::new(1950.0).unwrap());
         assert_eq!(
             journal.records(),
             &[JournalRecord::new(
@@ -162,6 +173,7 @@ fn journal_repository_test() {
                 UnitName::new("kg").unwrap(),
                 PurchaseUnitPrice::new(130_u32).unwrap(),
                 PurchaseQuantity::new(15_u32).unwrap(),
+                TotalPrice::new(1950.0).unwrap(),
             ),]
         );
         true

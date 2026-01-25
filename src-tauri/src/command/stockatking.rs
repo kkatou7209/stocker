@@ -13,6 +13,7 @@ use crate::core::stocker::Stocker;
 pub struct StocktakingData {
     id: String,
     stocktaking_date: i64,
+    total_price: f64,
     records: Vec<StocktakingRecordData>,
 }
 
@@ -24,12 +25,14 @@ pub struct StocktakingRecordData {
     unit_name: String,
     unit_price: f64,
     quantity: f64,
+    total_price: f64,
 }
 
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RecordStocktakingCommand {
     stocktaking_date: i64,
+    total_price: f64,
     records: Vec<StocktakingRecordData>,
 }
 
@@ -37,6 +40,7 @@ pub struct RecordStocktakingCommand {
 #[serde(rename_all = "camelCase")]
 pub struct UpdateStocktakingCommand {
     id: String,
+    total_price: f64,
     records: Vec<StocktakingRecordData>,
 }
 
@@ -57,10 +61,11 @@ pub fn list_all_stocktakings(app: tauri::State<Stocker>) -> Result<Vec<Stocktaki
 
     let stocktakings = stocktakings
         .into_iter()
-        .map(|stockatking| StocktakingData {
-            id: stockatking.id,
-            stocktaking_date: stockatking.stocktaken_date,
-            records: stockatking
+        .map(|stocktaking| StocktakingData {
+            id: stocktaking.id,
+            stocktaking_date: stocktaking.stocktaken_date,
+            total_price: stocktaking.total_price,
+            records: stocktaking
                 .records
                 .into_iter()
                 .map(|record| StocktakingRecordData {
@@ -69,6 +74,7 @@ pub fn list_all_stocktakings(app: tauri::State<Stocker>) -> Result<Vec<Stocktaki
                     unit_name: record.unit_name,
                     unit_price: record.unit_price,
                     quantity: record.quantity,
+                    total_price: record.total_price,
                 })
                 .collect::<Vec<StocktakingRecordData>>(),
         })
@@ -92,6 +98,7 @@ pub fn get_stocktaking_by_id(
         Some(StocktakingData {
             id: stocktaking.id,
             stocktaking_date: stocktaking.stocktaken_date,
+            total_price: stocktaking.total_price,
             records: stocktaking
                 .records
                 .into_iter()
@@ -101,6 +108,7 @@ pub fn get_stocktaking_by_id(
                     unit_name: record.unit_name,
                     unit_price: record.unit_price,
                     quantity: record.quantity,
+                    total_price: record.total_price,
                 })
                 .collect::<Vec<StocktakingRecordData>>(),
         })
@@ -119,6 +127,7 @@ pub fn record_stocktaking(
         .stocktaking_usecase()
         .record(provided_ports::RecordStocktakingCommand {
             stocktaken_date: command.stocktaking_date,
+            total_price: command.total_price,
             records: command
                 .records
                 .into_iter()
@@ -128,6 +137,7 @@ pub fn record_stocktaking(
                     unit_name: record.unit_name,
                     unit_price: record.unit_price,
                     quantity: record.quantity,
+                    total_price: record.total_price,
                 })
                 .collect::<Vec<StocktakingRecordDTO>>(),
         })
@@ -136,6 +146,7 @@ pub fn record_stocktaking(
     let stocktaking = StocktakingData {
         id: stocktaking.id,
         stocktaking_date: stocktaking.stocktaken_date,
+        total_price: stocktaking.total_price,
         records: stocktaking
             .records
             .into_iter()
@@ -145,6 +156,7 @@ pub fn record_stocktaking(
                 unit_name: record.unit_name,
                 unit_price: record.unit_price,
                 quantity: record.quantity,
+                total_price: record.total_price,
             })
             .collect::<Vec<StocktakingRecordData>>(),
     };
@@ -161,6 +173,7 @@ pub fn update_stocktaking(
     app.stocktaking_usecase()
         .edit(provided_ports::EditStocktakingCommand {
             stocktaking_id: command.id,
+            total_price: command.total_price,
             records: command
                 .records
                 .into_iter()
@@ -170,6 +183,7 @@ pub fn update_stocktaking(
                     unit_name: record.unit_name,
                     unit_price: record.unit_price,
                     quantity: record.quantity,
+                    total_price: record.total_price,
                 })
                 .collect::<Vec<StocktakingRecordDTO>>(),
         })
@@ -197,6 +211,7 @@ pub fn search_stocktakings(
         .map(|stockatking| StocktakingData {
             id: stockatking.id,
             stocktaking_date: stockatking.stocktaken_date,
+            total_price: stockatking.total_price,
             records: stockatking
                 .records
                 .into_iter()
@@ -206,6 +221,7 @@ pub fn search_stocktakings(
                     unit_name: record.unit_name,
                     unit_price: record.unit_price,
                     quantity: record.quantity,
+                    total_price: record.total_price,
                 })
                 .collect::<Vec<StocktakingRecordData>>(),
         })
@@ -248,6 +264,7 @@ pub fn get_stocktaking_at(
         Some(StocktakingData {
             id: stocktaking.id,
             stocktaking_date: stocktaking.stocktaken_date,
+            total_price: stocktaking.total_price,
             records: stocktaking
                 .records
                 .into_iter()
@@ -257,6 +274,7 @@ pub fn get_stocktaking_at(
                     unit_name: record.unit_name,
                     unit_price: record.unit_price,
                     quantity: record.quantity,
+                    total_price: record.total_price,
                 })
                 .collect::<Vec<StocktakingRecordData>>(),
         })
